@@ -1,0 +1,145 @@
+- --------------------------------------------------------------------
+I want my Neovim set up conventionally here:
+
+    XDG_CONFIG_HOME : ~/.config/nvim
+    XDG_DATA_HOME   : ~/.local/share
+
+I will want to install these plugins:
+
+        XDG_DATA_HOME/nvim/site/pack/
+    ~/.local/share/nvim/site/pack/
+        lucs/opt/
+                Sources detailed later.
+            nvim-lucs/
+            vim-dirvish/
+            vim-perl/
+            vim-perl6/
+            vim-pgsep/
+            vim-plugin-AnsiEsc/
+            vim-surround/
+
+The nvim-lucs plugin repo (this repo) will have supplied two init
+files that I place as follows:
+
+        XDG_CONFIG_HOME/nvim/
+    ~/.config/nvim/
+
+            ⦃
+                packadd nvim-lucs
+                packadd vim-dirvish
+                ⋯
+
+                    " Misc options.
+                set termguicolors
+                ⋯
+
+                    " prj globals.
+                let g:user_home_dir = '/home/lucs'
+                ⋯
+            ⦄
+        init.lucs.vim
+
+            ⦃
+                source /home/lucs/.config/nvim/init.lucs.vim
+                let g:prj_nick = 'lucs'  
+                packadd vim-foo
+            ⦄
+        init.vim
+
+You can merge them into a single init.vim if you want; I use the
+include mechanism for flexibility in another aspect of the way I
+organize my projects, aspect which is not discussed here.
+
+- --------------------------------------------------------------------
+ʈ howto
+
+    ▸ Clone the module.
+dPkg=~/.local/share/nvim/site/pack/lucs/opt
+test -d $dPkg || mkdir -p $dPkg
+cd $dPkg
+git clone https://github.com/lucs/nvim-lucs.git
+
+    ▸ Ensure there is a config dir.
+dCfg=~/.config/nvim
+test -d $dCfg || mkdir -p $dCfg
+
+    ▸ Copy the init files. You may want to validate the contents,
+    especially after having cloned the plugins you will be asked to by
+    this doc right after.
+cp $dPkg/nvim-lucs/init.vim $dCfg
+cp $dPkg/nvim-lucs/init.lucs.vim $dCfg
+
+Then ｢▸ git clone｣ each of these plugins, in the same $dPkg directory:
+
+        My page separator plugin.
+    https://github.com/lucs/vim-pgsep.git
+
+        Scroll page, cursor remaining immobile.
+    https://github.com/lucs/vim-scroll-around-cursor.git
+
+        To make easier ╫─like box drawing.
+    https://github.com/vim-scripts/DrawIt.git
+
+        Navigate dirs. Start with '-'.
+    https://github.com/justinmk/vim-dirvish.git
+
+        Perl/Raku synlighting.
+    https://github.com/vim-perl/vim-perl.git
+    https://github.com/vim-perl/vim-perl6.git
+
+        Not sure anymore why/what this is. 2021-05-09
+    https://github.com/powerman/vim-plugin-AnsiEsc.git
+
+        Make it easy to surround with paren-alikes.
+    https://github.com/tpope/vim-surround.git
+
+Build the help files. FIXME
+
+    ./vimext/helptags.pl $dVimLucs/vimext
+    ./vimext/helptags.pl $dVimLucs/vimsetup/vimfiles
+
+- --------------------------------------------------------------------
+Things I wrote, in ./vimfiles
+
+    .
+    ├── filetype.vim
+    │
+    ├── plugin
+    │   │
+    │   ├── acutags.pl
+    │   │
+    │   ├── refmt.pl
+    │   │
+    │   │       Print timestamps used by some of my code.
+    │   ├── tstamp.pl
+    │   │
+    │
+    ├── syntax
+    │   │
+    │   ├── lucslog.vim
+    │   │
+    │   ├── text.vim
+    │   │
+    │   │       Highlights in red or green parts of text wrapped in some UTF-8
+    │   │       character pairs (for a project I did in the past).
+    │   ├── tradhelp.vim
+    │
+    ├── after
+        │
+        ├── plugin
+        │   │       My "real" .vimrc file.
+        │   └── lucs.vim
+        │
+        ├── ftplugin
+        │   │
+        │   ├── lucslog.vim
+        │   │
+        │   └── lucs.vim
+        │
+
+- --------------------------------------------------------------------
+To do
+
+. Document ｢./plugin/table_funcs.pl｣; clean up its code and
+｢_TableFunc｣ in ｢z_lucs.vim｣.
+
