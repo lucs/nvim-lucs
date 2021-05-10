@@ -5,6 +5,7 @@ packadd vim-perl6
 packadd vim-pgsep
 packadd vim-plugin-AnsiEsc
 packadd vim-surround
+packadd nvim-lucs
 
 set termguicolors
 colorscheme blue
