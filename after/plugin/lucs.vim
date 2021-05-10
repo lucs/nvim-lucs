@@ -33,7 +33,7 @@ nmap Kp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
 nmap Kt :%s/⌚/⌘/gc<cr>
 
     " Open my main Vim config file.
-nmap Kz :e ~/.config/nvim/plugin/z_lucs.vim<cr>
+nmap Kz :e ~/.local/share/nvim/site/pack/lucs/opt/nvim-lucs/after/plugin/lucs.vim<cr>
 
 " --------------------------------------------------------------------
 " Given ⦃g:prj_nick = 'vch'⦄, look for lines that start like ⦃vchf…⦄
@@ -77,7 +77,6 @@ func! InsertBillingElem ()
     endif
     set nolazyredraw
 endfunc
-
 
 " --------------------------------------------------------------------
 " Delete current paragraph and empty lines following it and move to
