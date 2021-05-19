@@ -167,20 +167,20 @@ nmap <f8> :<C-U>call _TableFunc()<cr>
 func! _TableFunc ()
     if &modified
         echo "File is modified. Save it first."
-    else
-        let l:tmpfile = tempname()
-        let l:prog = "build_toc.p6"
-        let l:cmd = printf("%s/plugin/" . l:prog . " %s %s",
-          \ $HOME . '/.config/nvim',
-          \ expand("%:p"),
-          \ l:tmpfile
-        \)
-        call system(l:cmd)
-        exec "edit " . l:tmpfile
-            " Pressing Enter on a line will open the file at the line
-            " number that it happens
-        nnoremap <buffer> <cr> :call OpenHere()<cr>
+        return
     endif
+
+    let l:prog = g:nvim_lucs_pack . '/plugin/build_toc.p6 '
+    let l:rd_file = expand("%:p")
+    let l:wr_file = tempname()
+
+    let l:cmd = printf("%s %s %s", l:prog, l:rd_file, l:wr_file)
+
+    call system(l:cmd)
+    exec "edit " . l:wr_file
+        " Pressing Enter on a line will open the file at the line
+        " number that it happens
+    nnoremap <buffer> <cr> :call OpenHere()<cr>
 endfunc
 
     " Current line should read like ⦃582 Chomp a string⦄. Open the
