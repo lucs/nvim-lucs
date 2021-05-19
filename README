@@ -1,7 +1,7 @@
 - --------------------------------------------------------------------
 I want my Neovim set up conventionally here:
 
-    XDG_CONFIG_HOME : ~/.config/nvim
+    XDG_CONFIG_HOME : ~/.config
     XDG_DATA_HOME   : ~/.local/share
 
 I will want to install these plugins:
