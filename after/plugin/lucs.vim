@@ -746,17 +746,6 @@ nnoremap g3 :call _InsertTimestamp(0, 1)<cr>
 nnoremap g4 :call _InsertTimestamp(1, 1)<cr>
 nnoremap g5 :call _InsertTimestamp(2, 1)<cr>
 
-" OLD
-"
-" func! _CalcTimestamp (str, format)
-"     let l:cmd = "perl " . $HOME . '/.config/nvim/plugin/tstamp.pl '" . a:str . "' " . a:format
-"     return system(
-"       \ (has('win16') || has('win32') || has('win64'))
-"       \     ? shellescape(l:cmd)
-"       \     : l:cmd
-"     \)
-" endfunc
-"
 " func! _InsertTimestamp (mode, format, where)
 "     if (a:mode == 'v')
 "             " We are in ´visual mode, so replace the visually selected
