@@ -33,7 +33,7 @@ nmap Kp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
 nmap Kt :%s/⌚/⌘/gc<cr>
 
     " Open my main Vim config file.
-nmap Kz :e ~/.local/share/nvim/site/pack/lucs/opt/nvim-lucs/after/plugin/lucs.vim<cr>
+nmap Kz :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
 
 " --------------------------------------------------------------------
 " Given ⦃g:prj_nick = 'vch'⦄, look for lines that start like ⦃vchf…⦄
@@ -720,7 +720,7 @@ map gy "ayiW:let @/ = @a<cr>
 " Insert a current moment timestamp.
 
 func! CalcTimestamp (format)
-    let l:cmd = 'perl6 ' . $HOME . '/.config/nvim/plugin/tstamp.p6 ' . a:format
+    let l:cmd = 'raku ' . g:nvim_lucs_pack . '/plugin/tstamp.p6 ' . a:format
     return system(
       \ (has('win16') || has('win32') || has('win64'))
       \     ? shellescape(l:cmd)
@@ -1168,6 +1168,7 @@ nmap ,an :call _AppendLogEntry()<cr>.
 "     if &modified
 "         echo "File is modified. Save it first."
 "     else
+       " let l:cmd = g:nvim_lucs_pack . '/plugin/build_toc.p6'
 "         let l:cmd = g:lucs_share . "/plugin/acutags.pl -" . a:option . " " . expand("%")
 "         let l:foo = system(l:cmd)
 "         echo l:foo
