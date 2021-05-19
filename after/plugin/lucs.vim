@@ -679,7 +679,8 @@ nnoremap J. J
 " nmap <esc>[Z <s-tab>
 
     " Force UTF-8 encoding.
-nmap gt8 :set fenc=utf-8<cr>
+    " 2021-06-25 Don't waste 'gt' for a too infrequent operation.
+"nmap gt8 :set fenc=utf-8<cr>
 
     " Keep highlighting when shifting text in or out.
 vnoremap < <gv
@@ -720,7 +721,7 @@ map gy "ayiW:let @/ = @a<cr>
 " Insert a current moment timestamp.
 
 func! CalcTimestamp (format)
-    let l:cmd = 'raku ' . g:nvim_lucs_pack . '/plugin/tstamp.p6 ' . a:format
+    let l:cmd = 'raku ' . g:nvim_lucs_pack . '/plugin/tstamp.raku ' . a:format
     return system(
       \ (has('win16') || has('win32') || has('win64'))
       \     ? shellescape(l:cmd)
@@ -728,9 +729,16 @@ func! CalcTimestamp (format)
     \)
 endfunc
 
+    " a:format:
+    "     0: ⦃⌘2014-06-28⦄
+    "     1: ⦃⌘2016-01-17.17-18-34⦄
+    "     2: ⦃⌘2014f.Jun13.Fri.09:14.44⦄
+    " a:where:
+    "     0: Insert at cursor position
+    "     1: Insert after cursor position
 func! _InsertTimestamp (format, where)
     let l:saved_b = getreg("b")
-    let @b = CalcTimestamp(a:format)
+    let @b = '⌘' . CalcTimestamp(a:format)
     if a:where == 0
         normal "bP
     elseif a:where == 1
@@ -739,43 +747,12 @@ func! _InsertTimestamp (format, where)
     call setreg('b', l:saved_b)
 endfunc
 
-nnoremap g0 :call _InsertTimestamp(0, 0)<cr>
-nnoremap g1 :call _InsertTimestamp(1, 0)<cr>
-nnoremap g2 :call _InsertTimestamp(2, 0)<cr>
-nnoremap g3 :call _InsertTimestamp(0, 1)<cr>
-nnoremap g4 :call _InsertTimestamp(1, 1)<cr>
-nnoremap g5 :call _InsertTimestamp(2, 1)<cr>
-
-" func! _InsertTimestamp (mode, format, where)
-"     if (a:mode == 'v')
-"             " We are in ´visual mode, so replace the visually selected
-"             " text, which should be a date, with my timestamp
-"             " format. Note: this code fails if we have selected the
-"             " text with 'V' or something,
-"         let l:saved_a = getreg("a")
-"         normal gv"ax
-"         let l:some_date = getreg("a")
-"         call setreg('a', l:saved_a)
-"     else
-"         let l:some_date = 'NOW'
-"     endif
-"
-"     let l:saved_b = getreg("b")
-"     let @b = _CalcTimestamp(l:some_date, a:format) . " "
-"     if a:where == 0
-"         normal "bP
-"     elseif a:where == 1
-"         normal "bp
-"     endif
-"     call setreg('b', l:saved_b)
-" endfunc
-"
-" nnoremap glk :call _InsertTimestamp('n', 0, 0)<cr>
-" nnoremap gll :call _InsertTimestamp('n', 0, 1)<cr>
-" nnoremap gli :call _InsertTimestamp('n', 1, 0)<cr>
-" nnoremap glo :call _InsertTimestamp('n', 1, 1)<cr>
-"
-" vnoremap glk :call _InsertTimestamp('v', 0, 0)<cr>
+nnoremap g00 :call _InsertTimestamp(0, 0)<cr>
+nnoremap g01 :call _InsertTimestamp(0, 1)<cr>
+nnoremap g10 :call _InsertTimestamp(1, 0)<cr>
+nnoremap g11 :call _InsertTimestamp(1, 1)<cr>
+nnoremap g20 :call _InsertTimestamp(2, 0)<cr>
+nnoremap g21 :call _InsertTimestamp(2, 1)<cr>
 
 " " --------------------------------------------------------------------
 " 2019-09-23.21-06-03
@@ -1377,7 +1354,7 @@ func! _ToggleSyntaxHi ()
         call Hi_off()
     else
         call Hi_onn()
-   endif
+    endif
 endfunc
 
     " Initialize.
