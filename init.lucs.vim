@@ -1,3 +1,4 @@
+let g:user_home_dir = '/home/lucs'
 packadd DrawIt
 packadd vim-dirvish
 packadd vim-perl
@@ -13,5 +14,4 @@ colorscheme blue
 set bg=dark
 let loaded_matchparen = 1
 
-let g:user_home_dir = '/home/lucs'
 
