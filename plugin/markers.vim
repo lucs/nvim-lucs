@@ -14,25 +14,32 @@ digraph  al   184 " ¸
 digraph  am   175 " ¯
 digraph  an  9252 " ␤
 digraph  ao  8594 " →
+digraph  ar  9166 " ⏎
 digraph  at   648 " ʈ
+digraph  av  9251 " ␣
 digraph  bb   166 " ¦
 digraph  bt   168 " ¨
 
-" Choix
-digraph  c0  8739 " ∣
-digraph  c1 10098 " ❲
-digraph  c2 10099 " ❳
-
-" Ellipses
-digraph  el  8943 " ⋯
-digraph  et  8230 " …
-
-" Git
-digraph  gb   946 " β
-digraph  gr   341 " ŕ
-digraph  gs   347 " ś
-digraph  gt   357 " ť
-digraph  gv  8729 " ∙
+" Préfixes, suffixes
+digraph  x0  7749 " ṅ
+digraph  xa  9670 " ◆
+digraph  xA  9672 " ◈
+digraph  xc   180 " ´
+digraph  xd   176 " °
+digraph  xe  9998 " ✎
+digraph  xf  8230 " …
+digraph  xj  8767 " ∿
+digraph  xl  9671 " ◇
+digraph  xm   625 " ɱ
+digraph  xn   413 " Ɲ
+digraph  xo   948 " δ
+digraph  xp   349 " ŝ
+digraph  xs   952 " θ
+digraph  xt   428 " Ƭ
+digraph  xu   363 " ū
+digraph  xU   367 " ů
+digraph  xw 10746 " ⧺
+digraph  xx   640 " ʀ
 
 " Lettres grecques
 imap <C-f>lga α
@@ -54,13 +61,6 @@ imap <C-f>lgS Σ
 imap <C-f>lgt τ
 imap <C-f>lgT Τ
 
-" Musique
-digraph  m0  9838 " ♮
-digraph  mb  9837 " ♭
-digraph  mc  9834 " ♪
-digraph  md  9839 " ♯
-digraph  mn  9833 " ♩
-
 " Opérateurs
 digraph  o1  8704 " ∀
 digraph  o2  8707 " ∃
@@ -76,27 +76,23 @@ digraph  ob  8746 " ∪
 digraph  oc   172 " ¬
 digraph  od  8800 " ≠
 digraph  oe  8801 " ≡
+digraph  of  8882 " ⊲
+digraph  og  8883 " ⊳
+digraph  oh  8826 " ≺
+digraph  oi  8827 " ≻
+digraph  oj  8918 " ⋖
+digraph  ok  8919 " ⋗
 
-" Prompts and returns
-digraph  p1  9656 " ▸
-digraph  p2  9666 " ◂
-digraph  p3  9655 " ▷
-digraph  p4  9665 " ◁
-digraph  p5  9658 " ►
-digraph  p6  9668 " ◄
-digraph  pp 10148 " ➤
+" Musique
+digraph  m0  9838 " ♮
+digraph  mb  9837 " ♭
+digraph  mc  9834 " ♪
+digraph  md  9839 " ♯
+digraph  mn  9833 " ♩
 
-" Surrounders
-imap <C-f>sg1 ｢
-imap <C-f>sg2 ｣
-imap <C-f>se1 ⦃
-imap <C-f>se2 ⦄
-imap <C-f>sr1 ⟦
-imap <C-f>sr2 ⟧
-imap <C-f>st1 ⟨
-imap <C-f>st2 ⟩
-imap <C-f>so1 ᚜
-imap <C-f>so2 ᚛
+" GUI
+digraph  um  8725 " ∕
+digraph  us  8212 " —
 
 " Euh, divers.
 digraph  vm   625 " ɱ
@@ -104,34 +100,54 @@ digraph  va   258 " Ă
 digraph  vd   270 " Ď
 digraph  vo   334 " Ŏ
 digraph  vn   327 " Ň
-imap <C-f>vs1 ≺
-imap <C-f>vs2 ≻
-imap <C-f>vs3 ⋖
-imap <C-f>vs4 ⋗
-imap <C-f>vs5 ⊲
-imap <C-f>vs6 ⊳
-imap <C-f>vs7 ▶
-imap <C-f>vs8 ◀
 
-" GUI
-digraph  um  8725 " ∕
-digraph  us  8212 " —
+" Git
+digraph  gb   946 " β
+digraph  gr   341 " ŕ
+digraph  gs   347 " ś
+digraph  gt   357 " ť
+digraph  gv  8729 " ∙
 
-" Préfixes, suffixes
-digraph  x0  7749 " ṅ
-digraph  xa  9670 " ◆
-digraph  xc   180 " ´
-digraph  xe  9998 " ✎
-digraph  xf  8230 " …
-digraph  xj  8767 " ∿
-digraph  xl  9671 " ◇
-digraph  xm   625 " ɱ
-digraph  xn   413 " Ɲ
-digraph  xo   948 " δ
-digraph  xp   349 " ŝ
-digraph  xs   952 " θ
-digraph  xt   428 " Ƭ
-digraph  xu   363 " ū
-digraph  xw 10746 " ⧺
-digraph  xx   640 " ʀ
+" Choix
+digraph  c0  8739 " ∣
+digraph  c1 10098 " ❲
+digraph  c2 10099 " ❳
+
+" Ellipses
+digraph  el  8943 " ⋯
+digraph  et  8230 " …
+
+" Prompts, returns
+digraph  p1  9656 " ▸
+digraph  p2  9666 " ◂
+digraph  p3  9655 " ▷
+digraph  p4  9665 " ◁
+digraph  p5  9658 " ►
+digraph  p6  9668 " ◄
+digraph  p7  9657 " ▹
+digraph  p8  9667 " ◃
+digraph  p9  9654 " ▶
+digraph  pa  9664 " ◀
+digraph  P1  9652 " ▴
+digraph  P2  9662 " ▾
+digraph  P3  9651 " △
+digraph  P4  9661 " ▽
+digraph  P7  9653 " ▵
+digraph  P8  9663 " ▿
+digraph  P9  9650 " ▲
+digraph  Pa  9660 " ▼
+
+" Surrounders
+imap <C-f>se1 ⦃
+imap <C-f>se2 ⦄
+imap <C-f>so1 ᚜
+imap <C-f>so2 ᚛
+imap <C-f>sq1 ｢
+imap <C-f>sq2 ｣
+imap <C-f>sr1 ⟦
+imap <C-f>sr2 ⟧
+imap <C-f>st1 ⟨
+imap <C-f>st2 ⟩
+imap <C-f>sz1 ‹
+imap <C-f>sz2 ›
 
