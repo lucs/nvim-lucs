@@ -876,6 +876,24 @@ com! -nargs=1 Fft call _Fft("<args>")
 " com! -nargs=0 M call _Errmess()
 
 " --------------------------------------------------------------------
+" Open a Raku doc file in the current Vim session. ⦃:Rd Module::Install⦄
+
+func! _Rd (module)
+    let l:savedB = @b
+    let @b = system("RAKUDOC_PAGER=cat rakudoc " . a:module)[:-2]
+    if v:shell_error != 0
+        echo a:module "not found."
+    else
+        exec "normal :new\<cr>"
+        exec "normal \<c-w>p\<c-w>c"
+        normal "bP
+        setl ft=pod ro nomod noma
+    endif
+    let @b = l:savedB
+endfunc
+com! -nargs=1 Rd call _Rd("<args>")
+
+" --------------------------------------------------------------------
 " Open a Perl module in the current Vim session. ⦃:Pm Module::Install⦄
 func! _Pm (module)
     let f = system("perl -MModule::Locate "
