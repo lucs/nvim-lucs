@@ -167,7 +167,7 @@ if main_syntax == 'cst'
 endif
 
 
-synt match tsLogRef '^\zs⌘[^ $]\+\ze\s\+\.´'
+synt match tsLogRef '^\zs☰[^ $]\+\ze\s\+\.´'
 synt match atLogRef '\.\zs´\S\+\ze'
 hi def tsLogRef   guifg=DarkCyan
 hi def atLogRef   guifg=Yellow
@@ -183,7 +183,7 @@ high Attr   ctermfg=LightRed
 high Obrk   ctermfg=Cyan
 high Cbrk   ctermfg=LightCyan
 
-synt match          Timestamp   '⌘[^ $]\+'
+synt match          Timestamp   '☰[^ $]\+'
 synt match          Acutag      '´\w*'
 high Timestamp      guifg=LightGreen
 high Acutag         guifg=Cyan

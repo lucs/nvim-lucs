@@ -30,7 +30,9 @@ nmap Kl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
 nmap Kp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
 
     " Replace old by new timestamp indicator.
-nmap Kt :%s/⌚/⌘/gc<cr>
+    " ⌚1 U-231a
+    " ⌘21 U-2318
+nmap Kt :%s,[\u231a\u2318],☰,gc<cr>
 
     " Open my main Vim config file.
 nmap Kz :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
@@ -38,7 +40,7 @@ nmap Kz :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
 " --------------------------------------------------------------------
 " Given ⦃g:prj_nick = 'vch'⦄, look for lines that start like ⦃vchf…⦄
 " (note the appended 'f') and insert a block before it, like
-" ｢vchf!0'043- ⌘2019l.Dec02.Mon.09:44.06｣
+" ｢vchf!0'043- ☰2019l.Dec02.Mon.09:44.06｣
 
 func! InsertBillingElem ()
     if ! exists('g:prj_nick')
@@ -730,15 +732,15 @@ func! CalcTimestamp (format)
 endfunc
 
     " a:format:
-    "     0: ⦃⌘2014-06-28⦄
-    "     1: ⦃⌘2016-01-17.17-18-34⦄
-    "     2: ⦃⌘2014f.Jun13.Fri.09:14.44⦄
+    "     0: ⦃☰2014-06-28⦄
+    "     1: ⦃☰2016-01-17.17-18-34⦄
+    "     2: ⦃☰2014f.Jun13.Fri.09:14.44⦄
     " a:where:
     "     0: Insert at cursor position
     "     1: Insert after cursor position
 func! _InsertTimestamp (format, where)
     let l:saved_b = getreg("b")
-    let @b = '⌘' . CalcTimestamp(a:format)
+    let @b = '☰' . CalcTimestamp(a:format)
     if a:where == 0
         normal "bP
     elseif a:where == 1
