@@ -203,7 +203,7 @@ func! OpenHere ()
 endfunc
 
 " --------------------------------------------------------------------
-" Surround visually selected text by typing ｢s｣ followed by indicated
+" Surround visually selected text by typing ｢S｣ followed by indicated
 " character. Insert boilerplate, place cursor for insertion.
 
     " c : (c1) Choice
@@ -259,6 +259,11 @@ inoremap <F2>⟨         ⟨⟩<esc>i
 let surround_117    = "ū<\r>"
 noremap  <F2>ū        iū<><esc>i
 inoremap <F2>ū         ū<><esc>i
+
+    " o :  ᚜ban-cu1᚛ My operator notation
+let surround_111    = "᚜\r᚛"
+noremap  <F2>᚜        i᚜᚛<esc>i
+inoremap <F2>᚜         ᚜᚛<esc>i
 
     " < : <>
 let surround_60     = "<\r>"
