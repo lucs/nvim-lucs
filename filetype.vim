@@ -1,7 +1,6 @@
 " Detect miscellaneous file types.
 
 au! BufNewFile,BufRead *.pmrc setf procmail
-au! BufNewFile,BufRead,BufWritePost *.raku,*.rakutest,*.rakumod setf perl6
 au! BufNewFile,BufRead *.sgl setf sgl
 au! BufNewFile,BufRead .llog setf lucslog
 au! BufNewFile,BufRead dist.ini setf distini
@@ -15,7 +14,7 @@ au! BufNewFile,BufRead *.scen setf scen
 au! BufNewFile,BufRead *.ly setf lilypond
 au! BufNewFile,BufRead *.sco,*.orc,*.csd setf csound
 au! BufNewFile,BufRead *.txh setf txh
-au! BufNewFile,BufRead *.pod,*.rakudoc setf pod
+au! BufNewFile,BufRead *.pod setf pod
 au! BufNewFile,BufRead *.vpl,*.cons setf perl
 au! BufNewFile,BufRead,BufWritePost *.memo,*.txt,*.poy setf text
 au! BufNewFile,BufRead *.tt2,*.tt set filetype=tt2
