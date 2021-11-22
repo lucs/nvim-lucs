@@ -11,5 +11,4 @@ setl nosmartindent
 "setl indentkeys-=0#
 setl isfname-=:
 setl tabstop=4 softtabstop=4 shiftwidth=4
-endif
 
