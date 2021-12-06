@@ -227,8 +227,8 @@ inoremap <F2><space>⦃  ⦃  ⦄<esc>hi
     " f : (fd) File or directory
 let surround_102    = "…<\r>"
 let surround_8229   = "…<\r>"
-noremap  <F2>‥        i…<><esc>i
-inoremap <F2>‥         …<><esc>i
+noremap  <F2>…        i…<><esc>i
+inoremap <F2>…         …<><esc>i
 
     " q : (q1) Quote, generic
 let surround_113    = "｢\r｣"
@@ -265,13 +265,16 @@ let surround_111    = "᚜\r᚛"
 noremap  <F2>᚜        i᚜᚛<esc>i
 inoremap <F2>᚜         ᚜᚛<esc>i
 
-    " < : <>
-let surround_60     = "<\r>"
-let surround_62     = "< \r >"
-noremap  <F2><        i<><esc>i
-noremap  <F2><space>< i<  ><esc>hi
-inoremap <F2><         <><esc>i
-inoremap <F2><space><  <  ><esc>hi
+    " ☰2021-12-06 Disactivated, as it interferes with the ｢surround｣
+    " plugin's tag surrounding, ⦃abc⦄ becoming ｢<foo>abc</foo>｣. To
+    " have ⦃abc⦄ become ｢<abc>｣, use ｢>｣ as the surrounding char.
+"    " < : <>
+"let surround_60     = "<\r>"
+"let surround_62     = "< \r >"
+"noremap  <F2><        i<><esc>i
+"noremap  <F2><space>< i<  ><esc>hi
+"inoremap <F2><         <><esc>i
+"inoremap <F2><space><  <  ><esc>hi
 
 " --------------------------------------------------------------------
 func! L_fixMarkers ()
