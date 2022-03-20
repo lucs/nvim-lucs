@@ -1,7 +1,8 @@
 " A format for my accounting files.
 
-"let b:PgPat1 = '^$'
-"let b:PgSep1 = ''
+call PgSep_New('tsv', 'i.Date', '')
+call PgSep_All('tsv')
+
 setl noexpandtab
 setl nosmartindent
 setl nowrap
