@@ -404,7 +404,8 @@ endif
 command! -range -nargs=0 Overline        call _CombineSelection(<line1>, <line2>, '0305')
 command! -range -nargs=0 Underline       call _CombineSelection(<line1>, <line2>, '0332')
 command! -range -nargs=0 DoubleUnderline call _CombineSelection(<line1>, <line2>, '0333')
-command! -range -nargs=0 Strikethrough   call _CombineSelection(<line1>, <line2>, '0336')
+command! -range -nargs=0 StrikeThrough   call _CombineSelection(<line1>, <line2>, '0336')
+command! -range -nargs=0 SlashThrough    call _CombineSelection(<line1>, <line2>, '0338')
 
 func! _CombineSelection(line1, line2, cp)
     execute 'let char = "\u'.a:cp.'"'
@@ -414,7 +415,8 @@ endfunc
 vnoremap CO :Overline<cr>
 vnoremap CU :Underline<cr>
 vnoremap CD :DoubleUnderline<cr>
-vnoremap CS :Strikethrough<cr>
+vnoremap CS :StrikeThrough<cr>
+vnoremap CL :SlashThrough<cr>
 
 " --------------------------------------------------------------------
 " Toggle ｢/*⋯*/｣ style one line comments.
@@ -472,6 +474,10 @@ nmap ,cp <Plug>PerlStyleOneLine
 nnoremap <silent><Plug>VimStyleOneLine :call
 \ StyleOneLineFunc('"')<cr>:call repeat#set("\<Plug>VimStyleOneLine")<cr>
 nmap ,cv <Plug>VimStyleOneLine
+
+nnoremap <silent><Plug>TexStyleOneLine :call
+ \ StyleOneLineFunc('%')<cr>:call repeat#set("\<Plug>TexStyleOneLine")<cr>
+nmap ,ct <Plug>TexStyleOneLine
 
 " --------------------------------------------------------------------
 " Similar to something found at
@@ -607,9 +613,9 @@ set noruler
 set whichwrap+=<,>,[,]
 set wildmenu
 
-nmap ,<f3> :set nolist<cr>
-nmap ,<f4> :set list listchars=tab:\ \ <cr>
-nmap ,<f5> :set list listchars=tab:•․,trail:·<cr>
+nmap ,<f3> :setl nolist<cr>
+nmap ,<f4> :setl list listchars=tab:\ \ <cr>
+nmap ,<f5> :setl list listchars=tab:→․,trail:·<cr>
 
 " --------------------------------------------------------------------
 if has("gui_running")
