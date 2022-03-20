@@ -1,4 +1,7 @@
-call PgSep_New('ad',  '^// ----', '// ----')
-call PgSep_New('ad2', '^##',      '##')
-call PgSep_All('ad', 'ad2')
+call PgSep_New(
+  \ 'md',
+  \ '\[comment]: ',
+  \ '[comment]: # ( )'
+\ )
+call PgSep_All('md')
 
