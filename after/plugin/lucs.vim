@@ -8,10 +8,31 @@
 "   g:prj_nick
 
 " --------------------------------------------------------------------
-" ｢K｣ mappings.
 
-    " To have an equivalent to the original ｢K｣ mapping.
-nnoremap K. K
+lua <<LUA
+    function map(mode, lhs, rhs, opts)
+        local options = { noremap = true }
+        if opts then
+            options = vim.tbl_extend("force", options, opts)
+        end
+        vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+    end
+
+        -- To have an equivalent to the original ｢K｣ mapping.
+    map("n", "K.", "K", { silent = true })
+
+        -- Formerly ｢nmap Kb :call InsertBillingElem()<cr>｣.
+    map("n", "Kb.", ":call InsertBillingElem()<cr>")
+
+        --[[ To help match code snippet ids, where ε (Alt-lge) prefix,
+        ⦃ID: εgram⦄ designates the ID. Formerly, ｢:nmap gW
+        /ID:<space>ε\.\?｣ (weird, why?)]]--
+    map("n", "gW", "/ID: ε")
+
+LUA
+
+" --------------------------------------------------------------------
+" ｢K｣ mappings.
 
 nmap Kb :call InsertBillingElem()<cr>
 
@@ -22,11 +43,23 @@ nmap Kc :%s/^\# -/- -/gc<cr>
 nmap Kd :e /shome/lucs/gdoc<cr>
 
     " Open this file, which lists file names, one per line, for easy
-    " opening with ｢gf｣ (built-in) or ｢gm｣ (defined elsewhere).
+    " opening with ｢gf｣ (built-in) or ｢gm｣ (defined here elsewhere).
 nmap Kf :e $HOME/.freq<cr>
 nmap Kg :exec ':e ' . g:user_home_dir . '/.freqg'<cr>
 nmap Kk :exec ':e ' . '/mnt/hKpop/opt/prj/'<cr>
 nmap Kl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
+
+    " Insert a timestamp with a format of 0, 1, or 2 (cf.
+    " _InsertTimestamp) and either at (0) the cursor position, or
+    " after (1) it.
+nnoremap K00 :call _InsertTimestamp(0, 0)<cr>
+nnoremap K01 :call _InsertTimestamp(0, 1)<cr>
+nnoremap K10 :call _InsertTimestamp(1, 0)<cr>
+nnoremap K11 :call _InsertTimestamp(1, 1)<cr>
+nnoremap K20 :call _InsertTimestamp(2, 0)<cr>
+nnoremap K21 :call _InsertTimestamp(2, 1)<cr>
+
+    " Open file browser in …<~lucs/prj/>.
 nmap Kp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
 
     " Replace old by new timestamp indicator.
@@ -36,6 +69,50 @@ nmap Kt :%s,[\u231a\u2318],☰,gc<cr>
 
     " Open my main Vim config file.
 nmap Kz :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
+
+" --------------------------------------------------------------------
+
+    " Insert a ｢todo｣ item at beginning of line, with a timestamp
+    " format of 0, 1, or 2 (cf. _InsertTimestamp),
+    " ⦃todo0☰2022-06-11.16-15-58 ⋯⦄.
+nmap Ko0 0<esc>itodo0<esc>K01a<space>
+nmap Ko1 0<esc>itodo0<esc>K11a<space>
+nmap Ko2 0<esc>itodo0<esc>K21a<space>
+
+nmap Koc0 0<esc>itodoδ<esc>K015x}iδ<space>
+nmap KKK 0<esc>itodoδ<esc>K01a <esc>/^\(todo\\|☰\)<cr>iδ\\r\\r<esc>
+nmap Koc1 0<esc>itodoδ<esc>K115x   <space>
+nmap Koc2 0<esc>itodoδ<esc>K215x   <space>
+
+" --------------------------------------------------------------------
+" Insert a current moment timestamp.
+
+func! CalcTimestamp (format)
+    let l:cmd = 'raku ' . g:nvim_lucs_pack . '/plugin/tstamp.raku ' . a:format
+    return system(
+      \ (has('win16') || has('win32') || has('win64'))
+      \     ? shellescape(l:cmd)
+      \     : l:cmd
+    \)
+endfunc
+
+    " a:format:
+    "     0: ⦃☰2014-06-28⦄
+    "     1: ⦃☰2016-01-17.17-18-34⦄
+    "     2: ⦃☰2014f.Jun13.Fri.09:14.44⦄
+    " a:where:
+    "     0: Insert bef cursor position
+    "     1: Insert aft cursor position
+func! _InsertTimestamp (format, where)
+    let l:saved_b = getreg("b")
+    let @b = '☰' . CalcTimestamp(a:format)
+    if a:where == 0
+        normal "bP
+    elseif a:where == 1
+        normal "bp
+    endif
+    call setreg('b', l:saved_b)
+endfunc
 
 " --------------------------------------------------------------------
 " Given ⦃g:prj_nick = 'vch'⦄, look for lines that start like ⦃vchf…⦄
@@ -250,6 +327,11 @@ noremap  <F2><space>⟦ i⟦  ⟧<esc>hi
 inoremap <F2>⟦         ⟦⟧<esc>i
 inoremap <F2><space>⟦  ⟦  ⟧<esc>hi
 
+    " s : 
+let surround_115    = "«\r»"
+noremap  <F2>«        i«»<esc>i
+inoremap <F2>«         «»<esc>i
+
     " t : ⟨Str⟩ A type
 let surround_116    = "⟨\r⟩"
 noremap  <F2>⟨        i⟨⟩<esc>i
@@ -442,42 +524,60 @@ nmap ,cc <Plug>CStyleOneLine
 "   |    my $x ⋯
 "   |   # my $x ⋯
 
-func! StyleOneLineFunc (comment_char)
+func! PfxLine (pfx_char)
     let l:line = getline('.')
     if strlen(l:line) == 0
         return
     endif
     let l:col_1_char = (l:line)[0]
     if l:col_1_char != ' '
-        if l:col_1_char == a:comment_char
-            exec ':.s,' . a:comment_char . ',,'
+        if l:col_1_char == a:pfx_char
+            exec ':.s,' . a:pfx_char . ',,'
         else
-            exec ':.s,^,' . a:comment_char . ','
+            exec ':.s,^,' . a:pfx_char . ','
         endif
     else
 
         let l:first_nonblank_char = matchstr(l:line, '  \zs\S\ze')
-        if l:first_nonblank_char == a:comment_char
-            exec ':.s, ' . a:comment_char . ', ,'
+        if l:first_nonblank_char == a:pfx_char
+            exec ':.s, ' . a:pfx_char . ', ,'
         else
-            exec ':.s,\( \S\),' . a:comment_char . '\1,'
+            exec ':.s,\( \S\),' . a:pfx_char . '\1,'
         endif
     endif
+    normal ll
 endfunc
 
-    " Line breaks in some other places may cause spurious moving right
-    " of cursor (?!).
-nnoremap <silent><Plug>PerlStyleOneLine :call
-\ StyleOneLineFunc('#')<cr>:call repeat#set("\<Plug>PerlStyleOneLine")<cr>
-nmap ,cp <Plug>PerlStyleOneLine
+" --------------------------------------------------------------------
+"     " Line breaks in some other places may cause spurious moving right
+"     " of cursor (?!).
 
-nnoremap <silent><Plug>VimStyleOneLine :call
-\ StyleOneLineFunc('"')<cr>:call repeat#set("\<Plug>VimStyleOneLine")<cr>
-nmap ,cv <Plug>VimStyleOneLine
+nnoremap <silent><Plug>TextPfx :call
+\ PfxLine('-')<cr>:call repeat#set("\<Plug>TextPfx")<cr>
+nmap ,cx <Plug>TextPfx
 
-nnoremap <silent><Plug>TexStyleOneLine :call
- \ StyleOneLineFunc('%')<cr>:call repeat#set("\<Plug>TexStyleOneLine")<cr>
-nmap ,ct <Plug>TexStyleOneLine
+nnoremap <silent><Plug>PerlPfx :call
+\ PfxLine('#')<cr>:call repeat#set("\<Plug>PerlPfx")<cr>
+nmap ,cp <Plug>PerlPfx
+
+nnoremap <silent><Plug>VimPfx :call
+\ PfxLine('"')<cr>:call repeat#set("\<Plug>VimPfx")<cr>
+nmap ,cv <Plug>VimPfx
+
+nnoremap <silent><Plug>TexPfx :call
+ \ PfxLine('%')<cr>:call repeat#set("\<Plug>TexPfx")<cr>
+nmap ,ct <Plug>TexPfx
+
+    " Try to abstract out the commonality, failed so far. Try again
+    " later.
+" func! Florb (name, nmap, pfx_char)
+"     let l:plug_name = 'Florb' . a:name
+"     exec ':nnoremap <silent><Plug>' . l:plug_name .
+"       \ ':call PfxLine('a:pfx_char')<cr>i
+"     :call repeat#set("\<Plug>l:plug_name")<cr>
+"     nmap a:nmap <Plug>Florb . a:name
+" endfunc
+" Florb('text', ',cx', '-')
 
 " --------------------------------------------------------------------
 " Similar to something found at
@@ -732,43 +832,6 @@ nmap <silent> gs :call _ClearTrailingBlanks()<cr>
 
     " ʈ Yank string under cursor into search register.
 map gy "ayiW:let @/ = @a<cr>
-
-" --------------------------------------------------------------------
-" Insert a current moment timestamp.
-
-func! CalcTimestamp (format)
-    let l:cmd = 'raku ' . g:nvim_lucs_pack . '/plugin/tstamp.raku ' . a:format
-    return system(
-      \ (has('win16') || has('win32') || has('win64'))
-      \     ? shellescape(l:cmd)
-      \     : l:cmd
-    \)
-endfunc
-
-    " a:format:
-    "     0: ⦃☰2014-06-28⦄
-    "     1: ⦃☰2016-01-17.17-18-34⦄
-    "     2: ⦃☰2014f.Jun13.Fri.09:14.44⦄
-    " a:where:
-    "     0: Insert at cursor position
-    "     1: Insert after cursor position
-func! _InsertTimestamp (format, where)
-    let l:saved_b = getreg("b")
-    let @b = '☰' . CalcTimestamp(a:format)
-    if a:where == 0
-        normal "bP
-    elseif a:where == 1
-        normal "bp
-    endif
-    call setreg('b', l:saved_b)
-endfunc
-
-nnoremap g00 :call _InsertTimestamp(0, 0)<cr>
-nnoremap g01 :call _InsertTimestamp(0, 1)<cr>
-nnoremap g10 :call _InsertTimestamp(1, 0)<cr>
-nnoremap g11 :call _InsertTimestamp(1, 1)<cr>
-nnoremap g20 :call _InsertTimestamp(2, 0)<cr>
-nnoremap g21 :call _InsertTimestamp(2, 1)<cr>
 
 " " --------------------------------------------------------------------
 " 2019-09-23.21-06-03
@@ -1109,7 +1172,7 @@ nmap <silent> gh
 " --------------------------------------------------------------------
 " My log entries look like this:
 "
-"   ....
+"   ⋯
 "
 "   .2014h.Aug27.Wed.14:12.47 .´larch Make $Test::Selector::test_id.
 "
@@ -1118,7 +1181,7 @@ nmap <silent> gh
 " This function inserts two lines (the second one empty) like shown
 " below before that '®' line:
 "
-"   ....
+"   ⋯
 "
 "   .2014h.Aug27.Wed.14:12.47 .´larch Make $Test::Selector::test_id.
 "
@@ -1142,7 +1205,7 @@ func! _AppendLogEntry ()
         normal n
             " Insert a timestamp, a couple of newlines, come back and
             " insert the project ID prefix, and go to insert mode.
-        call _InsertTimestamp(0, 0)
+        call _InsertTimestamp(2, 0)
        " call _InsertTimestamp('n', 0, 0)
         exec "normal! a\<cr>\<cr>"
         exec "normal kkA .´\<esc>zz"
