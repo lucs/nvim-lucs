@@ -12,4 +12,5 @@ call PgSep_All('c')
 setl autoindent
 setl nosmartindent
 setl syntax=css
+setl iskeyword+=-
 
