@@ -1,5 +1,7 @@
 " Detect miscellaneous file types.
 
+au! BufNewFile,BufRead *..zshrc setf zsh
+au! BufNewFile,BufRead *.xres setf xres
 au! BufNewFile,BufRead *.pmrc setf procmail
 au! BufNewFile,BufRead *.sgl setf sgl
 au! BufNewFile,BufRead .llog setf lucslog
