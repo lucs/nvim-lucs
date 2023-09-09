@@ -1,6 +1,6 @@
 call PgSep_All('x')
 setl autoindent
 setl comments=n:\%
-setl ts=2 sts=2 sw=2
+setl ts=4 sts=4 sw=4
 setl formatoptions=crql
 
