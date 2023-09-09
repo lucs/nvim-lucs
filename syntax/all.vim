@@ -185,8 +185,8 @@ high Cbrk   ctermfg=LightCyan
 
 synt match          Timestamp   '☰[^ $]\+'
 synt match          Acutag      '´\w*'
-high Timestamp      guifg=LightGreen
-high Acutag         guifg=Cyan
+high Timestamp      ctermfg=LightGreen guifg=LightGreen
+high Acutag         ctermfg=Cyan       guifg=Cyan
 
 syntax region remText matchgroup=foo concealends start=/↑/ end=/↓/
 highlight remText ctermfg=darkred guifg=darkred
