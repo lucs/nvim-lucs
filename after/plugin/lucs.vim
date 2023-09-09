@@ -1,11 +1,40 @@
 " --------------------------------------------------------------------
 " Globals
 "
-"       ⦃/home/lucs⦄, ⦃/root⦄, usually set in …<.init.｢user｣.vim>.
+"       ⦃/home/lucs⦄, ⦃/root⦄, usually set in …<.init.⟨user⟩.vim>.
 "   g:user_home_dir
 "
 "       ⦃lucs⦄, ⦃c_suz_vch⦄, usually set in …<.init.vim>.
 "   g:prj_nick
+
+" Raku identifier stuff.
+imap <c-r>2 ƻ
+imap <c-r>a Λ
+imap <c-r>d ď
+imap <c-r>f ƒ
+imap <c-r>h ͱ
+imap <c-r>i ᵢ
+imap <c-r>t ť
+
+    " Makes it possible to enter the characters when searching for
+    " example.
+cmap <c-r>2 ƻ
+cmap <c-r>a Λ
+cmap <c-r>d ď
+cmap <c-r>f ƒ
+cmap <c-r>h ͱ
+cmap <c-r>i ᵢ
+cmap <c-r>t ť
+
+" --------------------------------------------------------------------
+
+   " Identify the syntax highlighting group used at the cursor
+   " ū<http://vim.wikia.com/wiki/Identify_the_syntax_highlighting_group_used_at_the_cursor>
+:map <f10> :echo
+    \     "hi<"    . synIDattr(synID(line("."), col("."), 1), "name")
+    \ . '> trans<' . synIDattr(synID(line("."), col("."), 0), "name")
+    \ . "> lo<"    . synIDattr(synIDtrans(synID(line("."), col("."), 1)), "name")
+    \ . ">"<cr>
 
 " --------------------------------------------------------------------
 
@@ -27,9 +56,11 @@ lua <<LUA
         --[[ To help match code snippet ids, where ε (Alt-lge) prefix,
         ⦃ID: εgram⦄ designates the ID. Formerly, ｢:nmap gW
         /ID:<space>ε\.\?｣ (weird, why?)]]--
-    map("n", "gW", "/ID: ε")
+   -- map("n", "gW", "/ID: ε")
 
 LUA
+
+nmap gW /ID:<space>\.\?
 
 " --------------------------------------------------------------------
 " ｢K｣ mappings.
@@ -49,18 +80,13 @@ nmap Kg :exec ':e ' . g:user_home_dir . '/.freqg'<cr>
 nmap Kk :exec ':e ' . '/mnt/hKpop/opt/prj/'<cr>
 nmap Kl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
 
-    " Insert a timestamp with a format of 0, 1, or 2 (cf.
-    " _InsertTimestamp) and either at (0) the cursor position, or
-    " after (1) it.
-nnoremap K00 :call _InsertTimestamp(0, 0)<cr>
-nnoremap K01 :call _InsertTimestamp(0, 1)<cr>
-nnoremap K10 :call _InsertTimestamp(1, 0)<cr>
-nnoremap K11 :call _InsertTimestamp(1, 1)<cr>
-nnoremap K20 :call _InsertTimestamp(2, 0)<cr>
-nnoremap K21 :call _InsertTimestamp(2, 1)<cr>
+nmap Km :call FormatManPage()<cr>
 
     " Open file browser in …<~lucs/prj/>.
 nmap Kp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
+
+    " Change ｢⋯｣ surrounders to ⟨⋯⟩.
+nmap Kr :%s/｢\(.\{-}\)｣/⟨\1⟩/gc
 
     " Replace old by new timestamp indicator.
     " ⌚1 U-231a
@@ -71,23 +97,71 @@ nmap Kt :%s,[\u231a\u2318],☰,gc<cr>
 nmap Kz :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
 
 " --------------------------------------------------------------------
+" Replace a Man page with so
+func! FormatManPage ()
+endfunc
 
-    " Insert a ｢todo｣ item at beginning of line, with a timestamp
-    " format of 0, 1, or 2 (cf. _InsertTimestamp),
-    " ⦃todo0☰2022-06-11.16-15-58 ⋯⦄.
-nmap Ko0 0<esc>itodo0<esc>K01a<space>
-nmap Ko1 0<esc>itodo0<esc>K11a<space>
-nmap Ko2 0<esc>itodo0<esc>K21a<space>
+" --------------------------------------------------------------------
+" ʈ timestamps
 
-nmap Koc0 0<esc>itodoδ<esc>K015x}iδ<space>
-nmap KKK 0<esc>itodoδ<esc>K01a <esc>/^\(todo\\|☰\)<cr>iδ\\r\\r<esc>
-nmap Koc1 0<esc>itodoδ<esc>K115x   <space>
-nmap Koc2 0<esc>itodoδ<esc>K215x   <space>
+    " Insert a timestamp with a format of 7, 8, 9, or 0 (cf.
+    " _InsertTimestamp) and either at (i) the cursor position, or
+    " after (o) it.
+nnoremap <c-u>7i      :call _InsertTimestamp(7, "i")<cr>
+inoremap <c-u>7i <esc>:call _InsertTimestamp(7, "i")<cr>a
+nnoremap <c-u>7o      :call _InsertTimestamp(7, "o")<cr>
+inoremap <c-u>7o <esc>:call _InsertTimestamp(7, "o")<cr>a
+
+nnoremap <c-u>8i      :call _InsertTimestamp(8, "i")<cr>
+inoremap <c-u>8i <esc>:call _InsertTimestamp(8, "i")<cr>a
+nnoremap <c-u>8o      :call _InsertTimestamp(8, "o")<cr>
+inoremap <c-u>8o <esc>:call _InsertTimestamp(8, "o")<cr>a
+
+nnoremap <c-u>9i      :call _InsertTimestamp(9, "i")<cr>
+inoremap <c-u>9i <esc>:call _InsertTimestamp(9, "i")<cr>a
+nnoremap <c-u>9o      :call _InsertTimestamp(9, "o")<cr>
+inoremap <c-u>9o <esc>:call _InsertTimestamp(9, "o")<cr>a
+
+nnoremap <c-u>0i      :call _InsertTimestamp(0, "i")<cr>
+inoremap <c-u>0i <esc>:call _InsertTimestamp(0, "i")<cr>a
+nnoremap <c-u>0o      :call _InsertTimestamp(0, "o")<cr>
+inoremap <c-u>0o <esc>:call _InsertTimestamp(0, "o")<cr>a
+
+nmap <c-u><c-t>7      0itodo0<esc><c-u>7oa<space><esc>
+nmap <c-u><c-t>8      0itodo0<esc><c-u>8oa<space><esc>
+nmap <c-u><c-t>9      0itodo0<esc><c-u>9oa<space><esc>
+nmap <c-u><c-t>0      0itodo0<esc><c-u>0oa<space><esc>
+
+imap <c-u><c-t>7 <esc>0itodo0<esc><c-u>7oa<space><esc>a
+imap <c-u><c-t>8 <esc>0itodo0<esc><c-u>8oa<space><esc>a
+imap <c-u><c-t>9 <esc>0itodo0<esc><c-u>9oa<space><esc>a
+imap <c-u><c-t>0 <esc>0itodo0<esc><c-u>0oa<space><esc>a
+
+    " When placed on a 'todo' line, insert a ~done line preceding it.
+    " For example, this:
+    "
+    "   todo0☰2023-04-15.Sat As heard on "Stuff You Should Know", see about
+    "
+    " becomes this:
+    "
+    "       ☰2023-05-07.Sun Fixed bla bla medeo inunt speciasum
+    "       lorem ipsum.
+    "   todo☰2023-04-15.Sat As heard on "Stuff You Should Know", see about
+    "   Ferrante/Teicher piano duet.
+
+nmap <c-u><c-d>7 0xRtodo<esc>O<c-u>7o<esc>I    <esc>A<space>
+nmap <c-u><c-d>8 0xRtodo<esc>O<c-u>8o<esc>I    <esc>A<space>
+nmap <c-u><c-d>9 0xRtodo<esc>O<c-u>9o<esc>I    <esc>A<space>
+nmap <c-u><c-d>0 0xRtodo<esc>O<c-u>0o<esc>I    <esc>A<space>
 
 " --------------------------------------------------------------------
 " Insert a current moment timestamp.
 
 func! CalcTimestamp (format)
+   " let l:cmdb = 'echo $PATH >> /tmp/zvim'
+   " :call system(l:cmdb)
+   " let l:dapath = $PATH
+   " call writefile([l:dapath], "/tmp/zvim")
     let l:cmd = 'raku ' . g:nvim_lucs_pack . '/plugin/tstamp.raku ' . a:format
     return system(
       \ (has('win16') || has('win32') || has('win64'))
@@ -97,22 +171,35 @@ func! CalcTimestamp (format)
 endfunc
 
     " a:format:
-    "     0: ⦃☰2014-06-28⦄
-    "     1: ⦃☰2016-01-17.17-18-34⦄
-    "     2: ⦃☰2014f.Jun13.Fri.09:14.44⦄
+    "     7: ⦃☰2023-03-29T07:43:45-04:00⦄
+    "     8: ⦃☰2023-03-29.Wed⦄
+    "     9: ⦃☰2023-03-29.Wed.07-42-39⦄
+    "     0: ⦃☰2023c.Mar29.Wed.07:43.03⦄
     " a:where:
-    "     0: Insert bef cursor position
-    "     1: Insert aft cursor position
+    "     8: Insert bef cursor position
+    "     9: Insert aft cursor position
 func! _InsertTimestamp (format, where)
     let l:saved_b = getreg("b")
     let @b = '☰' . CalcTimestamp(a:format)
-    if a:where == 0
+    if a:where == 'i'
         normal "bP
-    elseif a:where == 1
+    elseif a:where == 'o'
         normal "bp
     endif
     call setreg('b', l:saved_b)
 endfunc
+
+" --------------------------------------------------------------------
+" Fix a timestamp, adding the day of week. so that:
+"   ☰2023-01-24 becomes ☰2023-01-24.Tue
+" and:
+"   ☰2023-01-24.20-45-15 becomes ☰2023-01-24.Tue.20-45-15
+"
+" This is not very smart. It will work correctly only only if the
+" cursor is already placed on the '☰' character.
+
+"func! AddDOW ()
+"endfunc
 
 " --------------------------------------------------------------------
 " Given ⦃g:prj_nick = 'vch'⦄, look for lines that start like ⦃vchf…⦄
@@ -125,7 +212,7 @@ func! InsertBillingElem ()
         return
     endif
 
-    set lazyredraw
+   " set lazyredraw
     call SaveWinView()
     normal gg
     let l:last_elem = search('^' . g:prj_nick . 'f')
@@ -154,7 +241,7 @@ func! InsertBillingElem ()
     else
         call RestoreWinView()
     endif
-    set nolazyredraw
+   " set nolazyredraw
 endfunc
 
 " --------------------------------------------------------------------
@@ -280,8 +367,16 @@ func! OpenHere ()
 endfunc
 
 " --------------------------------------------------------------------
-" Surround visually selected text by typing ｢S｣ followed by indicated
-" character. Insert boilerplate, place cursor for insertion.
+" In normal mode, surround visually selected text by typing ｢S｣
+" followed by indicated character. Insert boilerplate, place cursor
+" for insertion. ☰2023-03-21.Tue FIXME The <F2> stuff? Not sure what
+" it's about and how it's supposed to work. Also unsure about what the
+" second let`s are about, ⦃surround_9128⦄.
+
+    " a : (fd) Application or <program> name
+let surround_97     = "◆<\r>"
+noremap  <F2>◆        i◆<><esc>i
+inoremap <F2>◆         ◆<><esc>i
 
     " c : (c1) Choice
 let surround_99     = "❲\r❳"
@@ -290,6 +385,14 @@ noremap  <F2>❲        i❲∣❳<esc>i
 noremap  <F2><space>❲ i❲  ∣  ❳<esc>4hi
 inoremap <F2>❲         ❲∣❳<esc>i
 inoremap <F2><space>❲  ❲  ∣  ❳<esc>4hi
+
+    " d : Sample code ⌊%h2<s>⌉
+let surround_100    = "⌊\r⌉"
+noremap  <F2>⌊        i⌊⌉<esc>i
+inoremap <F2>⌊         ⌊⌉<esc>i
+
+"let surround_100 = "❬❭\r"
+"inoremap <F2>❬   ❬❭<esc>i
 
     " e, ⦃ : (e1) Example value
 let surround_101    = "⦃\r⦄"
@@ -306,6 +409,11 @@ let surround_102    = "…<\r>"
 let surround_8229   = "…<\r>"
 noremap  <F2>…        i…<><esc>i
 inoremap <F2>…         …<><esc>i
+
+    " o :  ᚜ban-cu1᚛ My operator notation
+let surround_111    = "᚜\r᚛"
+noremap  <F2>᚜        i᚜᚛<esc>i
+inoremap <F2>᚜         ᚜᚛<esc>i
 
     " q : (q1) Quote, generic
 let surround_113    = "｢\r｣"
@@ -327,7 +435,7 @@ noremap  <F2><space>⟦ i⟦  ⟧<esc>hi
 inoremap <F2>⟦         ⟦⟧<esc>i
 inoremap <F2><space>⟦  ⟦  ⟧<esc>hi
 
-    " s : 
+    " s :
 let surround_115    = "«\r»"
 noremap  <F2>«        i«»<esc>i
 inoremap <F2>«         «»<esc>i
@@ -342,10 +450,10 @@ let surround_117    = "ū<\r>"
 noremap  <F2>ū        iū<><esc>i
 inoremap <F2>ū         ū<><esc>i
 
-    " o :  ᚜ban-cu1᚛ My operator notation
-let surround_111    = "᚜\r᚛"
-noremap  <F2>᚜        i᚜᚛<esc>i
-inoremap <F2>᚜         ᚜᚛<esc>i
+    " z : Comment in code
+let surround_122    = "‹\r›"
+noremap  <F2>‹        i‹›<esc>i
+inoremap <F2>‹         ‹›<esc>i
 
     " ☰2021-12-06 Disactivated, as it interferes with the ｢surround｣
     " plugin's tag surrounding, ⦃abc⦄ becoming ｢<foo>abc</foo>｣. To
@@ -359,19 +467,22 @@ inoremap <F2>᚜         ᚜᚛<esc>i
 "inoremap <F2><space><  <  ><esc>hi
 
 " --------------------------------------------------------------------
+
+    " In the past, needed to fix these too:
+    "   \ 'ª' : '´',
+    "   \ '£' : '◆',
+    "   \ '※' : '‼',
+    "   \ 'Ť' : '⁇',
+    "   \ '‣' : '▸',
+    "   \ '←' : '◂',
+    "   \ '₋' : 'FIXME',
+    "   \ '⟨' : 'FIXME',
+    "   \ '⟩' : 'FIXME',
+    "   \ 'Ŏ' : 'ɱ',
+    "   \ 'Ň' : 'Ɲ',
 func! L_fixMarkers ()
     call _FixEncoding({
-      \ 'ª' : '´',
-      \ '£' : '◆',
-      \ '※' : '‼',
-      \ 'Ť' : '⁇',
-      \ '‣' : '▸',
-      \ '←' : '◂',
-      \ '₋' : 'FIXME',
-      \ '⟨' : 'FIXME',
-      \ '⟩' : 'FIXME',
-      \ 'Ŏ' : 'ɱ',
-      \ 'Ň' : 'Ɲ',
+      \ '⌘' : '☰',
     \})
 endfunc
 
@@ -501,25 +612,111 @@ vnoremap CS :StrikeThrough<cr>
 vnoremap CL :SlashThrough<cr>
 
 " --------------------------------------------------------------------
-" Toggle ｢/*⋯*/｣ style one line comments.
+" Toggle HTML/XML style comments.
+"
+"   |<!-- foo ⋯ -->
+"   |<foo ⋯>
+"
+"   |    <foo ⋯>
+"   |    <!-- foo ⋯ -->
 
-nnoremap <silent> <Plug>CStyleOneLine
-  \ ^:if search('/\*.*\*/', 'c', line(".")) != 0<cr>
-  \     :.s,/\* *\(.\{-}\) *\*/,\1,g<cr>
-  \ :else<cr>
-  \     :.s,\(\s*\)\(.*\)\(\s*\),\1/\* \2 \*/\3,g<cr>
-  \ :endif<cr>
-  \ :noh<cr>
-\:call repeat#set("\<Plug>CStyleOneLine")<cr>
-nmap ,cc <Plug>CStyleOneLine
+func! XmlStyleOneLine ()
+        " Remove the comment.
+    if match(getline('.'), '<!--.*-->') != -1
+        exec ':s,<!--\s*,<,'
+        exec ':s,\s*-->,>,'
+    elseif match(getline('.'), '<!--') != -1
+        echo "Multiline comment: fix by hand."
+        " Convert to comment.
+    elseif match(getline('.'), '<') == -1
+        echo "No tag here."
+    else
+        exec ':s,<,<!-- ,'
+        exec ':s,\s*>, -->,'
+    endif
+    nohl
+endfunc
+
+nnoremap <silent><Plug>XmlStyleOneLine :call
+  \ XmlStyleOneLine()<cr>:call repeat#set("\<Plug>XmlStyleOneLine")<cr>
+nmap ,cx <Plug>XmlStyleOneLine
 
 " --------------------------------------------------------------------
-" Toggle single character ｢#⋯｣ style one line comments. Presumes that
-" the code starts in column 1 or is indented with 4 spaces or more. So
-" converts between pairs of lines like these:
+" Toggle ｢/*⋯*/｣ style one line comments.
+"
+"   |int main() ⋯
+"   |/*0 int main() ⋯ */
+"
+"   | printf ⋯
+
+"
+"   |  printf ⋯
+"   |/* printf ⋯ */
+"
+"   |   printf ⋯
+"   | /* printf ⋯ */
+"
+"   |    printf ⋯
+"   |  /* printf ⋯ */
+"
+" /*0 adcfadf */
+" /*1  adcfadf */
+"  /* adcfadf */
+"   /* adcfadf */
+
+func! CStyleOneLine ()
+    let l:savedSearchReg = @/
+
+        " Remove the comment.
+    if match(getline('.'), '^/\*0') != -1
+        echo getline(".")
+        exec ':s,/\*0\s*,,'
+        exec ':s,\s*\*/,,'
+    elseif match(getline('.'), '^/\*1') != -1
+        echo getline(".")
+        exec ':s,/\*1\s*, ,'
+        exec ':s,\s*\*/,,'
+    elseif match(getline('.'), '/\*') != -1
+        exec ':s,/\*\s*,  ,'
+        exec ':s,\s*\*/,,'
+
+        " Convert to comment.
+    else
+            " LS : Leading Spaces.
+        let nbLSCurr = indent(line("."))
+        if nbLSCurr == 0
+            exec ':s,^,/*0 ,'
+            exec ':s,$, */,'
+        elseif nbLSCurr == 1
+            exec ':s,^,/*1 ,'
+            exec ':s,$, */,'
+        else
+            let LSWant = repeat(" ", nbLSCurr - 2)
+            exec ':s,^\s*,' . LSWant . '/* ,'
+            exec ':s,$, */,'
+        endif
+    endif
+    nohl
+    let @/ = l:savedSearchReg
+endfunc
+
+nnoremap <silent><Plug>CComment :call
+  \ CStyleOneLine()<cr>:call repeat#set("\<Plug>CComment")<cr>
+nmap ,cc <Plug>CComment
+
+" --------------------------------------------------------------------
+" Toggle single character ｢#⋯｣ prefix style one line comments.
+" Presumes that the code starts in column 1 or is indented with 4
+" spaces or more. So converts between pairs of lines like these:
 "
 "   |my $x ⋯
-"   |#my $x ⋯
+"   |#0 my $x ⋯
+"
+"   | my $x ⋯
+"   |#1 my $x ⋯
+"
+"   |  my $x ⋯
+"   | # my $x ⋯
 "
 "   |    my $x ⋯
 "   |   # my $x ⋯
@@ -549,24 +746,28 @@ func! PfxLine (pfx_char)
 endfunc
 
 " --------------------------------------------------------------------
-"     " Line breaks in some other places may cause spurious moving right
-"     " of cursor (?!).
+" Line breaks in some other places may cause spurious moving right
+" of cursor (?!) (☰2023-06-18.Sun Not sure what that even means)
+
+nnoremap <silent><Plug>XresPfx :call
+  \ PfxLine('!')<cr>:call repeat#set("\<Plug>XresPfx")<cr>
+nmap ,c! <Plug>XresPfx
 
 nnoremap <silent><Plug>TextPfx :call
-\ PfxLine('-')<cr>:call repeat#set("\<Plug>TextPfx")<cr>
-nmap ,cx <Plug>TextPfx
+  \ PfxLine('-')<cr>:call repeat#set("\<Plug>TextPfx")<cr>
+nmap ,c- <Plug>TextPfx
 
 nnoremap <silent><Plug>PerlPfx :call
-\ PfxLine('#')<cr>:call repeat#set("\<Plug>PerlPfx")<cr>
-nmap ,cp <Plug>PerlPfx
+  \ PfxLine('#')<cr>:call repeat#set("\<Plug>PerlPfx")<cr>
+nmap ,c# <Plug>PerlPfx
 
 nnoremap <silent><Plug>VimPfx :call
-\ PfxLine('"')<cr>:call repeat#set("\<Plug>VimPfx")<cr>
-nmap ,cv <Plug>VimPfx
+  \ PfxLine('"')<cr>:call repeat#set("\<Plug>VimPfx")<cr>
+nmap ,c" <Plug>VimPfx
 
 nnoremap <silent><Plug>TexPfx :call
- \ PfxLine('%')<cr>:call repeat#set("\<Plug>TexPfx")<cr>
-nmap ,ct <Plug>TexPfx
+  \ PfxLine('%')<cr>:call repeat#set("\<Plug>TexPfx")<cr>
+nmap ,c% <Plug>TexPfx
 
     " Try to abstract out the commonality, failed so far. Try again
     " later.
@@ -683,6 +884,13 @@ set confirm
 set encoding=utf-8
 set expandtab
 set ffs=unix,dos,mac
+
+    " The default is '│' (U-2502), which urxvt appears not to accept
+    " in its "cutchars", so changing it here allows capturing text
+    " with the mouse without grabbing the vertical window separator
+    " character.
+set fillchars+=vert:\|
+
 set hidden
 set history=1000
 set hlsearch
@@ -725,7 +933,12 @@ if has("gui_running")
 endif
 
 " --------------------------------------------------------------------
-" Execute the text that is visually highlighted.
+" "Execute the vimscript that is visually highlighted."
+"
+" That is, you visually highlight some vimscript, press F9 (you can
+" change that, eh) and that highlighted vimscript will be executed. I
+" find this Sofa King Useful when developing shortcuts or pretty much
+" any vimscript code.
 
 function! ExecHighlighted () range
 
@@ -740,8 +953,9 @@ function! ExecHighlighted () range
 
         " Concatenate continuation lines, else for some reason it
         " fails to work.
-    let l:text = substitute(l:text, '\n\s*\\\\', ' ', 'g')
-   
+    let l:text = substitute(l:text, '\n\s*\\\s*', ' ', 'g')
+
+
         " Execute the grabbed text.
    " echo '⦃' . l:text . '⦄'
     exec l:text
@@ -751,8 +965,13 @@ endfunction
     " Have a Visual-mode-only mapping to invoke the function.
 xnoremap <f9> :call ExecHighlighted()<cr>
 
-    " Is this sufficient?
-xnoremap <f10> y:exec substitute(@", '\n\s*\\\\', ' ', 'g')<cr>
+" --------------------------------------------------------------------
+" "Execute the vimscript that is visually highlighted."
+"
+" That is, you visually highlight some vimscript, press F9 (you can
+" change that, eh) and that highlighted vimscript will be executed. I
+" find this Sofa King Useful when developing shortcuts or pretty much
+" any vimscript code.
 
 " --------------------------------------------------------------------
 " Miscellaneous mappings
@@ -1098,11 +1317,11 @@ com! -nargs=1 Pd call _Pd("<args>")
 " syntax highlight style. For example, if we want text wrapped like
 " this:
 "
-"   <ps: ... :ps>
+"   <ps-> ... <-ps>
 "
 " to be syntax highlighted as 'postscr' (PostScript), then invoke:
 "
-"   _TextEnableCodeSnip('postscr', '<ps:', ':ps>')
+"   _TextEnableCodeSnip('postscr', '<ps->', '<-ps>')
 "
 " Sometimes, the highlighting does not end where it ought to. This
 " appears to be a known bug:
@@ -1149,13 +1368,12 @@ endfunc
 " errors.
 
 nmap <silent> gh
-  \ :set noredraw<bar>
   \ :call _CodeSnipNick('vim',        'vi')<bar>
   \ :call _CodeSnipNick('html',       'hl')<bar>
   \ :call _CodeSnipNick('xml',        'xl')<bar>
   \ :call _CodeSnipNick('javascript', 'js')<bar>
   \ :call _CodeSnipNick('perl',       'pl')<bar>
-  \ :call _CodeSnipNick('perl6',      'p6')<bar>
+  \ :call _CodeSnipNick('raku',       'rk')<bar>
   \ :call _CodeSnipNick('postscr',    'ps')<bar>
   \ :call _CodeSnipNick('sh',         'sh')<bar>
   \ :call _CodeSnipNick('haskell',    'hs')<bar>
@@ -1163,8 +1381,17 @@ nmap <silent> gh
   \ :call _CodeSnipNick('sql',        'sq')<bar>
   \ :call _CodeSnipNick('php',        'ph')<bar>
   \ :call _CodeSnipNick('tex',        'te')<bar>
-  \ :set redraw<bar>
   \ <cr>
+
+    " ◆nvim doesn't have the ｢noredraw｣ option (not a huge deal), so I
+    " simply removed a couple of lines just above.
+"nmap <silent> gh
+"  \ :set noredraw<bar>
+"  \ :call _CodeSnipNick('vim',        'vi')<bar>
+"    ⋯
+"  \ :call _CodeSnipNick('tex',        'te')<bar>
+"  \ :set redraw<bar>
+"  \ <cr>
 
  " \ :call _TextEnableCodeSnip('php', '<?php', '?>')<bar>
  " \ :echo "Done"<cr><cr>
@@ -1367,6 +1594,12 @@ else
     colorscheme desert256
 endif
 
+if $TMUX == ''
+    set notermguicolors
+else
+    set termguicolors
+endif
+
 func! Hi_off ()
     hi clear User1
     hi clear User2
@@ -1388,9 +1621,6 @@ func! Hi_onn ()
     hi User2        cterm=reverse guifg=red    guibg=black
     hi User3        cterm=reverse guifg=green  guibg=white
     hi User4        cterm=reverse guifg=white  guibg=black
-endfunc
-
-func! Comment (s)
 endfunc
 
 " --------------------------------------------------------------------
@@ -1423,13 +1653,13 @@ func! BuildUpStatusLine ()
     set statusline+=%3*\ %n
 
         " ｢mod. flag｣.'
-    set statusline+=%3*%m\ 
+    set statusline+=%3*%m\
 
         " ｢ ｢line num.｣/｢nb. of lines｣ ｣.
-    set statusline+=%*\ %l/%L\ 
+    set statusline+=%*\ %l/%L\
 
         " Cursor position ｢ ｢apparent｣➤｢real｣/｢and text width｣｣.
-    set statusline+=%4*\ %v➤%c/%{&tw}\ 
+    set statusline+=%4*\ %v➤%c/%{&tw}\
 
         " Flag: vertical scroll holds cursor in middle of screen.
     set statusline+=%1*%{&scrolloff==100?'S':'\ '}
@@ -1438,7 +1668,8 @@ func! BuildUpStatusLine ()
     set statusline+=%2*%{&paste==1?'P':'\ '}
 
         " Relative file path.
-    set statusline+=%*\ %f\ 
+        " ☰2023-06-14.Wed Used to be ｢⋯%f\ ｣
+    set statusline+=%*\ %t\
 
         " Rest of the line.
     set statusline+=%*
@@ -1456,4 +1687,10 @@ endfunc
 
     " Initialize.
 call Hi_onn()
+
+"set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
+"set guicursor=n-v-c-sm:ver25,i-ci-ve:ver25,r-cr-o:hor20
+"hhset guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
+"hi Cursor guifg=black guibg=green gui=reverse
+"set guicursor=a:block-blinkon100-Cursor/Cursor
 
