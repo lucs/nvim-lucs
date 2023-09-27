@@ -14,6 +14,7 @@ imap <c-r>d ď
 imap <c-r>f ƒ
 imap <c-r>h ͱ
 imap <c-r>i ᵢ
+imap <c-r>r ʀ
 imap <c-r>t ť
 
     " Makes it possible to enter the characters when searching for
@@ -24,6 +25,7 @@ cmap <c-r>d ď
 cmap <c-r>f ƒ
 cmap <c-r>h ͱ
 cmap <c-r>i ᵢ
+cmap <c-r>r ʀ
 cmap <c-r>t ť
 
 " --------------------------------------------------------------------
