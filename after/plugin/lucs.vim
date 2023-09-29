@@ -966,14 +966,6 @@ endfunction
 xnoremap <f9> :call ExecHighlighted()<cr>
 
 " --------------------------------------------------------------------
-" "Execute the vimscript that is visually highlighted."
-"
-" That is, you visually highlight some vimscript, press F9 (you can
-" change that, eh) and that highlighted vimscript will be executed. I
-" find this Sofa King Useful when developing shortcuts or pretty much
-" any vimscript code.
-
-" --------------------------------------------------------------------
 " Miscellaneous mappings
 
     " Why?
