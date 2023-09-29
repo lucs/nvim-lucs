@@ -911,8 +911,6 @@ set notimeout ttimeout ttimeoutlen=0
 set title
 set nowrapscan
 set nowritebackup
-set pheader=%<%f%h%m%40{strftime(\"%I:%M:%S\ \%p,\ %a\ %b\ %d,\ %Y\")}%=Page\ %N
-set printoptions=paper:letter
 set shortmess=atIToO
 set showcmd
 set showmatch
