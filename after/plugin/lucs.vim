@@ -40,7 +40,7 @@ cmap <c-r>t ť
 
 " --------------------------------------------------------------------
 
-lua <<LUA
+lua << EoF
     function map(mode, lhs, rhs, opts)
         local options = { noremap = true }
         if opts then
@@ -60,7 +60,7 @@ lua <<LUA
         /ID:<space>ε\.\?｣ (weird, why?)]]--
    -- map("n", "gW", "/ID: ε")
 
-LUA
+EoF
 
 nmap gW /ID:<space>\.\?
 
@@ -88,7 +88,7 @@ nmap Km :call FormatManPage()<cr>
 nmap Kp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
 
     " Change ｢⋯｣ surrounders to ⟨⋯⟩.
-nmap Kr :%s/｢\(.\{-}\)｣/⟨\1⟩/gc
+nmap Kr :.,$s/｢\(.\{-}\)｣/⟨\1⟩/gc<cr>
 
     " Replace old by new timestamp indicator.
     " ⌚1 U-231a
@@ -980,6 +980,7 @@ func! _TogglePaste ()
     else
         set nopaste
     endif
+    call BuildUpStatusLine()
 endfunc
 
 nmap <silent> <f4> :call _ToggleScrollOffset()<cr>
@@ -989,6 +990,7 @@ func! _ToggleScrollOffset ()
     elseif &scrolloff == 100
         set scrolloff=0
     endif
+    call BuildUpStatusLine()
 endfunc
 
     " Move between buffers.
