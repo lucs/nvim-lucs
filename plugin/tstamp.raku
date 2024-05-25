@@ -7,17 +7,17 @@
     tstamp.raku - Print timestamps formatted the way I like them.
 
 =head1 SYNOPSIS
-☰2023-05-16.Tue
-☰2023-05-16.Tue.17-27-43
-☰unknown timestamp format id
-☰2023-05-16T17:28:03-04:00
 
         Possible ｢format id｣ values result in
         different timestamp formatting:
+
+            6 : 2014f.Jun13.Fri.09:14.44
             7 : 2015-01-27.Tue
             8 : 2015-01-27.Tue.14:52:22
             9 : 2023-05-16T17:32:48-04:00
-    tstamp.raku ｢format id｣
+            0 : 2016-01-17.Tue.17:18:34-04:00
+              : unknown timestamp format id
+    tstamp.raku ⟨format id⟩
 
 =end pod
 
@@ -41,6 +41,14 @@ sub M (DateTime $dt) {
 # --------------------------------------------------------------------
 sub format-it (DateTime $dt, $format-id) {
 
+        # ⦃2014f.Jun13.Fri.09:14.44⦄
+    $format-id == 6 && return sprintf '%s%s.' ~ '%s%02d.' ~ '%s.%02d:' ~ '%02d.%02d',
+        $dt.year, M($dt),
+        MMM($dt), $dt.day,
+        DDD($dt), $dt.hour,
+        $dt.minute, $dt.whole-second,
+    ;
+
         # ⦃2014-06-28.Tue⦄
     $format-id == 7 && return sprintf '%s-%02d-%02d.%s',
         $dt.year,
@@ -59,13 +67,19 @@ sub format-it (DateTime $dt, $format-id) {
         # ⦃2023-03-08T08:36:37-05:00⦄
     $format-id == 9 && return $dt.truncated-to('second');
 
-   #     # ⦃2014f.Jun13.Fri.09:14.44⦄
-   # $format-id == 0 && return sprintf '%s%s.' ~ '%s%02d.' ~ '%s.%02d:' ~ '%02d.%02d',
-   #     $dt.year, M($dt),
-   #     MMM($dt), $dt.day,
-   #     DDD($dt), $dt.hour,
-   #     $dt.minute, $dt.whole-second,
-   # ;
+        # Used now for example by my lucslog format.
+        # ⦃2016-01-17.Tue.17:18:34-04:00⦄
+    $format-id == 0 && return sprintf "%s-%02d-%02d.%s.%02d:%02d:%02d%s",
+        $dt.year, $dt.month, $dt.day, DDD($dt),
+        $dt.hour, $dt.minute, $dt.whole-second,
+        -> $tz-secs {
+            my $hrs = ($tz-secs.abs / 3600).truncate;
+            my $mins = $tz-secs.abs - $hrs * 3600;
+            my $sign = $tz-secs < 0 ?? '-' !! '+';
+            sprintf('%s%02d:%02d', $sign, $hrs, $mins);
+        }($dt.timezone),
+
+    ;
 
     return 'unknown timestamp format id';
 }
