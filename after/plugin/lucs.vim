@@ -7,7 +7,7 @@
 "       ⦃lucs⦄, ⦃c_suz_vch⦄, usually set in …<.init.vim>.
 "   g:prj_nick
 
-" Raku identifier stuff.
+    " Raku identifier stuff.
 imap <c-r>2 ƻ
 imap <c-r>a Λ
 imap <c-r>d ď
@@ -27,6 +27,152 @@ cmap <c-r>h ͱ
 cmap <c-r>i ᵢ
 cmap <c-r>r ʀ
 cmap <c-r>t ť
+
+" --------------------------------------------------------------------
+" ☰2024-03-23.Sat
+"
+" When in a Makefile, the syntax setting has ‹:set noexpandtab›, which
+" is usually what one wants. But in comments, I would like to
+" be able to use tabs to indent text, but have spaces, not tabs, in
+" the text. This macro
+
+imap <s-tab> <esc>:call TabAsSpaces()<cr>a
+
+func! TabAsSpaces ()
+    let l:saved_expandtab = &expandtab
+    setl expandtab
+    if getcharpos('.')[2] > 1
+        exec "normal a\<tab>"
+    else
+        exec "normal i\<tab>"
+    endif
+    if l:saved_expandtab
+        setl expandtab
+    else
+        setl noexpandtab
+    endif
+endfunc
+
+" --------------------------------------------------------------------
+" ʈ surround replace substitute
+" Search for and replace ｢⋯｣ surrounders with either no change, ⟨⋯⟩,
+
+" ｢⋯｣ ｢⋯ ｢⋯｣ ｣ ｢⋯｣ ｢⋯｣
+" ｢⋯｣ ｢⋯ ｢⋯｣ ｣ ｢⋯｣ ｢⋯｣
+
+" ｢⋯｣ ｢⋯ ｢⋯｣ ｣ ｢⋯｣ ｢⋯｣
+
+func! ReplSurround ()
+    try
+        let l:saved_search = @/
+        normal k
+        /｢[^｢]\{-}｣
+        set cursorline
+        redraw
+        echo "Replace with: 1:⟨⋯⟩ 2:‹⋯› other:abort : "
+        let l:reply = getcharstr()
+        if l:reply == '1'
+            :s/｢\([^｢]\{-}\)｣/⟨\1⟩/gc
+        elseif l:reply == '2'
+            :s/｢\([^｢]\{-}\)｣/‹\1›/gc
+        endif
+        let @/ = l:saved_search
+        set nocursorline
+        echo ""
+       " /｢[^｢]\{-}｣
+        redraw
+       " exec "normal 0\<esc>"
+        exec "normal \<esc>"
+    finally
+        set nocursorline
+        echo ""
+       " /｢[^｢]\{-}｣
+        redraw
+    endtry
+endfunc
+nmap cd :call ReplSurround()<cr>
+
+func! MoarReplSurround ()
+    try
+        while 1
+            call ReplSurround()
+        endwhile
+    finally
+        set nocursorline
+        echo ""
+       " /｢[^｢]\{-}｣
+        redraw
+    endtry
+endfunc
+nmap cm :call MoarReplSurround()<cr>
+
+" --------------------------------------------------------------------
+" ☰2024-03-04.Mon
+" Search for pattern with slashes.
+"
+" Another way is to search backwards with ‹?› instead of ‹/›.
+
+" Found at:
+" https://vim.fandom.com/wiki/Searching_for_expressions_which_include_slashes
+
+    " ⦃:Ss /baz/foo⦄ Escape slashes.
+command! -nargs=1 Ss let @/ = escape(<q-args>, '/')|normal! /<C-R>/<CR>
+
+    " ⦃:SS /baz*/foo⦄ Escape all special characters.
+command! -nargs=1 SS let @/ = '\V'.escape(<q-args>, '/\')|normal! /<C-R>/<CR>
+
+" --------------------------------------------------------------------
+lua << EoF
+-- Submitted by pel⧺☰2023-10-08.Sun.
+--
+-- Print out variable profile code
+--
+-- console.log('var: ' = var); // in JS
+-- note("var: <$var>"); # in Raku
+
+local function not_empty(s) return s ~= nil and s ~= '' end
+
+_G.var_profiler = function()
+    local lang_map = {
+        ['javascript'] = 'JS',
+        ['raku'] = 'Raku',
+    }
+    if lang_map[vim.bo.filetype] == nil then return end
+    local output_map = {
+        ['javascript'] = "console.log(`%s: ${%s}`);",
+        ['raku'] = 'note("%s: <$%s>");',
+    }
+    local vars
+    vim.ui.input(
+        { prompt = string.format(
+            'Enter %s var name(s): ', lang_map[vim.bo.filetype]
+        )},
+        function(input) vars = input end
+    )
+    if not_empty(vars) then
+        for var in vars:gmatch('%S+') do
+            local line = string.format(
+                output_map[vim.bo.filetype], var, var
+            )
+            vim.api.nvim_put({ line }, 'l', false, true)
+        end
+    end
+end
+
+--vim.keymap.set('n', '<leader>p', var_profiler)
+
+--[[
+    I updated our variable profiler code. I do automagical (he he you
+    don't like that word!) filetype detection. If the filetype is not
+    supported, I have a guard clause that exits silently. I also used
+    the leader key with p for profile. Of course, you can keep your Kn
+    if you wish.
+
+    I like this because I can easily add other languages in the
+    future.
+--]]
+
+EoF
 
 " --------------------------------------------------------------------
 
@@ -49,8 +195,13 @@ lua << EoF
         vim.api.nvim_set_keymap(mode, lhs, rhs, options)
     end
 
-        -- To have an equivalent to the original ｢K｣ mapping.
-    map("n", "K.", "K", { silent = true })
+        -- To have an equivalent to the original mappings;
+      map("n", 'K', "<nop>", { silent = true })
+      map("n", 'K"', "K", { silent = true })
+   -- map("n", "M~", "M", { silent = true })
+   -- map("n", "Q~", "Q", { silent = true })
+   -- map("n", "U~", "U", { silent = true })
+   -- map("n", "V~", "V", { silent = true })
 
         -- Formerly ｢nmap Kb :call InsertBillingElem()<cr>｣.
     map("n", "Kb.", ":call InsertBillingElem()<cr>")
@@ -70,7 +221,7 @@ nmap gW /ID:<space>\.\?
 nmap Kb :call InsertBillingElem()<cr>
 
     " Change to "- -⋯" my old style "# -⋯" text separator lines.
-nmap Kc :%s/^\# -/- -/gc<cr>
+nmap Kc :%s/^\(\s*\)\# -/\1- -/gc<cr>
 
 "nmap Kd :e /opt/gdoc<cr>
 nmap Kd :e /shome/lucs/gdoc<cr>
@@ -109,6 +260,11 @@ endfunc
     " Insert a timestamp with a format of 7, 8, 9, or 0 (cf.
     " _InsertTimestamp) and either at (i) the cursor position, or
     " after (o) it.
+nnoremap <c-u>6i      :call _InsertTimestamp(6, "i")<cr>
+inoremap <c-u>6i <esc>:call _InsertTimestamp(6, "i")<cr>a
+nnoremap <c-u>6o      :call _InsertTimestamp(6, "o")<cr>
+inoremap <c-u>6o <esc>:call _InsertTimestamp(6, "o")<cr>a
+
 nnoremap <c-u>7i      :call _InsertTimestamp(7, "i")<cr>
 inoremap <c-u>7i <esc>:call _InsertTimestamp(7, "i")<cr>a
 nnoremap <c-u>7o      :call _InsertTimestamp(7, "o")<cr>
@@ -129,11 +285,13 @@ inoremap <c-u>0i <esc>:call _InsertTimestamp(0, "i")<cr>a
 nnoremap <c-u>0o      :call _InsertTimestamp(0, "o")<cr>
 inoremap <c-u>0o <esc>:call _InsertTimestamp(0, "o")<cr>a
 
+nmap <c-u><c-t>6      0itodo0<esc><c-u>6oa<space><esc>
 nmap <c-u><c-t>7      0itodo0<esc><c-u>7oa<space><esc>
 nmap <c-u><c-t>8      0itodo0<esc><c-u>8oa<space><esc>
 nmap <c-u><c-t>9      0itodo0<esc><c-u>9oa<space><esc>
 nmap <c-u><c-t>0      0itodo0<esc><c-u>0oa<space><esc>
 
+imap <c-u><c-t>6 <esc>0itodo0<esc><c-u>6oa<space><esc>a
 imap <c-u><c-t>7 <esc>0itodo0<esc><c-u>7oa<space><esc>a
 imap <c-u><c-t>8 <esc>0itodo0<esc><c-u>8oa<space><esc>a
 imap <c-u><c-t>9 <esc>0itodo0<esc><c-u>9oa<space><esc>a
@@ -317,10 +475,7 @@ func! _ReTextWidth ()
 endfunc
 
 " --------------------------------------------------------------------
-" ʈ ʈ handler
-
-    " Why the <C-U> (page up)?
-nmap <f8> :<C-U>call _TableFunc()<cr>
+" ʈ
 
 " I start by extracting all ｢ʈ｣ or ｢‼〈⋯〉｣ lines from a source file.
 " and construct a temporary file in which I write something like:
@@ -332,20 +487,57 @@ nmap <f8> :<C-U>call _TableFunc()<cr>
 "     237   ´install ´plugin ´extplugin
 "       ⋯   ⋯
 
-func! _TableFunc ()
+    " Why did this use to have <C-U> (page up)?
+"nmap <f8> :<C-U>call _ProgFunc()<cr>
+
+nmap <c-f8> :call _ProgFunc(
+  \ 'if $line ~~ /^ [$<indentl-level> = \s*] ' .
+  \ '$<entry> = [[sub\|method\|class\|grammar\|multi] ｢ ｣ .* ] / {'
+  \ )<cr>
+
+nmap <f8>   :call _ProgFunc(
+  \ 'if $line ~~ /^ .*? ｢ʈ｣ [$<indentl-level> = \d+]? \s+ $<entry> = [.*] / {'
+  \ )<cr>
+
+func! _ProgFunc (rakuRegex)
     if &modified
         echo "File is modified. Save it first."
         return
     endif
 
-    let l:prog = g:nvim_lucs_pack . '/plugin/build_toc.p6 '
-    let l:rd_file = expand("%:p")
-    let l:wr_file = tempname()
+    let l:fRead = expand("%:p")
+    let l:fWryt = tempname()
 
-    let l:cmd = printf("%s %s %s", l:prog, l:rd_file, l:wr_file)
+    let l:rakuFuncBeg =<< EoP
+        sub foo ($fRead, $fWryt) {
+            my $line-num = 0;
+            my @found;
+            $fRead.IO.lines.map: {
+                my $line = $_;
+                ++$line-num;
+EoP
 
+    let l:rakuFuncEnd =<< EoP
+                    @found.push([$line-num, $<indentl-level> ~ $<entry>]);
+
+                }
+            }
+            my $precis = ($line-num.log / 10.log).truncate + 1;
+            my $toc-lines = "";
+            for @found -> $d {
+                my ($line-num, $line) = @$d;
+                $toc-lines ~= sprintf "%{$precis}d   %s\n", $line-num, $line;
+            }
+            $fWryt.IO.spurt: "$fRead\n$toc-lines";
+        };
+EoP
+
+    let l:rakuInvoc = [ printf("foo(q|%s|, q|%s|)", l:fRead, l:fWryt) ]
+    let l:cmd = printf("raku -e '%s'", join(l:rakuFuncBeg + [ a:rakuRegex ] + l:rakuFuncEnd + l:rakuInvoc, "\n"))
+
+   " echo l:cmd | echo input("Press a key to continue...")
     call system(l:cmd)
-    exec "edit " . l:wr_file
+    exec "edit " . l:fWryt
         " Pressing Enter on a line will open the file at the line
         " number that it happens
     nnoremap <buffer> <cr> :call OpenHere()<cr>
@@ -412,7 +604,8 @@ let surround_8229   = "…<\r>"
 noremap  <F2>…        i…<><esc>i
 inoremap <F2>…         …<><esc>i
 
-    " o :  ᚜ban-cu1᚛ My operator notation
+    " o :  ᚜ban-cu1᚛ My operator notation.
+    "      ᚜lp/bazfoo/s᚛ My password notation.
 let surround_111    = "᚜\r᚛"
 noremap  <F2>᚜        i᚜᚛<esc>i
 inoremap <F2>᚜         ᚜᚛<esc>i
@@ -452,7 +645,7 @@ let surround_117    = "ū<\r>"
 noremap  <F2>ū        iū<><esc>i
 inoremap <F2>ū         ū<><esc>i
 
-    " z : Comment in code
+    " z : Light quoting (used to be: Comment in code)
 let surround_122    = "‹\r›"
 noremap  <F2>‹        i‹›<esc>i
 inoremap <F2>‹         ‹›<esc>i
@@ -603,8 +796,12 @@ command! -range -nargs=0 StrikeThrough   call _CombineSelection(<line1>, <line2>
 command! -range -nargs=0 SlashThrough    call _CombineSelection(<line1>, <line2>, '0338')
 
 func! _CombineSelection(line1, line2, cp)
+    let l:savedB = @b
+    normal mb
     execute 'let char = "\u'.a:cp.'"'
     execute a:line1.','.a:line2.'s/\%V[^[:cntrl:]]/&'.char.'/ge'
+    normal `b
+    let @b = l:savedB
 endfunc
 
 vnoremap CO :Overline<cr>
@@ -941,7 +1138,6 @@ endif
 " any vimscript code.
 
 function! ExecHighlighted () range
-
         " Grab the highlighted text: save the contents of an arbitrary
         " register, yank the highlighted text to it, copy the register
         " contents to a local variable, and restore the register
@@ -954,7 +1150,6 @@ function! ExecHighlighted () range
         " Concatenate continuation lines, else for some reason it
         " fails to work.
     let l:text = substitute(l:text, '\n\s*\\\s*', ' ', 'g')
-
 
         " Execute the grabbed text.
    " echo '⦃' . l:text . '⦄'
@@ -991,6 +1186,7 @@ func! _ToggleScrollOffset ()
         set scrolloff=0
     endif
     call BuildUpStatusLine()
+    normal jk
 endfunc
 
     " Move between buffers.
@@ -1345,6 +1541,7 @@ func! _TextEnableCodeSnip(filetype, start, end) abort
     else
         unlet b:current_syntax
     endif
+    execute 'syntax sync fromstart'
     execute 'syntax region textSnip' . l:ft . '
       \ matchgroup = SpecialComment
       \ start = "' . a:start . '" end = "' . a:end . '"
@@ -1358,37 +1555,26 @@ func! _CodeSnipNick (filetype, nick)
     call _TextEnableCodeSnip(a:filetype, l:start, l:end)
 endfunc
 
-" Still needs some fixing: invoking 'gh' a second time causes
-" errors.
-
-nmap <silent> gh
-  \ :call _CodeSnipNick('vim',        'vi')<bar>
-  \ :call _CodeSnipNick('html',       'hl')<bar>
-  \ :call _CodeSnipNick('xml',        'xl')<bar>
-  \ :call _CodeSnipNick('javascript', 'js')<bar>
-  \ :call _CodeSnipNick('perl',       'pl')<bar>
-  \ :call _CodeSnipNick('raku',       'rk')<bar>
-  \ :call _CodeSnipNick('postscr',    'ps')<bar>
-  \ :call _CodeSnipNick('sh',         'sh')<bar>
-  \ :call _CodeSnipNick('haskell',    'hs')<bar>
-  \ :call _CodeSnipNick('css',        'cs')<bar>
-  \ :call _CodeSnipNick('sql',        'sq')<bar>
-  \ :call _CodeSnipNick('php',        'ph')<bar>
-  \ :call _CodeSnipNick('tex',        'te')<bar>
-  \ <cr>
-
-    " ◆nvim doesn't have the ｢noredraw｣ option (not a huge deal), so I
-    " simply removed a couple of lines just above.
-"nmap <silent> gh
-"  \ :set noredraw<bar>
-"  \ :call _CodeSnipNick('vim',        'vi')<bar>
-"    ⋯
-"  \ :call _CodeSnipNick('tex',        'te')<bar>
-"  \ :set redraw<bar>
-"  \ <cr>
-
- " \ :call _TextEnableCodeSnip('php', '<?php', '?>')<bar>
- " \ :echo "Done"<cr><cr>
+func! _AllCodeSnips ()
+    syntax off
+    syntax on
+    call _CodeSnipNick('lua',        'lu')
+    call _CodeSnipNick('vim',        'vi')
+    call _CodeSnipNick('html',       'hl')
+    call _CodeSnipNick('xml',        'xl')
+    call _CodeSnipNick('javascript', 'js')
+    call _CodeSnipNick('perl',       'pl')
+    call _CodeSnipNick('raku',       'rk')
+    call _CodeSnipNick('postscr',    'ps')
+    call _CodeSnipNick('sh',         'sh')
+    call _CodeSnipNick('haskell',    'hs')
+    call _CodeSnipNick('css',        'cs')
+    call _CodeSnipNick('sql',        'sq')
+    call _CodeSnipNick('php',        'ph')
+    call _CodeSnipNick('tex',        'te')
+endfunc
+"call _AllCodeSnips()<cr>
+nmap <silent> gh :call _AllCodeSnips()<cr>
 
 " --------------------------------------------------------------------
 " My log entries look like this:
@@ -1426,7 +1612,7 @@ func! _AppendLogEntry ()
         normal n
             " Insert a timestamp, a couple of newlines, come back and
             " insert the project ID prefix, and go to insert mode.
-        call _InsertTimestamp(2, 0)
+        call _InsertTimestamp(0, 'i')
        " call _InsertTimestamp('n', 0, 0)
         exec "normal! a\<cr>\<cr>"
         exec "normal kkA .´\<esc>zz"
@@ -1447,23 +1633,23 @@ nmap ,as :call _AppendLogEntry()<cr>´
 nmap ,ad :call _AppendLogEntry()<cr>-
 nmap ,an :call _AppendLogEntry()<cr>.
 
-" " --------------------------------------------------------------------
-" func! _AcuTags (option)
-"     if &modified
-"         echo "File is modified. Save it first."
-"     else
-       " let l:cmd = g:nvim_lucs_pack . '/plugin/build_toc.p6'
-"         let l:cmd = g:lucs_share . "/plugin/acutags.pl -" . a:option . " " . expand("%")
-"         let l:foo = system(l:cmd)
-"         echo l:foo
-"         if a:option == "f"
-"                 " Reload file.
-"             edit
-"         endif
-"     endif
-" endfunc
-" nmap ,tl :call _AcuTags("l")<cr>
-" nmap ,tf :call _AcuTags("f")<cr>
+" --------------------------------------------------------------------
+func! _AcuTags (option)
+    if &modified
+        echo "File is modified. Save it first."
+    else
+     " let l:cmd = g:nvim_lucs_pack . '/plugin/build_toc.p6'
+        let l:cmd = g:nvim_lucs_pack . "/plugin/acutags.pl -" . a:option . " " . expand("%")
+        let l:foo = system(l:cmd)
+        echo l:foo
+        if a:option == "f"
+                " Reload file.
+            edit
+        endif
+    endif
+endfunc
+nmap ,tl :call _AcuTags("l")<cr>
+nmap ,tf :call _AcuTags("f")<cr>
 
 " --------------------------------------------------------------------
 " Display ｢let｣s sorted in a new file.
@@ -1640,19 +1826,19 @@ endfunc
 
 " --------------------------------------------------------------------
 func! BuildUpStatusLine ()
-        " Initialize statusline.')
+        " Initialize statusline.
     set statusline=
 
         " Buffer number.
     set statusline+=%3*\ %n
 
-        " ｢mod. flag｣.'
+        " ‹mod. flag›.
     set statusline+=%3*%m\
 
-        " ｢ ｢line num.｣/｢nb. of lines｣ ｣.
+        " ‹ ⟨line num.⟩/⟨nb. of lines⟩ ›.
     set statusline+=%*\ %l/%L\
 
-        " Cursor position ｢ ｢apparent｣➤｢real｣/｢and text width｣｣.
+        " Cursor position ‹ ⟨apparent⟩➤⟨real⟩/⟨and text width⟩›.
     set statusline+=%4*\ %v➤%c/%{&tw}\
 
         " Flag: vertical scroll holds cursor in middle of screen.
@@ -1662,7 +1848,7 @@ func! BuildUpStatusLine ()
     set statusline+=%2*%{&paste==1?'P':'\ '}
 
         " Relative file path.
-        " ☰2023-06-14.Wed Used to be ｢⋯%f\ ｣
+        " ☰2023-06-14.Wed Used to be ‹⋯%f\ ›
     set statusline+=%*\ %t\
 
         " Rest of the line.
