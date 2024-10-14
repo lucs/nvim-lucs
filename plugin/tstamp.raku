@@ -8,7 +8,7 @@
 
 =head1 SYNOPSIS
 
-        Possible ｢format id｣ values result in
+        Possible ⟨format id⟩ values result in
         different timestamp formatting:
 
             6 : 2014f.Jun13.Fri.09:14.44
