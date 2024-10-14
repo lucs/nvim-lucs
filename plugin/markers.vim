@@ -21,6 +21,7 @@ digraph  at  8594 " →
 digraph  aT  8482 " ™
 digraph  av  9251 " ␣
 digraph  bb   166 " ¦
+digraph  bs   160 "  
 digraph  bt   168 " ¨
 digraph  el  8943 " ⋯
 digraph  et  8230 " …
@@ -58,8 +59,6 @@ imap <C-f>lge ε
 imap <C-f>lgh θ
 imap <C-f>lgH Θ
 imap <C-f>lgk κ
-imap <C-f>lgk κ
-imap <C-f>lgK Κ
 imap <C-f>lgK Κ
 imap <C-f>lgl λ
 imap <C-f>lgm μ
@@ -104,7 +103,7 @@ digraph  gb   946 " β
 digraph  gr   341 " ŕ
 digraph  gs   347 " ś
 digraph  gt   357 " ť
-digraph  gv  8729 " ∙
+digraph  gc  9679 " ●
 digraph  m0  9838 " ♮
 digraph  mb  9837 " ♭
 digraph  mc  9834 " ♪
