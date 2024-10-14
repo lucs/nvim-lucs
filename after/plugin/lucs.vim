@@ -7,6 +7,147 @@
 "       ⦃lucs⦄, ⦃c_suz_vch⦄, usually set in …<.init.vim>.
 "   g:prj_nick
 
+" --------------------------------------------------------------------
+" ☰2024-09-23.Mon
+
+    " ⦃:call EchoSleep(3, "baz")⦄
+func! EchoSleep (dura, msg)
+    redraw
+    echo a:msg
+    exec "sleep " . a:dura
+    exec "normal! \<esc>"
+endfunc
+
+nmap gbut :call OpenInBrowser('u', 't')<cr>
+nmap gbuw :call OpenInBrowser('u', 'w')<cr>
+nmap gbft :call OpenInBrowser('f', 't')<cr>
+nmap gbfw :call OpenInBrowser('f', 'w')<cr>
+
+" ū<go111ogle.com>
+" <  >
+" ū<google.com>
+
+func! OpenInBrowser (url_or_file, tab_or_window)
+    let l:winview = winsaveview()
+    let l:saved_visual = GetVisual()
+    let l:saved_0 = getreg("0")
+    let l:curr_line = getpos(".")[1]
+    let l:quit_msg = ''
+    try
+        normal! vi<y
+            " Make sure selection is on the current line.
+        if getpos("'<")[1] != l:curr_line
+            exec "normal! \<esc>"
+            let l:quit_msg = "Bad selection."
+            throw "moo"
+        endif
+        normal! y
+        let l:want_to_open = getreg("0")
+        if match(l:want_to_open, '^\s*$') == 0
+            let l:quit_msg = "Nothing to open"
+            throw "mee"
+        endif
+        let l:url_or_file_arg = ''
+        if a:url_or_file == 'f'
+            let l:url_or_file_arg = '-f'
+        endif
+        let l:tab_or_window = ''
+        if a:tab_or_window == 'w'
+            let l:tab_or_window = '-w'
+        endif
+        let l:output = system(
+          \ printf("ffox %s %s %s",
+          \     l:url_or_file_arg,
+          \     l:tab_or_window,
+          \     l:want_to_open
+          \ )
+        \)
+        if v:shell_error != 0
+            let l:quit_msg = l:output
+            throw "muu"
+        endif
+    catch
+    finally
+        call setreg('0', l:saved_0)
+        call SetVisual(l:saved_visual)
+        call winrestview(l:winview)
+    endtry
+    redraw | echo substitute(l:quit_msg, '\n\+$', '', '')
+endfunc
+
+func! GetVisual ()
+    return [visualmode(), getpos("'<"), getpos("'>")]
+endfunc
+
+func! SetVisual (want_visual)
+    let l:mode    = a:want_visual[0]
+    let l:beg_lyn = a:want_visual[1][1]
+    let l:beg_col = a:want_visual[1][2]
+    let l:end_lyn = a:want_visual[2][1]
+    let l:end_col = a:want_visual[2][2]
+    let l:cmd = ''
+    if l:mode == 'V'
+        let l:cmd = l:beg_lyn . 'GV' . l:end_lyn . 'G'
+    elseif l:mode =~ "[v\<c-v>]"
+        let l:cmd =
+          \  l:beg_lyn . 'G0' .
+          \ (l:beg_col - 1) . 'l' . l:mode .
+          \  l:end_lyn . 'G0' .
+          \ (l:end_col - 1) . 'l'
+    else
+        return
+    endif
+    let l:winview = winsaveview()
+    exec "normal! " . l:cmd . "\<esc>"
+    call winrestview(l:winview)
+endfunc
+
+    " Used to be this. ☰2024-09-24.Tue
+" nmap gb :call _OpenFileInBrowser()<cr>
+" func! _OpenFileInBrowser ()
+"     let l:FoD = _GetFileOrDirUnderCursor(0)
+"         " FIXME Hardcoded for kpop.
+"     let l:fChromeExe = '/opt/google/chrome/chrome'
+"     let l:cmd = "system('" . l:fChromeExe . " " . l:FoD . " 2>/dev/null &')"
+"     exec ':call ' . l:cmd
+" endfunc
+
+" --------------------------------------------------------------------
+" ☰2024-06-18.Tue
+" Line/line: line number
+" Vcol/vCol: virtual column
+" Ccol/cCol: byte column
+" Bpos/bPos: buffer position: #{Line:⟨Line⟩, vCol:⟨Vcol⟩, cCol:⟨Ccol⟩}
+
+func! GetCursorBpos ()
+    return #{Line: line('.'), vCol: virtcol('.'), cCol: col('.')}
+endfunc
+
+func! GetCharAtBpos (bPos)
+    return strcharpart(strpart(getline(a:bPos.Line), a:bPos.cCol - 1), 0, 1)
+endfunc
+
+func! GetCharAtCursor ()
+    return GetCharAtBpos(GetCursorBpos())
+endfunc
+
+func! MoveCursorToBpos (bPos)
+    call setcharpos('.', [0, a:bPos.Line, a:bPos.cCol, 0])
+endfunc
+
+" --------------------------------------------------------------------
+" ☰2024-08-06.Tue
+
+    " For use with Debugging::Tool.
+nmap ,dp /\$dt\.p/e<cr>
+
+nmap ,ds /\$dt\.s/e<cr>
+nmap ,dd /\$dt\.[ps]/e<cr>
+nmap ,d. /\$dt\._/e<cr>
+nmap ,da /\$dt\./e<cr>
+
+" --------------------------------------------------------------------
+
     " Raku identifier stuff.
 imap <c-r>2 ƻ
 imap <c-r>a Λ
@@ -42,9 +183,9 @@ func! TabAsSpaces ()
     let l:saved_expandtab = &expandtab
     setl expandtab
     if getcharpos('.')[2] > 1
-        exec "normal a\<tab>"
+        exec "normal! a\<tab>"
     else
-        exec "normal i\<tab>"
+        exec "normal! i\<tab>"
     endif
     if l:saved_expandtab
         setl expandtab
@@ -52,59 +193,6 @@ func! TabAsSpaces ()
         setl noexpandtab
     endif
 endfunc
-
-" --------------------------------------------------------------------
-" ʈ surround replace substitute
-" Search for and replace ｢⋯｣ surrounders with either no change, ⟨⋯⟩,
-
-" ｢⋯｣ ｢⋯ ｢⋯｣ ｣ ｢⋯｣ ｢⋯｣
-" ｢⋯｣ ｢⋯ ｢⋯｣ ｣ ｢⋯｣ ｢⋯｣
-
-" ｢⋯｣ ｢⋯ ｢⋯｣ ｣ ｢⋯｣ ｢⋯｣
-
-func! ReplSurround ()
-    try
-        let l:saved_search = @/
-        normal k
-        /｢[^｢]\{-}｣
-        set cursorline
-        redraw
-        echo "Replace with: 1:⟨⋯⟩ 2:‹⋯› other:abort : "
-        let l:reply = getcharstr()
-        if l:reply == '1'
-            :s/｢\([^｢]\{-}\)｣/⟨\1⟩/gc
-        elseif l:reply == '2'
-            :s/｢\([^｢]\{-}\)｣/‹\1›/gc
-        endif
-        let @/ = l:saved_search
-        set nocursorline
-        echo ""
-       " /｢[^｢]\{-}｣
-        redraw
-       " exec "normal 0\<esc>"
-        exec "normal \<esc>"
-    finally
-        set nocursorline
-        echo ""
-       " /｢[^｢]\{-}｣
-        redraw
-    endtry
-endfunc
-nmap cd :call ReplSurround()<cr>
-
-func! MoarReplSurround ()
-    try
-        while 1
-            call ReplSurround()
-        endwhile
-    finally
-        set nocursorline
-        echo ""
-       " /｢[^｢]\{-}｣
-        redraw
-    endtry
-endfunc
-nmap cm :call MoarReplSurround()<cr>
 
 " --------------------------------------------------------------------
 " ☰2024-03-04.Mon
@@ -213,6 +301,7 @@ lua << EoF
 
 EoF
 
+    " To help match code snippet ids.
 nmap gW /ID:<space>\.\?
 
 " --------------------------------------------------------------------
@@ -226,9 +315,11 @@ nmap Kc :%s/^\(\s*\)\# -/\1- -/gc<cr>
 "nmap Kd :e /opt/gdoc<cr>
 nmap Kd :e /shome/lucs/gdoc<cr>
 
-    " Open this file, which lists file names, one per line, for easy
+    " Open a file which lists file names, one per line, for easy
     " opening with ｢gf｣ (built-in) or ｢gm｣ (defined here elsewhere).
 nmap Kf :e $HOME/.freq<cr>
+nmap KF :e $dSP/.freq<cr>
+
 nmap Kg :exec ':e ' . g:user_home_dir . '/.freqg'<cr>
 nmap Kk :exec ':e ' . '/mnt/hKpop/opt/prj/'<cr>
 nmap Kl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
@@ -342,9 +433,9 @@ func! _InsertTimestamp (format, where)
     let l:saved_b = getreg("b")
     let @b = '☰' . CalcTimestamp(a:format)
     if a:where == 'i'
-        normal "bP
+        normal! "bP
     elseif a:where == 'o'
-        normal "bp
+        normal! "bp
     endif
     call setreg('b', l:saved_b)
 endfunc
@@ -374,13 +465,13 @@ func! InsertBillingElem ()
 
    " set lazyredraw
     call SaveWinView()
-    normal gg
+    normal! gg
     let l:last_elem = search('^' . g:prj_nick . 'f')
     if l:last_elem != 0
             " Move to found matching line and copy it
-        exec 'normal ' . l:last_elem . 'G'
+        exec 'normal! ' . l:last_elem . 'G'
         let l:saved_x = getreg("x")
-        normal "xyy
+        normal! "xyy
         let l:saved_b = getreg("b")
         let l:num = matchstr(@x, '\d\d\+')
         let l:num += 1
@@ -390,13 +481,13 @@ func! InsertBillingElem ()
        " echo @b
         let @x = '- ' . repeat('-', 68)
        " echo @x
-        normal kk
+        normal! kk
         put x
         put b
         call setreg('x', l:saved_x)
         call setreg('b', l:saved_b)
-        normal o
-        normal zzk2f-l
+        normal! o
+        normal! zzk2f-l
         startinsert
     else
         call RestoreWinView()
@@ -411,7 +502,7 @@ endfunc
 func! DelPara ()
     let l:savedSearch = @/
 
-    normal {jV}/.kd
+    normal! {jV}/.kd
         " Restore saved search pattern.
     let @/ = l:savedSearch
 endfunc
@@ -444,16 +535,6 @@ nnoremap __ :e ~/⋯*<cr>
 nnoremap _. :e ./⋯*<cr>
 nnoremap _t :e ./…*<cr>
 nnoremap _l :e ./⋯*<cr>
-
-" --------------------------------------------------------------------
-nmap gb :call _OpenFileInBrowser()<cr>
-func! _OpenFileInBrowser ()
-    let l:FoD = _GetFileOrDirUnderCursor(0)
-        " FIXME Hardcoded for kpop.
-    let l:fChromeExe = '/opt/google/chrome/chrome'
-    let l:cmd = "system('" . l:fChromeExe . " " . l:FoD . " 2>/dev/null &')"
-    exec ':call ' . l:cmd
-endfunc
 
 " --------------------------------------------------------------------
 " If ｢:set textwidth｣ is not equal to 70, set it to 70, else set it to
@@ -549,23 +630,36 @@ endfunc
 func! OpenHere ()
     let l:saved_ = getreg("")
     let l:saved_x = getreg("x")
-    normal "xyy
+    normal! "xyy
     let l:num = matchstr(@x, '\d\+')
-    normal gg"xyy
+    normal! gg"xyy
     let l:file = matchstr(@x, '[^\n]\+')
     call setreg('x', l:saved_x)
     bd
     exec "edit " . l:file
-    exec "normal " . l:num . "Gzt"
+    exec "normal! " . l:num . "Gzt"
     call setreg('', l:saved_)
 endfunc
 
 " --------------------------------------------------------------------
-" In normal mode, surround visually selected text by typing ｢S｣
+" This works with Tim Pope's ‹surround› plugin.
+" In normal mode, surround visually selected text by typing ⟨S⟩
 " followed by indicated character. Insert boilerplate, place cursor
 " for insertion. ☰2023-03-21.Tue FIXME The <F2> stuff? Not sure what
 " it's about and how it's supposed to work. Also unsure about what the
 " second let`s are about, ⦃surround_9128⦄.
+
+    " Template. FIXME
+    " [
+"     " e ⦃ : (⟨(Can't remember.)⟩) ⟨What this is for.⟩
+" let surround_101    = "⦃\r⦄"
+" let surround_69     = "⦃ \r ⦄"
+" let surround_10627  = "⦃\r⦄"
+" let surround_10628  = "⦃ \r ⦄"
+" noremap  <F2>⦃        i⦃⦄<esc>i
+" noremap  <F2><space>⦃ i⦃  ⦄<esc>hi
+" inoremap <F2>⦃         ⦃⦄<esc>i
+" inoremap <F2><space>⦃  ⦃  ⦄<esc>hi
 
     " a : (fd) Application or <program> name
 let surround_97     = "◆<\r>"
@@ -580,7 +674,8 @@ noremap  <F2><space>❲ i❲  ∣  ❳<esc>4hi
 inoremap <F2>❲         ❲∣❳<esc>i
 inoremap <F2><space>❲  ❲  ∣  ❳<esc>4hi
 
-    " d : Sample code ⌊%h2<s>⌉
+    " d : Consequence of example value. For example:
+    " ‹Multiplying ⦃21⦄ by 2 gives ⌊42⌉.›
 let surround_100    = "⌊\r⌉"
 noremap  <F2>⌊        i⌊⌉<esc>i
 inoremap <F2>⌊         ⌊⌉<esc>i
@@ -603,6 +698,12 @@ let surround_102    = "…<\r>"
 let surround_8229   = "…<\r>"
 noremap  <F2>…        i…<><esc>i
 inoremap <F2>…         …<><esc>i
+
+    " j :  Project directory
+let surround_106    = "∿<\r>"
+let surround_8767   = "∿<\r>"
+noremap  <F2>∿        i∿<><esc>i
+inoremap <F2>∿         ∿<><esc>i
 
     " o :  ᚜ban-cu1᚛ My operator notation.
     "      ᚜lp/bazfoo/s᚛ My password notation.
@@ -645,7 +746,7 @@ let surround_117    = "ū<\r>"
 noremap  <F2>ū        iū<><esc>i
 inoremap <F2>ū         ū<><esc>i
 
-    " z : Light quoting (used to be: Comment in code)
+    " z : Generic quoting (used to be: Comment in code)
 let surround_122    = "‹\r›"
 noremap  <F2>‹        i‹›<esc>i
 inoremap <F2>‹         ‹›<esc>i
@@ -758,7 +859,7 @@ func! L_saveasTimestamped ()
         let l:fSpec = l:dTs . "/" . l:fTs
         try
             let l:saved_b = getreg("b")
-            exec "normal Go‥<\$PRJ_DIR/" . l:dSnip . "/" . l:fTs . ">\r\<esc>"
+            exec "normal! Go‥<\$PRJ_DIR/" . l:dSnip . "/" . l:fTs . ">\r\<esc>"
             exec "saveas " . l:fSpec
         catch
             echo "Caught" v:exception
@@ -797,10 +898,10 @@ command! -range -nargs=0 SlashThrough    call _CombineSelection(<line1>, <line2>
 
 func! _CombineSelection(line1, line2, cp)
     let l:savedB = @b
-    normal mb
+    normal! mb
     execute 'let char = "\u'.a:cp.'"'
     execute a:line1.','.a:line2.'s/\%V[^[:cntrl:]]/&'.char.'/ge'
-    normal `b
+    normal! `b
     let @b = l:savedB
 endfunc
 
@@ -941,7 +1042,7 @@ func! PfxLine (pfx_char)
             exec ':.s,\( \S\),' . a:pfx_char . '\1,'
         endif
     endif
-    normal ll
+    normal! ll
 endfunc
 
 " --------------------------------------------------------------------
@@ -1030,15 +1131,15 @@ filetype on
 "filetype off
 filetype plugin on
 
-" --------------------------------------------------------------------
-func! LooksLikePerl6 ()
-    if getline(1) =~# 'v6'
-        set filetype=perl6
-    endif
-endfunc
-
-au! bufRead *.t call LooksLikePerl6()
-"au! BufNewFile,BufRead *.p6 setf perl6
+" " --------------------------------------------------------------------
+" func! LooksLikePerl6 ()
+"     if getline(1) =~# 'v6'
+"         set filetype=perl6
+"     endif
+" endfunc
+" 
+" au! bufRead *.t call LooksLikePerl6()
+" "au! BufNewFile,BufRead *.p6 setf perl6
 
 " --------------------------------------------------------------------
 " http://vim.wikia.com/wiki/Avoid_scrolling_when_switch_buffers
@@ -1136,6 +1237,16 @@ endif
 " change that, eh) and that highlighted vimscript will be executed. I
 " find this Sofa King Useful when developing shortcuts or pretty much
 " any vimscript code.
+"
+"   ☰2024-07-11.Thu
+"   Much simpler method can be derived from this post.
+" https://vi.stackexchange.com/a/36440
+"
+"   The idea is to source a yanked block of text.
+"   nnoremap <silent> <LEADER>sy :@"<CR>
+"
+"   :map <f12> :exec "echo 'Hi' " .
+"   \ "'there."<cr>
 
 function! ExecHighlighted () range
         " Grab the highlighted text: save the contents of an arbitrary
@@ -1186,7 +1297,7 @@ func! _ToggleScrollOffset ()
         set scrolloff=0
     endif
     call BuildUpStatusLine()
-    normal jk
+    normal! jk
 endfunc
 
     " Move between buffers.
@@ -1372,9 +1483,9 @@ func! _Rd (module)
     if v:shell_error != 0
         echo a:module "not found."
     else
-        exec "normal :new\<cr>"
-        exec "normal \<c-w>p\<c-w>c"
-        normal "bP
+        exec "normal! :new\<cr>"
+        exec "normal! \<c-w>p\<c-w>c"
+        normal! "bP
         setl ft=pod ro nomod noma
     endif
     let @b = l:savedB
@@ -1558,6 +1669,7 @@ endfunc
 func! _AllCodeSnips ()
     syntax off
     syntax on
+    call _CodeSnipNick('muttrc',     'mr')
     call _CodeSnipNick('lua',        'lu')
     call _CodeSnipNick('vim',        'vi')
     call _CodeSnipNick('html',       'hl')
@@ -1609,13 +1721,13 @@ func! _AppendLogEntry ()
     set wrapscan
     try
         set lazyredraw
-        normal n
+        normal! n
             " Insert a timestamp, a couple of newlines, come back and
             " insert the project ID prefix, and go to insert mode.
         call _InsertTimestamp(0, 'i')
        " call _InsertTimestamp('n', 0, 0)
         exec "normal! a\<cr>\<cr>"
-        exec "normal kkA .´\<esc>zz"
+        exec "normal! kkA .´\<esc>zz"
         startinsert!
     catch /E486/
         echo "No end-of-log indicator (®) at the beginning of any line."
@@ -1681,9 +1793,9 @@ func! L_DisplayLetSorted ()
        # VIM::DoCommand(":let \@a = l:a_saved");
 EoP
    " echo "Press a key to continue..."
-    normal gg
+    normal! gg
         " Get rid of spurious first line, which is blank.
-    normal dd
+    normal! dd
         " We don't care about the fact that this is a non-saved
         " file.
     set nomodified
@@ -1719,9 +1831,9 @@ func! L_DisplayMappingsSorted ()
        # VIM::DoCommand(":let \@a = l:a_saved");
 EoP
    " echo "Press a key to continue..."
-    normal gg
+    normal! gg
         " Get rid of spurious first line, which is blank.
-    normal dd
+    normal! dd
         " We don't care about the fact that this is a non-saved
         " file.
     set nomodified
