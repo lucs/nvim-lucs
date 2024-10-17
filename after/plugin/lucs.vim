@@ -211,7 +211,7 @@ command! -nargs=1 SS let @/ = '\V'.escape(<q-args>, '/\')|normal! /<C-R>/<CR>
 
 " --------------------------------------------------------------------
 lua << EoF
--- Submitted by pel⧺☰2023-10-08.Sun.
+-- Submitted by pel⧺ ☰2023-10-08.Sun.
 --
 -- Print out variable profile code
 --
@@ -301,11 +301,11 @@ lua << EoF
 
 EoF
 
-    " To help match code snippet ids.
+    " To help match code snippet id`s.
 nmap gW /ID:<space>\.\?
 
 " --------------------------------------------------------------------
-" ｢K｣ mappings.
+" ‹K› mappings.
 
 nmap Kb :call InsertBillingElem()<cr>
 
@@ -316,7 +316,7 @@ nmap Kc :%s/^\(\s*\)\# -/\1- -/gc<cr>
 nmap Kd :e /shome/lucs/gdoc<cr>
 
     " Open a file which lists file names, one per line, for easy
-    " opening with ｢gf｣ (built-in) or ｢gm｣ (defined here elsewhere).
+    " opening with ‹gf› (built-in) or ‹gm› (defined here elsewhere).
 nmap Kf :e $HOME/.freq<cr>
 nmap KF :e $dSP/.freq<cr>
 
@@ -329,9 +329,6 @@ nmap Km :call FormatManPage()<cr>
     " Open file browser in …<~lucs/prj/>.
 nmap Kp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
 
-    " Change ｢⋯｣ surrounders to ⟨⋯⟩.
-nmap Kr :.,$s/｢\(.\{-}\)｣/⟨\1⟩/gc<cr>
-
     " Replace old by new timestamp indicator.
     " ⌚1 U-231a
     " ⌘21 U-2318
@@ -339,11 +336,6 @@ nmap Kt :%s,[\u231a\u2318],☰,gc<cr>
 
     " Open my main Vim config file.
 nmap Kz :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
-
-" --------------------------------------------------------------------
-" Replace a Man page with so
-func! FormatManPage ()
-endfunc
 
 " --------------------------------------------------------------------
 " ʈ timestamps
@@ -537,7 +529,7 @@ nnoremap _t :e ./…*<cr>
 nnoremap _l :e ./⋯*<cr>
 
 " --------------------------------------------------------------------
-" If ｢:set textwidth｣ is not equal to 70, set it to 70, else set it to
+" If ‹:set textwidth› is not equal to 70, set it to 70, else set it to
 " 70 (minus 4) plus however far is the first character on the line
 " where the cursor is.
 
@@ -558,7 +550,7 @@ endfunc
 " --------------------------------------------------------------------
 " ʈ
 
-" I start by extracting all ｢ʈ｣ or ｢‼〈⋯〉｣ lines from a source file.
+" I start by extracting all ‹ʈ› or ‹‼〈⋯〉› lines from a source file.
 " and construct a temporary file in which I write something like:
 "
 "    /opt/prj/l/vim/_l_vim.memo
@@ -942,7 +934,7 @@ nnoremap <silent><Plug>XmlStyleOneLine :call
 nmap ,cx <Plug>XmlStyleOneLine
 
 " --------------------------------------------------------------------
-" Toggle ｢/*⋯*/｣ style one line comments.
+" Toggle ‹/*⋯*/› style one line comments.
 "
 "   |int main() ⋯
 "   |/*0 int main() ⋯ */
