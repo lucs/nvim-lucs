@@ -321,6 +321,10 @@ nmap Kf :e $HOME/.freq<cr>
 nmap KF :e $dSP/.freq<cr>
 
 nmap Kg :exec ':e ' . g:user_home_dir . '/.freqg'<cr>
+
+nmap Kh :e $HOME/...<cr>
+nmap KH :e $dSP/...<cr>
+
 nmap Kk :exec ':e ' . '/mnt/hKpop/opt/prj/'<cr>
 nmap Kl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
 
@@ -1122,16 +1126,6 @@ nmap <f5> :Bs2<cr>
 filetype on
 "filetype off
 filetype plugin on
-
-" " --------------------------------------------------------------------
-" func! LooksLikePerl6 ()
-"     if getline(1) =~# 'v6'
-"         set filetype=perl6
-"     endif
-" endfunc
-" 
-" au! bufRead *.t call LooksLikePerl6()
-" "au! BufNewFile,BufRead *.p6 setf perl6
 
 " --------------------------------------------------------------------
 " http://vim.wikia.com/wiki/Avoid_scrolling_when_switch_buffers
