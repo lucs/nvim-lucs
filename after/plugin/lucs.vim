@@ -638,125 +638,45 @@ func! OpenHere ()
 endfunc
 
 " --------------------------------------------------------------------
-" This works with Tim Pope's ‹surround› plugin.
-" In normal mode, surround visually selected text by typing ⟨S⟩
-" followed by indicated character. Insert boilerplate, place cursor
-" for insertion. ☰2023-03-21.Tue FIXME The <F2> stuff? Not sure what
-" it's about and how it's supposed to work. Also unsure about what the
-" second let`s are about, ⦃surround_9128⦄.
+" This works with Tim Pope's ‹surround› plugin. For example, in normal
+" mode, surround visually selected text by typing ‹S› followed by
+" indicated character. It also allows inserting empty boilerplate by
+" entering <f2> followed by the letter, which will also properly place
+" the cursor for insertion.
 
-    " Template. FIXME
-    " [
-"     " e ⦃ : (⟨(Can't remember.)⟩) ⟨What this is for.⟩
-" let surround_101    = "⦃\r⦄"
-" let surround_69     = "⦃ \r ⦄"
-" let surround_10627  = "⦃\r⦄"
-" let surround_10628  = "⦃ \r ⦄"
-" noremap  <F2>⦃        i⦃⦄<esc>i
-" noremap  <F2><space>⦃ i⦃  ⦄<esc>hi
-" inoremap <F2>⦃         ⦃⦄<esc>i
-" inoremap <F2><space>⦃  ⦃  ⦄<esc>hi
+func! BigSurr (char_lower, pfx, sfx, ...)
+    let l:nr_lower = char2nr(a:char_lower)
+    let l:nr_upper = l:nr_lower - 32
+    let l:char_upper = nr2char(l:nr_upper)
+    exec "let g:surround_" . l:nr_lower . " = '" . a:pfx . "\<cr>" . a:sfx . "'"
+    if a:0 == 0
+        exec 'nnoremap <f2>' . a:char_lower . ' i' . a:pfx .                     a:sfx . '<esc>i'
+        exec 'nnoremap <f2>' . l:char_upper . ' i' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
+        exec 'inoremap <f2>' . a:char_lower . '  ' . a:pfx .                     a:sfx . '<esc>i'
+        exec 'inoremap <f2>' . l:char_upper . '  ' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
+    else
+        let l:mid = a:1
+        exec 'nnoremap <f2>' . a:char_lower . ' i' . a:pfx .       l:mid .       a:sfx . '<esc>i'
+        exec 'nnoremap <f2>' . l:char_upper . ' i' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>hi'
+        exec 'inoremap <f2>' . a:char_lower . '  ' . a:pfx .       l:mid .       a:sfx . '<esc>hi'
+        exec 'inoremap <f2>' . l:char_upper . '  ' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>2hi'
+    endif
+endfunc
 
-    " a : (fd) Application or <program> name
-let surround_97     = "◆<\r>"
-noremap  <F2>◆        i◆<><esc>i
-inoremap <F2>◆         ◆<><esc>i
-
-    " c : (c1) Choice
-let surround_99     = "❲\r❳"
-let surround_9128   = "❲\r❳"
-noremap  <F2>❲        i❲∣❳<esc>i
-noremap  <F2><space>❲ i❲  ∣  ❳<esc>4hi
-inoremap <F2>❲         ❲∣❳<esc>i
-inoremap <F2><space>❲  ❲  ∣  ❳<esc>4hi
-
-    " d : Consequence of example value. For example:
-    " ‹Multiplying ⦃21⦄ by 2 gives ⌊42⌉.›
-let surround_100    = "⌊\r⌉"
-noremap  <F2>⌊        i⌊⌉<esc>i
-inoremap <F2>⌊         ⌊⌉<esc>i
-
-"let surround_100 = "❬❭\r"
-"inoremap <F2>❬   ❬❭<esc>i
-
-    " e, ⦃ : (e1) Example value
-let surround_101    = "⦃\r⦄"
-let surround_69     = "⦃ \r ⦄"
-let surround_10627  = "⦃\r⦄"
-let surround_10628  = "⦃ \r ⦄"
-noremap  <F2>⦃        i⦃⦄<esc>i
-noremap  <F2><space>⦃ i⦃  ⦄<esc>hi
-inoremap <F2>⦃         ⦃⦄<esc>i
-inoremap <F2><space>⦃  ⦃  ⦄<esc>hi
-
-    " f : (fd) File or directory
-let surround_102    = "…<\r>"
-let surround_8229   = "…<\r>"
-noremap  <F2>…        i…<><esc>i
-inoremap <F2>…         …<><esc>i
-
-    " j :  Project directory
-let surround_106    = "∿<\r>"
-let surround_8767   = "∿<\r>"
-noremap  <F2>∿        i∿<><esc>i
-inoremap <F2>∿         ∿<><esc>i
-
-    " o :  ᚜ban-cu1᚛ My operator notation.
-    "      ᚜lp/bazfoo/s᚛ My password notation.
-let surround_111    = "᚜\r᚛"
-noremap  <F2>᚜        i᚜᚛<esc>i
-inoremap <F2>᚜         ᚜᚛<esc>i
-
-    " q : (q1) Quote, generic
-let surround_113    = "｢\r｣"
-let surround_81     = "｢ \r ｣"
-let surround_65378  = "｢\r｣"
-let surround_65379  = "｢ \r ｣"
-noremap  <F2>｢        i｢｣<esc>i
-noremap  <F2><space>｢ i｢  ｣<esc>hi
-inoremap <F2>｢         ｢｣<esc>i
-inoremap <F2><space>｢  ｢  ｣<esc>hi
-
-    " r : (r1) Reftag
-let surround_114    = "⟦\r⟧"
-let surround_82     = "⟦ \r ⟧"
-let surround_10214  = "⟦\r⟧"
-let surround_10215  = "⟦ \r ⟧"
-noremap  <F2>⟦        i⟦⟧<esc>i
-noremap  <F2><space>⟦ i⟦  ⟧<esc>hi
-inoremap <F2>⟦         ⟦⟧<esc>i
-inoremap <F2><space>⟦  ⟦  ⟧<esc>hi
-
-    " s :
-let surround_115    = "«\r»"
-noremap  <F2>«        i«»<esc>i
-inoremap <F2>«         «»<esc>i
-
-    " t : ⟨Str⟩ A type
-let surround_116    = "⟨\r⟩"
-noremap  <F2>⟨        i⟨⟩<esc>i
-inoremap <F2>⟨         ⟨⟩<esc>i
-
-    " u : (ur) URL
-let surround_117    = "ū<\r>"
-noremap  <F2>ū        iū<><esc>i
-inoremap <F2>ū         ū<><esc>i
-
-    " z : Generic quoting (used to be: Comment in code)
-let surround_122    = "‹\r›"
-noremap  <F2>‹        i‹›<esc>i
-inoremap <F2>‹         ‹›<esc>i
-
-    " ☰2021-12-06 Disactivated, as it interferes with the ｢surround｣
-    " plugin's tag surrounding, ⦃abc⦄ becoming ｢<foo>abc</foo>｣. To
-    " have ⦃abc⦄ become ｢<abc>｣, use ｢>｣ as the surrounding char.
-"    " < : <>
-"let surround_60     = "<\r>"
-"let surround_62     = "< \r >"
-"noremap  <F2><        i<><esc>i
-"noremap  <F2><space>< i<  ><esc>hi
-"inoremap <F2><         <><esc>i
-"inoremap <F2><space><  <  ><esc>hi
+call BigSurr('a', '◆<', '>'     ) " Program name: Launch ◆<nvim> in your terminal.
+call BigSurr('c', '❲',  '❳', '∣') " Choice: Choose one of ❲a∣b∣c❳.
+call BigSurr('d', '⌊',  '⌉'     ) " Consequence of example: ⦃21*2⦄ gives ⌊42⌉.
+call BigSurr('e', '⦃',  '⦄'     ) " Example value: ⦃21*2⦄ gives ⌊42⌉.
+call BigSurr('f', '…<', '>'     ) " File or directory: Look at …</etc/passwd>.
+call BigSurr('j', '∿<', '>'     ) " Project directory: ∿<t/nvim>
+call BigSurr('o', '᚜',  '᚛'     ) " Operator ᚜ban-cu1᚛ or password location ᚜lp/bazfoo/s᚛.
+call BigSurr('q', '｢',  '｣'     ) " Non-interpolating Raku quoting: ｢No $interpol. \n｣.
+call BigSurr('r', '⟦',  '⟧'     ) " Reftag: ⟦⋯ p_36/23⟧
+call BigSurr('s', '«',  '»'     ) " ?
+call BigSurr('t', '⟨',  '⟩'     ) " A kind/type of something: ▸ cp ⟨file from⟩ ⟨file to⟩
+call BigSurr('u', 'ū<', '>'     ) " URL: ū<github.com/lucs/>
+call BigSurr('x', '❬',  '❭'     ) " ?
+call BigSurr('z', '‹',  '›'     ) " All-purpose quoting: Quote ‹like this› instead of double quotes.
 
 " --------------------------------------------------------------------
 
