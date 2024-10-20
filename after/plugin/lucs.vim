@@ -56,7 +56,7 @@ func! OpenInBrowser (url_or_file, tab_or_window)
             let l:tab_or_window = '-w'
         endif
         let l:output = system(
-          \ printf("ffox %s %s %s",
+          \ printf("ffox %s %s '%s'",
           \     l:url_or_file_arg,
           \     l:tab_or_window,
           \     l:want_to_open
