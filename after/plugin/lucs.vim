@@ -147,29 +147,6 @@ nmap ,d. /\$dt\._/e<cr>
 nmap ,da /\$dt\./e<cr>
 
 " --------------------------------------------------------------------
-
-    " Raku identifier stuff.
-imap <c-r>2 ƻ
-imap <c-r>a Λ
-imap <c-r>d ď
-imap <c-r>f ƒ
-imap <c-r>h ͱ
-imap <c-r>i ᵢ
-imap <c-r>r ʀ
-imap <c-r>t ť
-
-    " Makes it possible to enter the characters when searching for
-    " example.
-cmap <c-r>2 ƻ
-cmap <c-r>a Λ
-cmap <c-r>d ď
-cmap <c-r>f ƒ
-cmap <c-r>h ͱ
-cmap <c-r>i ᵢ
-cmap <c-r>r ʀ
-cmap <c-r>t ť
-
-" --------------------------------------------------------------------
 " ☰2024-03-23.Sat
 "
 " When in a Makefile, the syntax setting has ‹:set noexpandtab›, which
@@ -640,43 +617,72 @@ endfunc
 " --------------------------------------------------------------------
 " This works with Tim Pope's ‹surround› plugin. For example, in normal
 " mode, surround visually selected text by typing ‹S› followed by
-" indicated character. It also allows inserting empty boilerplate by
-" entering <f2> followed by the letter, which will also properly place
-" the cursor for insertion.
+" either a lowercase, uppercase, or smallcaps letter to surround
+" respectively plainly, padding with spaces, or padding with
+" non-breaking spaces.
+"
+" It also allows inserting empty boilerplate surrounders by entering
+" <f2> followed by the letter, which will also properly place the
+" cursor for insertion.
 
-func! BigSurr (char_lower, pfx, sfx, ...)
-    let l:nr_lower = char2nr(a:char_lower)
-    let l:nr_upper = l:nr_lower - 32
-    let l:char_upper = nr2char(l:nr_upper)
-    exec "let g:surround_" . l:nr_lower . " = '" . a:pfx . "\<cr>" . a:sfx . "'"
+func! BigSurr (char_lower, char_smcap, pfx, sfx, ...)
+    let l:lL = a:char_lower     " lowercase Letter
+    let l:lN = char2nr(l:lL)    " lowercase Number
+
+    let l:uN = l:lN - 32        " uppercase Number
+    let l:uL = nr2char(l:uN)    " uppercase Letter
+
+    let l:sL = a:char_smcap     " smallcaps Letter
+    let l:sN = char2nr(l:sL)    " smallcaps Number
+
+    exec "let g:surround_" . l:lN . " = '" . a:pfx . "\<cr>" .   a:sfx . "'"
+    exec "let g:surround_" . l:uN . " = '" . a:pfx . " \<cr> " . a:sfx . "'"
+    exec "let g:surround_" . l:sN . " = '" . a:pfx . " \<cr> " . a:sfx . "'"
+
     if a:0 == 0
-        exec 'nnoremap <f2>' . a:char_lower . ' i' . a:pfx .                     a:sfx . '<esc>i'
-        exec 'nnoremap <f2>' . l:char_upper . ' i' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
-        exec 'inoremap <f2>' . a:char_lower . '  ' . a:pfx .                     a:sfx . '<esc>i'
-        exec 'inoremap <f2>' . l:char_upper . '  ' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
+        exec 'nnoremap <f2>' . l:lL   ' i' . a:pfx .                     a:sfx . '<esc>i'
+        exec 'nnoremap <f2>' . l:uL . ' i' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
+        exec 'nnoremap <f2>' . l:sL . ' i' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
+        exec 'inoremap <f2>' . l:lL   '  ' . a:pfx .                     a:sfx . '<esc>i'
+        exec 'inoremap <f2>' . l:uL . '  ' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
+        exec 'inoremap <f2>' . l:sL . '  ' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
     else
         let l:mid = a:1
-        exec 'nnoremap <f2>' . a:char_lower . ' i' . a:pfx .       l:mid .       a:sfx . '<esc>i'
-        exec 'nnoremap <f2>' . l:char_upper . ' i' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>hi'
-        exec 'inoremap <f2>' . a:char_lower . '  ' . a:pfx .       l:mid .       a:sfx . '<esc>hi'
-        exec 'inoremap <f2>' . l:char_upper . '  ' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>2hi'
+        exec 'nnoremap <f2>' . l:lL   ' i' . a:pfx .       l:mid .       a:sfx . '<esc>i'
+        exec 'nnoremap <f2>' . l:uL . ' i' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>hi'
+        exec 'nnoremap <f2>' . l:sL . ' i' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>hi'
+        exec 'inoremap <f2>' . l:lL   '  ' . a:pfx .       l:mid .       a:sfx . '<esc>hi'
+        exec 'inoremap <f2>' . l:uL . '  ' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>2hi'
+        exec 'inoremap <f2>' . l:sL . '  ' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>2hi'
     endif
 endfunc
 
-call BigSurr('a', '◆<', '>'     ) " Program name: Launch ◆<nvim> in your terminal.
-call BigSurr('c', '❲',  '❳', '∣') " Choice: Choose one of ❲a∣b∣c❳.
-call BigSurr('d', '⌊',  '⌉'     ) " Consequence of example: ⦃21*2⦄ gives ⌊42⌉.
-call BigSurr('e', '⦃',  '⦄'     ) " Example value: ⦃21*2⦄ gives ⌊42⌉.
-call BigSurr('f', '…<', '>'     ) " File or directory: Look at …</etc/passwd>.
-call BigSurr('j', '∿<', '>'     ) " Project directory: ∿<t/nvim>
-call BigSurr('o', '᚜',  '᚛'     ) " Operator ᚜ban-cu1᚛ or password location ᚜lp/bazfoo/s᚛.
-call BigSurr('q', '｢',  '｣'     ) " Non-interpolating Raku quoting: ｢No $interpol. \n｣.
-call BigSurr('r', '⟦',  '⟧'     ) " Reftag: ⟦⋯ p_36/23⟧
-call BigSurr('s', '«',  '»'     ) " ?
-call BigSurr('t', '⟨',  '⟩'     ) " A kind/type of something: ▸ cp ⟨file from⟩ ⟨file to⟩
-call BigSurr('u', 'ū<', '>'     ) " URL: ū<github.com/lucs/>
-call BigSurr('x', '❬',  '❭'     ) " ?
-call BigSurr('z', '‹',  '›'     ) " All-purpose quoting: Quote ‹like this› instead of double quotes.
+    call BigSurr('a', 'ᴀ', '◆<', '>'     ) " Program name: Launch ◆<nvim> in your terminal.
+  " call BigSurr('b', 'ʙ',
+    call BigSurr('c', 'ᴄ', '❲',  '❳', '∣') " Choice: Choose one of ❲a∣b∣c❳.
+    call BigSurr('d', 'ᴅ', '⌊',  '⌉'     ) " Consequence of example: ⦃21*2⦄ gives ⌊42⌉.
+    call BigSurr('e', 'ᴇ', '⦃',  '⦄'     ) " Example value: ⦃21*2⦄ gives ⌊42⌉.
+    call BigSurr('f', 'ꜰ', '…<', '>'     ) " File or directory: Look at …</etc/passwd>.
+    call BigSurr('g', 'ɢ', '⟪',  '⟫'     ) " GUI: Select ⟪Inksc⇣tools:Bezier Tool (⇧F6)⇣mode:⦃…regular…⦄⟫
+  " call BigSurr('h', 'ʜ',
+  " call BigSurr('i', 'ɪ',
+    call BigSurr('j', 'ᴊ', '∿<', '>'     ) " Project directory: ∿<t/nvim>
+    call BigSurr('k', 'ᴋ', '｢',  '｣'     ) " Literal Raku quoting: ｢No $interpol. \n｣.
+  " call BigSurr('l', 'ʟ',
+  " call BigSurr('m', 'ᴍ',
+  " call BigSurr('n', 'ɴ',
+    call BigSurr('o', 'ᴏ', '᚜',  '᚛'     ) " Operator ᚜ban-cu1᚛ or password location ᚜lp/bazfoo/s᚛.
+  " call BigSurr('p', 'ᴘ',
+  " call BigSurr('q', No small cap for this letter.
+    call BigSurr('r', 'ʀ', '⟦',  '⟧'     ) " Reftag: ⟦⋯ p_36/23⟧
+    call BigSurr('s', 'ꜱ', '«',  '»'     ) " French guillemets: Le film L'argent.
+    call BigSurr('t', 'ᴛ', '⟨',  '⟩'     ) " A kind/type of something: ▸ cp ⟨file from⟩ ⟨file to⟩
+    call BigSurr('u', 'ᴜ', 'ū<', '>'     ) " URL: ū<https://github.com/lucs/>
+  " call BigSurr('v', 'ᴠ',
+    call BigSurr('w', 'ᴡ', '❬',  '❭'     ) " ?
+  " call BigSurr('x', No small cap for this letter.
+  " call BigSurr('y', 'ʏ',
+    call BigSurr('z', 'ᴢ', '‹',  '›'     ) " Replaces double quotes: Quote ‹like this›.
 
 " --------------------------------------------------------------------
 
