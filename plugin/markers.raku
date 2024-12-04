@@ -51,7 +51,7 @@ my $raw-data = q:to/EoD/;
     bb ¦  Broken bar
     bs    Non-breaking space
     bt ¨  Tréma
-        
+
     # --------------------------------------------------------------------
     : x: Semantic
 
@@ -63,7 +63,7 @@ my $raw-data = q:to/EoD/;
     xl ◇  Library nickname    | ◇mcrypt
     xo ∖  Continuation line   | This line continues on the ∖
     xs θ  Santé               | θ Dr.Rhéaume
-    xT ☰  Date, time mark     | ☰2021-11-20 
+    xT ☰  Date, time mark     | ☰2021-11-20
     xt ʈ  ToC entry           | ʈ Summary
     xU ů  User                | ůlucs
     xw ⧺  Who's who           | lucs⧺
@@ -101,13 +101,13 @@ my $raw-data = q:to/EoD/;
     lgd δ  delta
     lgD Δ  delta
     lge ε  epsillon
-    lgh θ  theta            | Préfixe pour tags, ⦃θvch⦄, ⦃θsan⦄. (?)
+    lgh θ  theta    | Préfixe pour tags, ⦃θvch⦄, ⦃θsan⦄. (?)
     lgH Θ  Theta
-    lgk κ  kappa            | LaTeX pkg. prefix, ⦃κlayouts⦄
-    lgK Κ  Kappa            | LaTeX pkg. manual prefix, ⦃Κlayman⦄
+    lgk κ  kappa    | LaTeX pkg. prefix, ⦃κlayouts⦄
+    lgK Κ  Kappa    | LaTeX pkg. manual prefix, ⦃Κlayman⦄
     lgl λ  lamda
     lgm μ  mu
-    lgo ω  omega 
+    lgo ω  omega
     lgO Ω  Omega
     lgpi  π  pi
     lgPi  Π  Pi
@@ -115,8 +115,8 @@ my $raw-data = q:to/EoD/;
     lgPsi Ψ Psi
     lgr ρ  rho
     lgS Σ  Sigma
-    lgt τ  tau
-    lgT Τ  Tau
+    lgt τ  tau      | Entry inscription moment, ⦃τ2024-07-22⦄.
+    lgT Τ  Tau      | Entry redaction   moment, ⦃Τ2024-09-03⦄.
 
     # --------------------------------------------------------------------
     : o: Opérateurs
@@ -210,14 +210,14 @@ my $raw-data = q:to/EoD/;
     # --------------------------------------------------------------------
     : s: Surrounders
 
-    sc0 ∣  Choices             | ❲a∣b∣c❳
+    sc0 ∣  Choices              | ❲a∣b∣c❳
     sc1 ❲
     sc2 ❳
     sd1 ⌊   Conseq. of example  | "Observe that ⦃21⦄*2 is ⌊42⌉."
     sd2 ⌉
     se1 ⦃   Example value       | Insert image, ⦃<img src=⋯>⦄
     se2 ⦄
-    sg1 ⟪   GUI invoc.          | ⟪I⇣tools:Bezier Tool (⇧F6)⇣mode:⦃…regular…⦄⟫
+    sg1 ⟪   GUI invoc.          | ⟪I⇣tools:Bezier ⋯ ⇣mode:⦃…regular…⦄⟫
     sg2 ⟫
     sk1 ｢   Literal Raku quote  | ｢⋯｣
     sk2 ｣
@@ -228,9 +228,11 @@ my $raw-data = q:to/EoD/;
     sr2 ⟧
     ss1 «   French guillemets   | « La mémoire »
     ss2 »
-    st1 ⟨   Types               | factor(⟨Int⟩)
+    st1 ⟨   A kind of thing     | factor(⟨Int⟩)
     st2 ⟩
-    sz1 ‹   All-purpose quote   | my $x = 42;  ‹Might want this value.›
+    sw1 ❬   For keyed wrappers  | Open the data file …❬~/.zshrc❭.
+    sw2 ❭
+    sz1 ‹   All-purpose quote   | The code is ‹my $x = 42›.
     sz2 ›
 
     # --------------------------------------------------------------------
@@ -301,8 +303,6 @@ for $xcompose-syms.comb(/ \N+ /) -> $line {
 # --------------------------------------------------------------------
 class Kombo {
 
-    # A line of raw Kombo data looks like ⦃p1 ▸ Shell command | ▸ ls⦄.
-
         # ⦃p1⦄ Keys.
     has $.keys;
 
@@ -319,7 +319,7 @@ class Kombo {
 # --------------------------------------------------------------------
 class Section {
 
-    # A Section of raw data has a name and an array of Kombo. Here is
+    # A Section of raw data has a title and an array of Kombo. Here is
     # an example of a typical one:
     #
     #   : Choix
@@ -327,14 +327,14 @@ class Section {
     #   c1 ❲
     #   c2 ❳
 
-    has $.name;
+    has $.title;
     has Kombo @.kombos;
 }
 
 # --------------------------------------------------------------------
 # Parse the raw data into an array of Section.
 
-my $g_sections = sub {
+my @g_sections = do {
 
     my Section @sections;
 
@@ -344,48 +344,51 @@ my $g_sections = sub {
 
     for $raw-data.comb(/ \N+ /) -> $line is copy {
 
-            # Trim line and skip comments and empty lines.
+            # Trim line and skip comments.
         $line .= trim;
-        next if $line ~~ /^ \s* ['#' | $] /;
+        next if $line.substr(0, 1) eq '#';
 
+            # ‹: ⟨Section title⟩›
+            # ⦃: a b: Wysiwyg⦄
         if $line ~~ /^ ':' \s+ (.*) / {
             @sections.push: $curr-section if $curr-section;
-            $curr-section = Section.new: name => ~$0;
+            $curr-section = Section.new: title => ~$0;
         }
         else {
+                # A line of Kombo data looks like:
+                #   ‹⟨keys⟩ ⟨phem⟩ ⟨desc⟩        | ⟨xmpl⟩›
+                #   ⦃p1     ▸      Shell command | ▸ ls⦄
             my ($keys, $phem, $desc, $xmpl) = ($line ~~ /^
                     (\S+)
-                    <[\ \t]>+   # Unbreakable space won't match here.
-                   # (\S+)
-                    (<[ \x00A0 \S]>)
+                    ' '+
+                    (<-[\ ]>)
                     \s*
                     (<-[|]>*)
                     \|? \s* (.*)
             /)».Str;
+            $desc .= trim;
+            $xmpl .= trim;
             die "Keys '$keys' already defined" if $keys ~~ %seen-kombo-keys;
-           # note "<$keys>";
             $curr-section.kombos.push: Kombo.new: :$keys, :$phem, :$desc, :$xmpl;
         }
     }
     @sections.push: $curr-section if $curr-section;
 
-    return @sections;
-}();
+    @sections;
+};
 
 # --------------------------------------------------------------------
 multi sub MAIN {
-    say q:to/EoH/
-        Invoke with one of these arguments:
-            Arg     May want to redirect output here
-            ---     --------------------------------
-            xco     …<⟨User home dir.⟩/.XCompose>.
-            vim     …<⟨User home dir.⟩/⋯
-                     .local/share/nvim/site/pack/lucs/opt/nvim-lucs/plugin/markers.vim>.
-            memo    markers.memo
-            text    (Format the output with ◆<abiword>)
+    say Q:to/EoH/
+        Typical usage by lucs⧺:
+            $prog xco  > ~lucs/.XCompose
+            $prog vim  > ~/plugin.nvim-lucs/nvim-lucs.git/plugin/markers.raku
+            $prog memo > /shome/lucs/gdoc/markers.memo
+            $prog text > /shome/lucs/gdoc/markers.text
         EoH
     ;
-           # tex     For LaTeX, needs work.
+   # abiword <($prog text) # Then save as …❬/shome/lucs/gdoc/markers.abw❭.
+   # $prog tex : For LaTeX, needs work.
 }
 
 # --------------------------------------------------------------------
@@ -400,8 +403,8 @@ multi sub MAIN ('xco') {
         EoT
     ;
 
-    for $g_sections.list -> $section {
-        $xco ~= "# {$section.name}\n";
+    for @g_sections -> $section {
+        $xco ~= "# {$section.title}\n";
         for $section.kombos -> $kombo {
             $xco ~= sprintf qq|<Multi_key> %s : "%s"\n|,
                 $kombo.keys.comb.map({
@@ -427,8 +430,8 @@ multi sub MAIN ('vim') {
         EoT
     ;
 
-    for $g_sections.list -> $section {
-        $vim ~= qq|" {$section.name}\n|;
+    for @g_sections -> $section {
+        $vim ~= qq|" {$section.title}\n|;
         for $section.kombos -> $kombo {
 
                 # Two character kombos can use digraph, but
@@ -458,9 +461,9 @@ multi sub MAIN ('memo') {
     my $memo;
     $memo ~= '- ' ~ '-' x 68 ~ "\n";
     $memo ~= "- Generated by {$?FILE}\n\n";
-    for $g_sections.list -> $section {
+    for @g_sections -> $section {
         $memo ~= '- ' ~ '-' x 68;
-        $memo ~= "\n{$section.name}\n\n";
+        $memo ~= "\n{$section.title}\n\n";
 
             # Obtain longest kombo keys and desc.
         my $longest-keys = 0;
@@ -488,6 +491,43 @@ multi sub MAIN ('memo') {
 
 # --------------------------------------------------------------------
 multi sub MAIN ('text') {
+    my $text;
+    for @g_sections -> $section {
+            # Obtain the max widths of the elements.
+        my $max_len-keys = 0;
+        my $max_len-desc = 0;
+        my $max_len-xmpl = 0;
+        for $section.kombos -> $kombo {
+            $max_len-keys = $_ if $max_len-keys < $_ given $kombo.keys.chars;
+            $max_len-desc = $_ if $max_len-desc < $_ given $kombo.desc.chars;
+            $max_len-xmpl = $_ if $max_len-xmpl < $_ given $kombo.xmpl.chars;
+        }
+
+        $text ~= "            {$section.title}\n";
+
+        for $section.kombos -> $kombo {
+            $text ~= sprintf
+                "%5s %5x   %{$max_len-keys}s   " ~
+                 "%s   %-{$max_len-desc}s : %-{$max_len-xmpl}s\n",
+                $kombo.phem.ord,
+                $kombo.phem.ord,
+                $kombo.keys,
+                $kombo.phem,
+                $kombo.desc,
+                $kombo.xmpl,
+            ;
+        }
+        $text ~= "\n";
+    }
+
+    print $text // "Mooo";
+}
+
+# --------------------------------------------------------------------
+=finish
+
+# --------------------------------------------------------------------
+multi sub MAIN ('text_OLD') {
     my $text = q:to/EoT/
         File∕
             Page Setup …∕
@@ -503,31 +543,31 @@ multi sub MAIN ('text') {
 
             Font: DejaVu Sans Mono, 8pt
 
-            Set these tab values with Format∕Paragraphs∕Tabs:
+      #      Set these tab values with Format∕Paragraphs∕Tabs:
 
-                Set        Column desc.
-                ---        ------------
-                0.50 right 0d
-                1.00 right 0x
-                1.50 right Keys
-                1.75 right Prints
-                2.00 left  Titre de section
-                2.25 left  Desc.
-                3.75 left  Exemple
+      #          Set        Column desc.
+      #          ---        ------------
+      #          0.50 right 0d
+      #          1.00 right 0x
+      #          1.50 right Keys
+      #          1.75 right Prints
+      #          2.00 left  Titre de section
+      #          2.25 left  Desc.
+      #          3.75 left  Exemple
 
-          ┘  ┘  ┘ ┘ └    └             └ 
-       ‹→  → →  →  →a, b, e: Wysiwyg›
-       ‹183→b7→ad→·→→Middle dot→ asdf›
-       ⋯
-          ┘    ┘    ┘   ┘   └   └                 └ 
-       ‹    →    →    → → → a, b, e: Wysiwyg›
-       ‹183 → b7 → ad → ◆ →   → Middle mooow dot → asdf›
+      #    ┘  ┘  ┘ ┘ └    └             └
+      # ‹→  → →  →  →a, b, e: Wysiwyg›
+      # ‹183→b7→ad→·→→Middle dot→ asdf›
+      # ⋯
+      #    ┘    ┘    ┘   ┘   └   └                 └
+      # ‹    →    →    → → → a, b, e: Wysiwyg›
+      # ‹183 → b7 → ad → ◆ →   → Middle mooow dot → asdf›
 
     EoT
     ;
 
-    for $g_sections.list -> $section {
-        $text ~= "\t\t\t\t\t{$section.name}\n";
+    for @g_sections -> $section {
+        $text ~= "\t\t\t\t\t{$section.title}\n";
         for $section.kombos -> $kombo {
             $text ~= sprintf qq|\t%s\t%x\t%s\t%s\t\t%s\t%s\n|,
            # $text ~= sprintf qq|\t%5s\t%4x\t%s\t%s\t\t%s\t%s\n|,
@@ -545,9 +585,6 @@ multi sub MAIN ('text') {
     print $text;
 }
 
-# --------------------------------------------------------------------
-=finish
-
     Maybe some day I'll produce a LaTeX listing.
 multi sub MAIN ('tex') {
     my $tex = Q:f:to/EoT/
@@ -559,8 +596,8 @@ multi sub MAIN ('tex') {
         EoT
     ;
 
-    for $g_sections.list -> $section {
-        $tex ~= "% {$section.name}\n";
+    for @g_sections -> $section {
+        $tex ~= "% {$section.title}\n";
         $tex ~= '\begin{tabular}{ | r | c | r | r | r | r | }' ~ "\n";
         for $section.kombos -> $kombo {
             $tex ~= sprintf qq|%5s & %4x & %s & %s & %s & %s\\\\\n|,
