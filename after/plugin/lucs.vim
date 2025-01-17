@@ -8,6 +8,30 @@
 "   g:prj_nick
 
 " --------------------------------------------------------------------
+" ☰2024-12-27.Fri
+" Restore these ❬⋯❭ to <⋯>
+
+:nmap ,r :%s/❬/</gc<cr>
+:nmap ,R :%s/❭/>/gc<cr>
+
+    " Make it easier to leave terminal mode.
+    " (Enter with ⦃:vsplit term://zsh⦄, then ‹i›.)
+:tnoremap <c-g><c-g> <c-\><c-n>
+
+" --------------------------------------------------------------------
+" ☰2024-12-11.Wed
+"
+func! s:MidWindow ()
+    :vnew
+    :vnew
+    :vert res 46
+    exec "normal 2\<c-w>l"
+    :vert res 78
+    exec "normal \<c-w>x\<c-w>h"
+endfunc
+nmap ,<f2> :call <SID>MidWindow()<cr>
+
+" --------------------------------------------------------------------
 " ☰2024-09-23.Mon
 
     " ⦃:call EchoSleep(3, "baz")⦄
@@ -18,62 +42,10 @@ func! EchoSleep (dura, msg)
     exec "normal! \<esc>"
 endfunc
 
-nmap gbut :call OpenInBrowser('u', 't')<cr>
-nmap gbuw :call OpenInBrowser('u', 'w')<cr>
-nmap gbft :call OpenInBrowser('f', 't')<cr>
-nmap gbfw :call OpenInBrowser('f', 'w')<cr>
-
-" ū<go111ogle.com>
-" <  >
-" ū<google.com>
-
-func! OpenInBrowser (url_or_file, tab_or_window)
-    let l:winview = winsaveview()
-    let l:saved_visual = GetVisual()
-    let l:saved_0 = getreg("0")
-    let l:curr_line = getpos(".")[1]
-    let l:quit_msg = ''
-    try
-        normal! vi<y
-            " Make sure selection is on the current line.
-        if getpos("'<")[1] != l:curr_line
-            exec "normal! \<esc>"
-            let l:quit_msg = "Bad selection."
-            throw "moo"
-        endif
-        normal! y
-        let l:want_to_open = getreg("0")
-        if match(l:want_to_open, '^\s*$') == 0
-            let l:quit_msg = "Nothing to open"
-            throw "mee"
-        endif
-        let l:url_or_file_arg = ''
-        if a:url_or_file == 'f'
-            let l:url_or_file_arg = '-f'
-        endif
-        let l:tab_or_window = ''
-        if a:tab_or_window == 'w'
-            let l:tab_or_window = '-w'
-        endif
-        let l:output = system(
-          \ printf("ffox %s %s '%s'",
-          \     l:url_or_file_arg,
-          \     l:tab_or_window,
-          \     l:want_to_open
-          \ )
-        \)
-        if v:shell_error != 0
-            let l:quit_msg = l:output
-            throw "muu"
-        endif
-    catch
-    finally
-        call setreg('0', l:saved_0)
-        call SetVisual(l:saved_visual)
-        call winrestview(l:winview)
-    endtry
-    redraw | echo substitute(l:quit_msg, '\n\+$', '', '')
-endfunc
+nmap gbut :call GetOpenInBrowser('u', 't')<cr>
+nmap gbuw :call GetOpenInBrowser('u', 'w')<cr>
+nmap gbft :call GetOpenInBrowser('f', 't')<cr>
+nmap gbfw :call GetOpenInBrowser('f', 'w')<cr>
 
 func! GetVisual ()
     return [visualmode(), getpos("'<"), getpos("'>")]
@@ -102,15 +74,57 @@ func! SetVisual (want_visual)
     call winrestview(l:winview)
 endfunc
 
-    " Used to be this. ☰2024-09-24.Tue
-" nmap gb :call _OpenFileInBrowser()<cr>
-" func! _OpenFileInBrowser ()
-"     let l:FoD = _GetFileOrDirUnderCursor(0)
-"         " FIXME Hardcoded for kpop.
-"     let l:fChromeExe = '/opt/google/chrome/chrome'
-"     let l:cmd = "system('" . l:fChromeExe . " " . l:FoD . " 2>/dev/null &')"
-"     exec ':call ' . l:cmd
-" endfunc
+func! GetOpenInBrowser (url_or_file, tab_or_window)
+    let l:winview = winsaveview()
+    let l:saved_visual = GetVisual()
+    let l:saved_0 = getreg("0")
+    let l:curr_line = getpos(".")[1]
+    let l:quit_msg = ''
+    try
+        normal! vi<y
+            " Make sure selection is on the current line.
+        if getpos("'<")[1] != l:curr_line
+            exec "normal! \<esc>"
+            let l:quit_msg = "Bad selection."
+            throw "moo"
+        endif
+        normal! y
+        let l:want = getreg("0")
+        if match(l:want, '^\s*$') == 0
+            let l:quit_msg = "Nothing to open"
+            throw "mee"
+        endif
+        let l:quit_msg = OpenInBrowser(l:want, a:url_or_file, a:tab_or_window)
+    catch
+    finally
+        call setreg('0', l:saved_0)
+        call SetVisual(l:saved_visual)
+        call winrestview(l:winview)
+    endtry
+    redraw | echo substitute(l:quit_msg, '\n\+$', '', '')
+endfunc
+
+" ū<ssd3go111ogle.com>
+" <  >
+" ū<google.com>
+
+func! OpenInBrowser (wut, url_or_file, tab_or_window)
+    let l:url_or_file = ''
+    if a:url_or_file == 'f'
+        let l:url_or_file = '-f'
+    endif
+    let l:tab_or_window = ''
+    if a:tab_or_window == 'w'
+        let l:tab_or_window = '-w'
+    endif
+    return system(
+      \ printf("ffox %s %s '%s'",
+      \     l:url_or_file,
+      \     l:tab_or_window,
+      \     a:wut
+      \ )
+    \)
+endfunc
 
 " --------------------------------------------------------------------
 " ☰2024-06-18.Tue
@@ -152,7 +166,7 @@ nmap ,da /\$dt\./e<cr>
 " When in a Makefile, the syntax setting has ‹:set noexpandtab›, which
 " is usually what one wants. But in comments, I would like to
 " be able to use tabs to indent text, but have spaces, not tabs, in
-" the text. This macro
+" the text. This macro somewhat helps.
 
 imap <s-tab> <esc>:call TabAsSpaces()<cr>a
 
@@ -268,12 +282,12 @@ lua << EoF
    -- map("n", "U~", "U", { silent = true })
    -- map("n", "V~", "V", { silent = true })
 
-        -- Formerly ｢nmap Kb :call InsertBillingElem()<cr>｣.
+        -- Formerly ‹nmap Kb :call InsertBillingElem()<cr>›.
     map("n", "Kb.", ":call InsertBillingElem()<cr>")
 
         --[[ To help match code snippet ids, where ε (Alt-lge) prefix,
-        ⦃ID: εgram⦄ designates the ID. Formerly, ｢:nmap gW
-        /ID:<space>ε\.\?｣ (weird, why?)]]--
+        ⦃ID: εgram⦄ designates the ID. Formerly, ‹:nmap gW
+        /ID:<space>ε\.\?› (weird, why?)]]--
    -- map("n", "gW", "/ID: ε")
 
 EoF
@@ -307,8 +321,11 @@ nmap Kl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
 
 nmap Km :call FormatManPage()<cr>
 
-    " Open file browser in …<~lucs/prj/>.
 nmap Kp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
+
+    " Replace keyed surrounders by more recent mechanism
+    " ☰2024-11-23.Sat.
+"nmap Kr :%s/\([◆…∿ū]\)<\(.\{-}\)>/\1❬\2❭/gc<cr>
 
     " Replace old by new timestamp indicator.
     " ⌚1 U-231a
@@ -428,7 +445,7 @@ endfunc
 " --------------------------------------------------------------------
 " Given ⦃g:prj_nick = 'vch'⦄, look for lines that start like ⦃vchf…⦄
 " (note the appended 'f') and insert a block before it, like
-" ｢vchf!0'043- ☰2019l.Dec02.Mon.09:44.06｣
+" ‹vchf!0'043- ☰2019l.Dec02.Mon.09:44.06›
 
 func! InsertBillingElem ()
     if ! exists('g:prj_nick')
@@ -481,7 +498,7 @@ func! DelPara ()
 endfunc
 
 " --------------------------------------------------------------------
-" Take a string like ｢foo=$bar/noy｣ and have it evaluate so that the
+" Take a string like ‹foo=$bar/noy› and have it evaluate so that the
 " Vim session recognizes $foo.
 "
 " Meh, complicated. Just copy the line and eval that
@@ -499,8 +516,8 @@ endfunc
 
 " --------------------------------------------------------------------
 
-    " Especially don't want ｢q｣ to quit Vim when I'm reading a file
-    " that has ｢set ft=man｣. See
+    " Especially don't want ‹q› to quit Vim when I'm reading a file
+    " that has ‹set ft=man›. See
     " ‥<vim.app/share/vim/vim80/ftplugin/man.vim>.
 let no_man_maps = 1
 
@@ -540,9 +557,6 @@ endfunc
 "     217   plugin install vim8
 "     237   ´install ´plugin ´extplugin
 "       ⋯   ⋯
-
-    " Why did this use to have <C-U> (page up)?
-"nmap <f8> :<C-U>call _ProgFunc()<cr>
 
 nmap <c-f8> :call _ProgFunc(
   \ 'if $line ~~ /^ [$<indentl-level> = \s*] ' .
@@ -622,8 +636,8 @@ endfunc
 " non-breaking spaces.
 "
 " It also allows inserting empty boilerplate surrounders by entering
-" <f2> followed by the letter, which will also properly place the
-" cursor for insertion.
+" <f2> followed by the letter (lowercase, uppercase, or smallcaps),
+" which will also properly place the cursor for insertion.
 
 func! BigSurr (char_lower, char_smcap, pfx, sfx, ...)
     let l:lL = a:char_lower     " lowercase Letter
@@ -676,10 +690,10 @@ endfunc
   " call BigSurr('q', No small cap for this letter.
     call BigSurr('r', 'ʀ', '⟦',  '⟧'     ) " Reftag: ⟦⋯ p_36/23⟧
     call BigSurr('s', 'ꜱ', '«',  '»'     ) " French guillemets: Le film L'argent.
-    call BigSurr('t', 'ᴛ', '⟨',  '⟩'     ) " A kind/type of something: ▸ cp ⟨file from⟩ ⟨file to⟩
+    call BigSurr('t', 'ᴛ', '⟨',  '⟩'     ) " A kind of something: ▸ cp ⟨file from⟩ ⟨file to⟩
     call BigSurr('u', 'ᴜ', 'ū<', '>'     ) " URL: ū<https://github.com/lucs/>
   " call BigSurr('v', 'ᴠ',
-    call BigSurr('w', 'ᴡ', '❬',  '❭'     ) " ?
+    call BigSurr('w', 'ᴡ', '<',  '>'     ) " ?
   " call BigSurr('x', No small cap for this letter.
   " call BigSurr('y', 'ʏ',
     call BigSurr('z', 'ᴢ', '‹',  '›'     ) " Replaces double quotes: Quote ‹like this›.
@@ -1111,7 +1125,15 @@ set laststatus=2
 set list listchars=tab:•․
 set modeline
 set modelines=3
-set mouse=a
+
+
+    " ☰2024-11-29.Fri Allows me to mouse-resize split windows.
+set mouse=n
+    " ☰2024-11-26.Tue Mouse disabled to try to make ◆<urxvt>'s
+    " ‹cutchars› work -- but it didn't work, something else must be
+    " interfering.
+"set mouse=
+
 set nobackup
 set nodigraph
 set nojoinspaces
@@ -1220,8 +1242,16 @@ nnoremap Hh H
 nmap LL :bn<cr>
 nnoremap Ll L
 
+    " ☰2024-11-11.Mon I just commented this out. Not sure why I used
+    " to do this. So now, ‹J› concatenates current line with following
+    " one inserting a space between, and ‹gJ›, with no space between.
+    "
     " To have an equivalent to the original ｢J｣ mapping.
-nnoremap J. J
+"nnoremap J. J
+
+    " Maybe... ☰2024-11-11.Mon
+"nmap gj Jx
+"nnoremap gJ gJ
 
     " To trap the ISO_Left_Tab xterm (I guess) mapping.
 " nmap <esc>[Z <s-tab>
@@ -1581,6 +1611,7 @@ endfunc
 func! _AllCodeSnips ()
     syntax off
     syntax on
+    call _CodeSnipNick('make',       'mk')
     call _CodeSnipNick('muttrc',     'mr')
     call _CodeSnipNick('lua',        'lu')
     call _CodeSnipNick('vim',        'vi')
