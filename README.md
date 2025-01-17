@@ -31,7 +31,6 @@ share. On the other hand, some projects may indeed require their own
 unique settings. I solve this by using an appropriate combination of
 files specific to each project and by using symlinks.
 
-
 [comment]: # ( )
 ## Installing
 
@@ -151,7 +150,6 @@ organize my projects, aspect which is not discussed here.
 
                 Print timestamps used by some of my code.
             tstamp.pl
-
 
         syntax/
 
