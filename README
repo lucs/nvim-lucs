@@ -1,0 +1,125 @@
+- --------------------------------------------------------------------
+Intro
+
+I use Neovim nowadays. It started out mainly as a way to have
+available the ‹neovim-remote› package which provides functionality
+similar to Vim's client-server mode, but which contrary to Vim also
+works in console mode. Maybe this can be done with Vim too now, but
+there appear to be other good reasons to use Neovim; I'll leave that
+discussion to others and stick with Neovim.
+
+- --------------------------------------------------------------------
+HOMEs Sweet HOMEs
+
+An unusual thing I do when working on my main desktop is that,
+depending on which project I am working on, I may set the HOME envvar
+(among other configuration tweaks) to point to a different directory,
+holding the project's files (there are pros and cons to this approach,
+the trade-offs of which I am happy with). For Neovim, which uses the
+XDG conventions, that means that each of these HOME directories would
+need to have its own copy of an …<init.vim>, of plugins, etc., since
+they are searched for in the …<nvim/> subdirectories of the following
+directories by default:
+
+    XDG_CONFIG_HOME : ~/.config
+    XDG_DATA_HOME   : ~/.local/share
+
+Now, most of my projects use the same initialization and plugins, so I
+neither want to duplicate all that stuff, nor want to have to update
+each project whenever I modify something that I want all projects to
+share. On the other hand, some projects may indeed require their own
+unique settings. I solve this by using an appropriate combination of
+files specific to each project and by using symlinks.
+
+It's not explained much here, but I keep files init.vim and
+init.lucs.vim in this repo as samples.
+
+- --------------------------------------------------------------------
+Installing
+
+        ▸ Clone this module.
+    dPkg=~/.local/share/nvim/site/pack/lucs/opt
+    mkdir -p $dPkg
+    cd $dPkg
+    git clone https://github.com/lucs/nvim-lucs.git
+
+        ▸ Ensure there is a config dir.
+    dCfg=~/.config/nvim
+    mkdir -p $dCfg
+
+        ▸ Copy and edit as necessary the init files.
+    cp $dPkg/nvim-lucs/init.vim $dCfg
+    cp $dPkg/nvim-lucs/init.lucs.vim $dCfg
+
+- --------------------------------------------------------------------
+Personal HOMEs notes
+
+⟨PName⟩ is a "plugin name".
+
+Master repos, from my machine point of view:
+
+    /shome/lucs/vcs/
+        vim-⟨PName⟩.git/    : bare repo
+        vim-⦃dirvish⦄.git/
+        ⋯
+
+        For each ⟨PName⟩, in the Git ‹config› file we find something
+        like this:
+
+            [remote "origin"]
+                url = ⟨Wherever, not one of my plugins⟩
+
+              or
+
+                One of my plugins.
+            [remote "gh"]
+                url = ssh://github.com/lucs/vim-⟨Pname⟩.git
+
+For development work:
+
+    ⋯lucs/prj/t/nvim/
+        plugin.vim-⟨PName⟩/
+            vim-⟨PNname⟩.git/
+                .git/
+                        [remote "origin"
+                            url = /shome/lucs/vcs/vim-⟨PName⟩.git
+                    config
+
+My home directory:
+
+    ~lucs/.config/
+        nvim/
+                let g:user_home_dir = '/home/lucs'
+                let g:nvim_lucs_pack = g:user_home_dir .
+                  \ '/.local/share/nvim/site/pack/lucs/opt/vim-lucs'
+                    ⦃⦄
+                packadd vim-DrawIt
+                packadd vim-dirvish
+                ⋯
+            init.lucs.vim
+
+                    ⦃⦄
+                source /home/lucs/.config/nvim/init.lucs.vim
+                let g:prj_nick = 'lucs'
+            init.vim
+
+    ~lucs/.local/
+        share/nvim/site/pack/lucs/opt/
+                ⦃⦄
+            vim-DrawIt/
+            vim-dirvish/
+            ⋯
+
+Other HOME directories:
+
+    $HOME/  : ⦃~lucs/prj/t/raku/⦄
+        .config/ 
+            nvim/
+                    source /home/lucs/.config/nvim/init.lucs.vim
+                    let g:prj_nick = '⌊t_raku⌉'
+                init.vim
+
+        .local/
+                Symlink to /home/lucs/.local/share/nvim/site/pack/lucs/
+            share/nvim/site/pack/lucs
+
