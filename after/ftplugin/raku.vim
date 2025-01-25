@@ -12,3 +12,6 @@ setl nosmartindent
 setl isfname-=:
 setl tabstop=4 softtabstop=4 shiftwidth=4
 
+    " Added for acutags. ☰2025-01-24.Fri
+setl isk+=´
+
