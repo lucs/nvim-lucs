@@ -32,20 +32,8 @@ endfunc
 nmap ,<f2> :call <SID>MidWindow()<cr>
 
 " --------------------------------------------------------------------
-" ☰2024-09-23.Mon
-
-    " ⦃:call EchoSleep(3, "baz")⦄
-func! EchoSleep (dura, msg)
-    redraw
-    echo a:msg
-    exec "sleep " . a:dura
-    exec "normal! \<esc>"
-endfunc
-
-nmap gbut :call GetOpenInBrowser('u', 't')<cr>
-nmap gbuw :call GetOpenInBrowser('u', 'w')<cr>
-nmap gbft :call GetOpenInBrowser('f', 't')<cr>
-nmap gbfw :call GetOpenInBrowser('f', 'w')<cr>
+" These allow saving the current visual selection and resetting it to
+" what it then was later.
 
 func! GetVisual ()
     return [visualmode(), getpos("'<"), getpos("'>")]
@@ -73,6 +61,65 @@ func! SetVisual (want_visual)
     exec "normal! " . l:cmd . "\<esc>"
     call winrestview(l:winview)
 endfunc
+
+" --------------------------------------------------------------------
+" ʈ open evince
+" ☰2025-01-18.Sat
+
+nmap gbv :call GetOpenInEvince()<cr>
+
+" …</home/lucs/prj/t/raku/vol/Parsing-Moritz/Parsing-Moritz.pdf>
+
+func! GetOpenInEvince ()
+    let l:winview = winsaveview()
+    let l:saved_visual = GetVisual()
+    let l:saved_0 = getreg("0")
+    let l:curr_line = getpos(".")[1]
+    let l:quit_msg = ''
+    try
+        normal! vi<y
+            " Make sure selection is on the current line.
+        if getpos("'<")[1] != l:curr_line
+            exec "normal! \<esc>"
+            let l:quit_msg = "Bad selection."
+            throw "moo"
+        endif
+        normal! y
+        let l:want = getreg("0")
+        if match(l:want, '^\s*$') == 0
+            let l:quit_msg = "Nothing to open"
+            throw "mee"
+        endif
+        let l:quit_msg = OpenInEvince(l:want)
+    catch
+    finally
+        call setreg('0', l:saved_0)
+        call SetVisual(l:saved_visual)
+        call winrestview(l:winview)
+    endtry
+    redraw | echo substitute(l:quit_msg, '\n\+$', '', '')
+endfunc
+
+func! OpenInEvince (wut)
+    return system(printf("evince '%s'", a:wut))
+endfunc
+
+" --------------------------------------------------------------------
+" ʈ open browser
+" ☰2024-09-23.Mon
+
+    " ⦃:call EchoSleep(3, "baz")⦄
+func! EchoSleep (dura, msg)
+    redraw
+    echo a:msg
+    exec "sleep " . a:dura
+    exec "normal! \<esc>"
+endfunc
+
+nmap gbut :call GetOpenInBrowser('u', 't')<cr>
+nmap gbuw :call GetOpenInBrowser('u', 'w')<cr>
+nmap gbft :call GetOpenInBrowser('f', 't')<cr>
+nmap gbfw :call GetOpenInBrowser('f', 'w')<cr>
 
 func! GetOpenInBrowser (url_or_file, tab_or_window)
     let l:winview = winsaveview()
@@ -150,6 +197,7 @@ func! MoveCursorToBpos (bPos)
 endfunc
 
 " --------------------------------------------------------------------
+" ʈ Debugging::Tool
 " ☰2024-08-06.Tue
 
     " For use with Debugging::Tool.
@@ -186,6 +234,7 @@ func! TabAsSpaces ()
 endfunc
 
 " --------------------------------------------------------------------
+" ʈ search slash
 " ☰2024-03-04.Mon
 " Search for pattern with slashes.
 "
@@ -296,7 +345,7 @@ EoF
 nmap gW /ID:<space>\.\?
 
 " --------------------------------------------------------------------
-" ‹K› mappings.
+" ʈ ‹K› mappings
 
 nmap Kb :call InsertBillingElem()<cr>
 
@@ -443,6 +492,7 @@ endfunc
 "endfunc
 
 " --------------------------------------------------------------------
+" ʈ billing elem
 " Given ⦃g:prj_nick = 'vch'⦄, look for lines that start like ⦃vchf…⦄
 " (note the appended 'f') and insert a block before it, like
 " ‹vchf!0'043- ☰2019l.Dec02.Mon.09:44.06›
@@ -629,6 +679,7 @@ func! OpenHere ()
 endfunc
 
 " --------------------------------------------------------------------
+" ʈ surrounders
 " This works with Tim Pope's ‹surround› plugin. For example, in normal
 " mode, surround visually selected text by typing ‹S› followed by
 " either a lowercase, uppercase, or smallcaps letter to surround
@@ -676,27 +727,28 @@ endfunc
     call BigSurr('c', 'ᴄ', '❲',  '❳', '∣') " Choice: Choose one of ❲a∣b∣c❳.
     call BigSurr('d', 'ᴅ', '⌊',  '⌉'     ) " Consequence of example: ⦃21*2⦄ gives ⌊42⌉.
     call BigSurr('e', 'ᴇ', '⦃',  '⦄'     ) " Example value: ⦃21*2⦄ gives ⌊42⌉.
-    call BigSurr('f', 'ꜰ', '…<', '>'     ) " File or directory: Look at …</etc/passwd>.
-    call BigSurr('g', 'ɢ', '⟪',  '⟫'     ) " GUI: Select ⟪Inksc⇣tools:Bezier Tool (⇧F6)⇣mode:⦃…regular…⦄⟫
+    call BigSurr('f', 'ꜰ', '…<', '>'     ) " File or directory: …</etc/passwd>
+    call BigSurr('g', 'ɢ', '⟪',  '⟫'     ) " GUI: Select ⟪Inksc⇣tools:Bezier Tool (⇧F6)⇣mode:⦃…regular…⦄⟫.
   " call BigSurr('h', 'ʜ',
   " call BigSurr('i', 'ɪ',
     call BigSurr('j', 'ᴊ', '∿<', '>'     ) " Project directory: ∿<t/nvim>
-    call BigSurr('k', 'ᴋ', '｢',  '｣'     ) " Literal Raku quoting: ｢No $interpol. \n｣.
+    call BigSurr('k', 'ᴋ', '｢',  '｣'     ) " Literal Raku quoting: ｢No $interpol. \n｣
   " call BigSurr('l', 'ʟ',
   " call BigSurr('m', 'ᴍ',
   " call BigSurr('n', 'ɴ',
-    call BigSurr('o', 'ᴏ', '᚜',  '᚛'     ) " Operator ᚜ban-cu1᚛ or password location ᚜lp/bazfoo/s᚛.
-  " call BigSurr('p', 'ᴘ',
-  " call BigSurr('q', No small cap for this letter.
+    call BigSurr('o', 'ᴏ', 'ᴏ<', '>'     ) " Operator: ᴏ<ban-cu1> (not ‹᚜⋯᚛› anymore)
+    call BigSurr('p', 'ᴘ', 'ᴘ<', '>'     ) " Password location: ᴘ<lp/bazfoo/s>
+  " call BigSurr('q', No such small cap.
     call BigSurr('r', 'ʀ', '⟦',  '⟧'     ) " Reftag: ⟦⋯ p_36/23⟧
-    call BigSurr('s', 'ꜱ', '«',  '»'     ) " French guillemets: Le film L'argent.
+    call BigSurr('s', 'ꜱ', '«',  '»'     ) " French guillemets: «Le film L'argent».
     call BigSurr('t', 'ᴛ', '⟨',  '⟩'     ) " A kind of something: ▸ cp ⟨file from⟩ ⟨file to⟩
     call BigSurr('u', 'ᴜ', 'ū<', '>'     ) " URL: ū<https://github.com/lucs/>
   " call BigSurr('v', 'ᴠ',
     call BigSurr('w', 'ᴡ', '<',  '>'     ) " ?
-  " call BigSurr('x', No small cap for this letter.
+  " call BigSurr('x', No such mall cap.
   " call BigSurr('y', 'ʏ',
-    call BigSurr('z', 'ᴢ', '‹',  '›'     ) " Replaces double quotes: Quote ‹like this›.
+    call BigSurr('z', 'ᴢ', '‹',  '›'     ) " Quotes: Quote ‹like this›.
+
 
 " --------------------------------------------------------------------
 
