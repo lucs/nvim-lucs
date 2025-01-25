@@ -7,3 +7,7 @@ setl comments=n:\"
 setl formatoptions=crql
 setl isk+=:
 setl nosmartindent
+
+    " Added for acutags. ☰2025-01-25.Sat
+setl isk+=´
+
