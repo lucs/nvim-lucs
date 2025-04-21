@@ -8,6 +8,52 @@
 "   g:prj_nick
 
 " --------------------------------------------------------------------
+" ʈ open frequent
+
+" ‹K⋯h›: $HOME
+" ‹K⋯s›: Subproject dir.
+" ‹K⋯u›: User dir
+
+    " ‹Kf⋯›: ‹.freq⋯›
+    " Open a file which lists file names, one per line, for easy
+    " opening with ‹gf› (built-in) or ‹gm› (defined here elsewhere).
+nmap Kfh :e $HOME/.freq<cr>
+nmap Kfs :e $dSP/.freq<cr>
+nmap Kfu :exec ':e ' . g:user_home_dir . '/.frequ'<cr>
+
+    " ‹Kh⋯›: ‹...›
+    " Held junk data.
+nmap Khh :e $HOME/...<cr>
+nmap Khs :e $dSP/...<cr>
+nmap Khu :exec ':e ' . g:user_home_dir . '/...u'<cr>
+
+    " ‹Kk⋯›: Misc.
+nmap Kkk :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
+nmap Kkd :e /shome/lucs/gdoc<cr>
+nmap Kkl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
+nmap Kkm :e /mnt/hKpop/opt/prj<cr>
+nmap Kkp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
+
+" --------------------------------------------------------------------
+" ʈ ‹K› mappings
+
+nmap Kb :call InsertBillingElem()<cr>
+
+    " Change to "- -⋯" my old style "# -⋯" text separator lines.
+nmap Kc :%s/^\(\s*\)\# -/\1- -/gc<cr>
+
+nmap Km :call FormatManPage()<cr>
+
+    " Replace keyed surrounders by more recent mechanism
+    " ☰2024-11-23.Sat.
+"nmap Kr :%s/\([◆…∿ū]\)<\(.\{-}\)>/\1❬\2❭/gc<cr>
+
+    " Replace old by new timestamp indicator.
+    " ⌚1 U-231a
+    " ⌘21 U-2318
+nmap Kt :%s,[\u231a\u2318],☰,gc<cr>
+
+" --------------------------------------------------------------------
 " ☰2024-12-27.Fri
 " Restore these ❬⋯❭ to <⋯>
 
@@ -250,59 +296,6 @@ command! -nargs=1 Ss let @/ = escape(<q-args>, '/')|normal! /<C-R>/<CR>
 command! -nargs=1 SS let @/ = '\V'.escape(<q-args>, '/\')|normal! /<C-R>/<CR>
 
 " --------------------------------------------------------------------
-lua << EoF
--- Submitted by pel⧺ ☰2023-10-08.Sun.
---
--- Print out variable profile code
---
--- console.log('var: ' = var); // in JS
--- note("var: <$var>"); # in Raku
-
-local function not_empty(s) return s ~= nil and s ~= '' end
-
-_G.var_profiler = function()
-    local lang_map = {
-        ['javascript'] = 'JS',
-        ['raku'] = 'Raku',
-    }
-    if lang_map[vim.bo.filetype] == nil then return end
-    local output_map = {
-        ['javascript'] = "console.log(`%s: ${%s}`);",
-        ['raku'] = 'note("%s: <$%s>");',
-    }
-    local vars
-    vim.ui.input(
-        { prompt = string.format(
-            'Enter %s var name(s): ', lang_map[vim.bo.filetype]
-        )},
-        function(input) vars = input end
-    )
-    if not_empty(vars) then
-        for var in vars:gmatch('%S+') do
-            local line = string.format(
-                output_map[vim.bo.filetype], var, var
-            )
-            vim.api.nvim_put({ line }, 'l', false, true)
-        end
-    end
-end
-
---vim.keymap.set('n', '<leader>p', var_profiler)
-
---[[
-    I updated our variable profiler code. I do automagical (he he you
-    don't like that word!) filetype detection. If the filetype is not
-    supported, I have a guard clause that exits silently. I also used
-    the leader key with p for profile. Of course, you can keep your Kn
-    if you wish.
-
-    I like this because I can easily add other languages in the
-    future.
---]]
-
-EoF
-
-" --------------------------------------------------------------------
 
    " Identify the syntax highlighting group used at the cursor
    " ū<http://vim.wikia.com/wiki/Identify_the_syntax_highlighting_group_used_at_the_cursor>
@@ -312,77 +305,8 @@ EoF
     \ . "> lo<"    . synIDattr(synIDtrans(synID(line("."), col("."), 1)), "name")
     \ . ">"<cr>
 
-" --------------------------------------------------------------------
-
-lua << EoF
-    function map(mode, lhs, rhs, opts)
-        local options = { noremap = true }
-        if opts then
-            options = vim.tbl_extend("force", options, opts)
-        end
-        vim.api.nvim_set_keymap(mode, lhs, rhs, options)
-    end
-
-        -- To have an equivalent to the original mappings;
-      map("n", 'K', "<nop>", { silent = true })
-      map("n", 'K"', "K", { silent = true })
-   -- map("n", "M~", "M", { silent = true })
-   -- map("n", "Q~", "Q", { silent = true })
-   -- map("n", "U~", "U", { silent = true })
-   -- map("n", "V~", "V", { silent = true })
-
-        -- Formerly ‹nmap Kb :call InsertBillingElem()<cr>›.
-    map("n", "Kb.", ":call InsertBillingElem()<cr>")
-
-        --[[ To help match code snippet ids, where ε (Alt-lge) prefix,
-        ⦃ID: εgram⦄ designates the ID. Formerly, ‹:nmap gW
-        /ID:<space>ε\.\?› (weird, why?)]]--
-   -- map("n", "gW", "/ID: ε")
-
-EoF
-
     " To help match code snippet id`s.
 nmap gW /ID:<space>\.\?
-
-" --------------------------------------------------------------------
-" ʈ ‹K› mappings
-
-nmap Kb :call InsertBillingElem()<cr>
-
-    " Change to "- -⋯" my old style "# -⋯" text separator lines.
-nmap Kc :%s/^\(\s*\)\# -/\1- -/gc<cr>
-
-"nmap Kd :e /opt/gdoc<cr>
-nmap Kd :e /shome/lucs/gdoc<cr>
-
-    " Open a file which lists file names, one per line, for easy
-    " opening with ‹gf› (built-in) or ‹gm› (defined here elsewhere).
-nmap Kf :e $HOME/.freq<cr>
-nmap KF :e $dSP/.freq<cr>
-
-nmap Kg :exec ':e ' . g:user_home_dir . '/.freqg'<cr>
-
-nmap Kh :e $HOME/...<cr>
-nmap KH :e $dSP/...<cr>
-
-nmap Kk :exec ':e ' . '/mnt/hKpop/opt/prj/'<cr>
-nmap Kl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
-
-nmap Km :call FormatManPage()<cr>
-
-nmap Kp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
-
-    " Replace keyed surrounders by more recent mechanism
-    " ☰2024-11-23.Sat.
-"nmap Kr :%s/\([◆…∿ū]\)<\(.\{-}\)>/\1❬\2❭/gc<cr>
-
-    " Replace old by new timestamp indicator.
-    " ⌚1 U-231a
-    " ⌘21 U-2318
-nmap Kt :%s,[\u231a\u2318],☰,gc<cr>
-
-    " Open my main Vim config file.
-nmap Kz :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
 
 " --------------------------------------------------------------------
 " ʈ timestamps
