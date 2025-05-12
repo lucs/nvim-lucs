@@ -7,5 +7,4 @@ setl comments=n:#  " com:  Perlish comments
 setl formatoptions=crql
 setl iskeyword=@,48-57,_,192-255,-
 setl nowrapscan
-setl list lcs=tab:•․
 
