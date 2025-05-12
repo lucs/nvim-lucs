@@ -1,15 +1,12 @@
 #!/usr/bin/env raku
 
-# This program is maintained in …<~lucs/src/markers.raku>.
-
 # --------------------------------------------------------------------
 #`(
 
-This program prints to STDOUT data that need to be placed in the
-correct file.
+This program is maintained at
+…</home/lucs/prj/t/nvim/plugin.vim-lucs/vim-lucs.git/plugin/markers.raku>.
 
-The makefile will place the program's output in …<~/gen> and prompt
-the user to perform an action to make the new values used.
+It prints to STDOUT data that need to be placed in the correct file.
 
 Naming:
 
@@ -31,41 +28,49 @@ sub f { $^a }
 
 my $raw-data = q:to/EoD/;
     # --------------------------------------------------------------------
-    : a b: Wysiwyg
+    : a b c: Wysiwyg
 
     a0 ∅  Empty set
     ab •  Bullet
-    ac ⌃  Ctrl-char           | ⌃a" : Ctrl-A, double-quote
+    ac ✓  Check mark
     ad ·  Middle dot
     ae €  Euro
     ag °  Degré               | 12°C
     ai ∞  Infinity
+    ak ¦  Broken bar
     a! ¡  ¡Exclamation!
-    ak ✓  Check mark
-    am ¯  Macron
-    an ␤  Newline             | "Hello world.␤"
-    ar ⏎  Return
+    an    Non-breaking space
     as §  Section sign        | ▸ rak §word
-    aT ™  Trademark
-    av ␣  Espace              | Par␣exemple
-    bb ¦  Broken bar
-    bs    Non-breaking space
+    at ™  Trademark
+
+    ba ´  Acute accent        | ´markers
     bt ¨  Tréma
+    bm ¯  Macron
+    bc ⌃  Ctrl-char           | ⌃a" : Ctrl-A, double-quote
+
+    cc ␍  Carr. Return symb.
+    ce ⎆  Enter symb.
+    ch ␉  Horiz. Tab. symb.
+    cl ␊  Line Feed symb.
+    cn ␤  Newline symb.       | "Hello world.␤"
+    cr ⏎  Return symb.
+    cs ␛  Escape symb.
+    cv ␋  Vert. Tab. symb.
 
     # --------------------------------------------------------------------
     : x: Semantic
 
     x0 ṅ  A number            | ṅj
     xa ◆  Application name    | ◆<svn>
-    xA ◈  Application name    | ◈<Xorg-sh> (actually …</usr/bin/Xorg>)
-    xc ´  Acutag              | ´markers
+    xA ◈  Application name    | ◈<⦃Xorg-sh⦄> (actually …<⌊/usr/bin/Xorg⌉>)
+    xd ☰  Date, time mark     | ☰2021-11-20
     xe ✎  Edit                | ✎…<.zshrc>
     xl ◇  Library nickname    | ◇mcrypt
     xo ∖  Continuation line   | This line continues on the ∖
     xs θ  Santé               | θ Dr.Rhéaume
-    xT ☰  Date, time mark     | ☰2021-11-20
     xt ʈ  ToC entry           | ʈ Summary
-    xU ů  User                | ůlucs
+    xu ů  User                | ůlucs
+    xv ␣  Espace visible      | Par␣exemple
     xw ⧺  Who's who           | lucs⧺
     xx ⌘  Compose key         | ⌘xx
 
@@ -197,6 +202,7 @@ my $raw-data = q:to/EoD/;
     p8 ◃
     p9 ▶
     pa ◀
+    po ∷  Vim ‹ex› command    | ∷%s/baz/
 
     P1 ▴
     P2 ▾
@@ -221,8 +227,8 @@ my $raw-data = q:to/EoD/;
     sg2 ⟫
     sk1 ｢   Literal Raku quote  | ｢⋯｣
     sk2 ｣
-    so1 ᚜   Opérateurs          | ᚜ban-col᚛ is ‹!:›.
-    so2 ᚛
+    so1 ᚜   Opérateurs, clés    | ᚜ban-col᚛:‹!:›. Ctrl, Shift:
+    so2 ᚛                       | ᚜c-x᚛, ᚜s-x᚛. ᚜esc᚛, ᚜tab᚛, ᚜ret᚛, ᚜ent᚛
     sr0 ρ   Reftag              | ⟦ρs05 L-42⟧, ⟦ρ⋯ p.23`36⟧
     sr1 ⟦
     sr2 ⟧
@@ -382,9 +388,10 @@ multi sub MAIN {
     say Q:to/EoH/
         Typical usage by lucs⧺:
             $prog xco  > ~lucs/.XCompose
-            $prog vim  > ~/plugin.nvim-lucs/nvim-lucs.git/plugin/markers.raku
+            $prog vim  > ~lucs/prj/t/nvim/plugin.vim-lucs/vim-lucs.git/plugin/markers.vim
             $prog memo > /shome/lucs/gdoc/markers.memo
             $prog text > /shome/lucs/gdoc/markers.text
+            $prog list > /shome/lucs/gdoc/markers.list
         EoH
     ;
    # abiword <($prog text) # Then save as …❬/shome/lucs/gdoc/markers.abw❭.
@@ -417,7 +424,6 @@ multi sub MAIN ('xco') {
     }
 
     print $xco;
-
 }
 
 # --------------------------------------------------------------------
@@ -453,7 +459,6 @@ multi sub MAIN ('vim') {
     }
 
     print $vim;
-
 }
 
 # --------------------------------------------------------------------
@@ -520,101 +525,43 @@ multi sub MAIN ('text') {
         $text ~= "\n";
     }
 
-    print $text // "Mooo";
-}
-
-# --------------------------------------------------------------------
-=finish
-
-# --------------------------------------------------------------------
-multi sub MAIN ('text_OLD') {
-    my $text = q:to/EoT/
-        File∕
-            Page Setup …∕
-                Paper Size: Letter ⟨(etc.)⟩
-
-            Margin∕
-                Units: inch
-                Top/Bottom: 0.35
-                Right/Left: 0.5
-                Header/Footer: 0.0
-
-        Select all:
-
-            Font: DejaVu Sans Mono, 8pt
-
-      #      Set these tab values with Format∕Paragraphs∕Tabs:
-
-      #          Set        Column desc.
-      #          ---        ------------
-      #          0.50 right 0d
-      #          1.00 right 0x
-      #          1.50 right Keys
-      #          1.75 right Prints
-      #          2.00 left  Titre de section
-      #          2.25 left  Desc.
-      #          3.75 left  Exemple
-
-      #    ┘  ┘  ┘ ┘ └    └             └
-      # ‹→  → →  →  →a, b, e: Wysiwyg›
-      # ‹183→b7→ad→·→→Middle dot→ asdf›
-      # ⋯
-      #    ┘    ┘    ┘   ┘   └   └                 └
-      # ‹    →    →    → → → a, b, e: Wysiwyg›
-      # ‹183 → b7 → ad → ◆ →   → Middle mooow dot → asdf›
-
-    EoT
-    ;
-
-    for @g_sections -> $section {
-        $text ~= "\t\t\t\t\t{$section.title}\n";
-        for $section.kombos -> $kombo {
-            $text ~= sprintf qq|\t%s\t%x\t%s\t%s\t\t%s\t%s\n|,
-           # $text ~= sprintf qq|\t%5s\t%4x\t%s\t%s\t\t%s\t%s\n|,
-                $kombo.phem.ord,
-                $kombo.phem.ord,
-                $kombo.keys,
-                $kombo.phem,
-                $kombo.desc,
-                $kombo.xmpl,
-            ;
-        }
-        $text ~= "\n";
-    }
-
     print $text;
 }
 
-    Maybe some day I'll produce a LaTeX listing.
-multi sub MAIN ('tex') {
-    my $tex = Q:f:to/EoT/
-        \documentclass{markers}
+# --------------------------------------------------------------------
+#`{
+    Prints in Unicode order a list of all the kombo`s, each one like:
 
-        &f( '% ' ~ '-' x 68 )
-        \begin{document}
+        ⟨unic⟩ ⟨keys⟩ ⟨phem⟩ ⟨desc⟩            ⟨xmpl⟩
+        ⦃2630   xT     ☰      Date, time mark : ☰2021-11-20
 
-        EoT
-    ;
+}
 
+multi sub MAIN ('list') {
+    my @kombos;
+    my $maxW-keys = 0;
+    my $maxW-desc = 0;
     for @g_sections -> $section {
-        $tex ~= "% {$section.title}\n";
-        $tex ~= '\begin{tabular}{ | r | c | r | r | r | r | }' ~ "\n";
-        for $section.kombos -> $kombo {
-            $tex ~= sprintf qq|%5s & %4x & %s & %s & %s & %s\\\\\n|,
-                $kombo.phem.ord,
-                $kombo.phem.ord,
-                $kombo.keys,
-                $kombo.phem,
-                $kombo.desc,
-                $kombo.xmpl,
-            ;
+            # Obtain the max widths of the keys and descriptions.
+        for $section.kombos -> $k {
+            $maxW-keys = $_ if $maxW-keys < $_ given $k.keys.chars;
+            $maxW-desc = $_ if $maxW-desc < $_ given $k.desc.chars;
+            @kombos.push: $k;
         }
-        $tex ~= '\end{tabular}' ~ "\n\n";
     }
 
-
-    $tex ~= '\end{document}' ~ "\n\n";
-
-    print $tex;
+    my $list = '';
+    for @kombos.sort({$^a.phem.ord <=> $^b.phem.ord}) -> $kombo {
+        $list ~= sprintf
+            "%5x %{$maxW-keys}s %s %-{$maxW-desc}s : %-s\n",
+            $kombo.phem.ord,
+            $kombo.keys,
+            $kombo.phem,
+            $kombo.desc,
+            $kombo.xmpl,
+        ;
+    }
+    say "Each line: ⟨unic⟩ ⟨keys⟩ ⟨phem⟩ ⟨desc⟩ : ⟨xmpl⟩\n";
+    print "$list\n";
 }
 
