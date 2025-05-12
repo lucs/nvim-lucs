@@ -8,11 +8,35 @@
 "   g:prj_nick
 
 " --------------------------------------------------------------------
+" Use "very magic" regexes (☰2025-05-03.Sat) and keep allowing
+" toggling search highlight, but turn it back on when a search is
+" done.
+
+nnoremap <silent> <c-n> :set hls!<cr>
+nnoremap <silent> n     :set hls<cr>n
+nnoremap <silent> N     :set hls<cr>N
+nnoremap <silent> /     :set hls<cr>/\v
+nnoremap <silent> ?     :set hls<cr>?\v
+cnoremap <silent> %s/   %s/\v
+cnoremap <silent> .,$s/ .,$%s/\v
+nnoremap <silent> *     :set hls<cr>*
+nnoremap <silent> g*     :set hls<cr>g*
+
+" There appears to be no way to concoct a mapping to generalize
+" ‹:⟨range⟩s/⋯› to use "very magic", so will just have to be careful
+" to add the ‹\v› manually to such invocations, or to use the regular
+" "magic" notation or such.
+
+    " Not sure what this was for. Commented out ☰2025-05-03.Sat
+"nmap <c-h> zh
+"nmap <c-l> zl
+
+" --------------------------------------------------------------------
 " ʈ open frequent
 
 " ‹K⋯h›: $HOME
-" ‹K⋯s›: Subproject dir.
-" ‹K⋯u›: User dir
+" ‹K⋯s›: Subproject dir
+" ‹K⋯u›: Logged-in-user dir
 
     " ‹Kf⋯›: ‹.freq⋯›
     " Open a file which lists file names, one per line, for easy
@@ -49,8 +73,8 @@ nmap Km :call FormatManPage()<cr>
 "nmap Kr :%s/\([◆…∿ū]\)<\(.\{-}\)>/\1❬\2❭/gc<cr>
 
     " Replace old by new timestamp indicator.
-    " ⌚1 U-231a
-    " ⌘21 U-2318
+    " ⌚1 U+231a
+    " ⌘21 U+2318
 nmap Kt :%s,[\u231a\u2318],☰,gc<cr>
 
 " --------------------------------------------------------------------
@@ -114,6 +138,7 @@ endfunc
 
 nmap gbv :call GetOpenInEvince()<cr>
 
+" For example, place cursor within this string and press ‹gbv›:
 " …</home/lucs/prj/t/raku/vol/Parsing-Moritz/Parsing-Moritz.pdf>
 
 func! GetOpenInEvince ()
@@ -660,7 +685,10 @@ endfunc
   " call BigSurr('l', 'ʟ',
   " call BigSurr('m', 'ᴍ',
   " call BigSurr('n', 'ɴ',
-    call BigSurr('o', 'ᴏ', 'ᴏ<', '>'     ) " Operator: ᴏ<ban-cu1> (not ‹᚜⋯᚛› anymore)
+
+    call BigSurr('o', 'ᴏ', '᚜', '᚛'      ) " Operator: Going back to this ☰2025-05-03.Sat
+   " call BigSurr('o', 'ᴏ', 'ᴏ<', '>'     ) " Operator: ᴏ<ban-cu1> (not ‹᚜⋯᚛› anymore)
+
     call BigSurr('p', 'ᴘ', 'ᴘ<', '>'     ) " Password location: ᴘ<lp/bazfoo/s>
   " call BigSurr('q', No such small cap.
     call BigSurr('r', 'ʀ', '⟦',  '⟧'     ) " Reftag: ⟦⋯ p_36/23⟧
@@ -672,7 +700,6 @@ endfunc
   " call BigSurr('x', No such mall cap.
   " call BigSurr('y', 'ʏ',
     call BigSurr('z', 'ᴢ', '‹',  '›'     ) " Quotes: Quote ‹like this›.
-
 
 " --------------------------------------------------------------------
 
@@ -1087,10 +1114,10 @@ set encoding=utf-8
 set expandtab
 set ffs=unix,dos,mac
 
-    " The default is '│' (U-2502), which urxvt appears not to accept
-    " in its "cutchars", so changing it here allows capturing text
-    " with the mouse without grabbing the vertical window separator
-    " character.
+    " The default is '│' (U+2502), which ◆<urxvt> appears not to
+    " accept in its "cutchars", so changing it here allows capturing
+    " text with the mouse without grabbing the vertical window
+    " separator character.
 set fillchars+=vert:\|
 
 set hidden
@@ -1098,10 +1125,8 @@ set history=1000
 set hlsearch
 set incsearch
 set laststatus=2
-set list listchars=tab:•․
 set modeline
 set modelines=3
-
 
     " ☰2024-11-29.Fri Allows me to mouse-resize split windows.
 set mouse=n
@@ -1129,9 +1154,18 @@ set noruler
 set whichwrap+=<,>,[,]
 set wildmenu
 
-nmap ,<f3> :setl nolist<cr>
-nmap ,<f4> :setl list listchars=tab:\ \ <cr>
-nmap ,<f5> :setl list listchars=tab:→․,trail:·<cr>
+" --------------------------------------------------------------------
+let s:do_list = 0
+func! ToggleList ()
+    if s:do_list == 0
+        set list listchars=tab:→․,trail:·
+    else
+        set list listchars=tab:\ \ ,trail:·
+    endif
+    let s:do_list = 1 - s:do_list
+endfunc
+call ToggleList()
+nmap ,<f4> :call ToggleList()<cr>
 
 " --------------------------------------------------------------------
 if has("gui_running")
@@ -1240,26 +1274,10 @@ nnoremap Ll L
 vnoremap < <gv
 vnoremap > >gv
 
-" --------------------------------------------------------------------
-    " Allow toggling search highlight, but turn it back on when a
-    " search is done.
-nmap <silent> <c-n> :set hls!<cr>
-"inoremap <silent> <c-n> <esc>:set hls!<cr>a<c-n>
-"vnoremap <silent> <c-n> <esc>:set hls!<cr>gv<c-n>
-nnoremap <silent> n :set hls<cr>n
-nnoremap <silent> N :set hls<cr>N
-nnoremap / :set hls<cr>/
-nnoremap ? :set hls<cr>?
-nnoremap <silent> * :set hls<cr>*
-nnoremap <silent> g* :set hls<cr>g*
-
-nmap <c-h> zh
-nmap <c-l> zl
-
     " Prompt for clearing lines of trailing blanks.
 func! _ClearTrailingBlanks ()
     try
-            " Spell out: space, tab, U-00A0.
+            " Spell out: space, tab, U+00A0.
         %s/[ \t ]\+$//c
     catch
         echo "No trailing blanks found."
@@ -1757,6 +1775,84 @@ EoP
         " file.
     set nomodified
 endfunc
+
+" --------------------------------------------------------------------
+" ☰2025-05-11.Sun
+" From ū<https://gist.github.com/romainl/eae0a260ab9c135390c30cd370c20cd7>
+" 
+" Redirect the output of a Vim or external command into a scratch buffer
+" 
+" Usage (any shell)
+" 
+"         Show full output of command :hi in scratch window.
+"     :Redir hi
+" 
+"         Show full output of command :!ls -al in scratch window.
+"     :Redir !ls -al 
+" 
+" Additional usage (depends on non-standard shell features so YMMV)
+" 
+" Evaluate current line with node and show full output in scratch window:
+" 
+" " current line
+" console.log(Math.random());
+" 
+" " Ex command
+" :.Redir !node
+" 
+" " scratch window
+" 0.03987581000754448
+" 
+" Evaluate visual selection + positional parameters with bash and show
+" full output in scratch window:
+" 
+" " content of buffer
+" echo ${1}
+" echo ${2}
+" 
+" " Ex command
+" :%Redir !bash -s foo bar
+" 
+" " scratch window
+" foo
+" bar
+
+function! Redir(cmd, rng, start, end)
+    for win in range(1, winnr('$'))
+        if getwinvar(win, 'scratch')
+            execute win . 'windo close'
+        endif
+    endfor
+    if a:cmd =~ '^!'
+        let cmd = a:cmd =~' %'
+            \ ? matchstr(substitute(a:cmd, ' %', ' ' . shellescape(escape(expand('%:p'), '\')), ''), '^!\zs.*')
+            \ : matchstr(a:cmd, '^!\zs.*')
+        if a:rng == 0
+            let output = systemlist(cmd)
+        else
+            let joined_lines = join(getline(a:start, a:end), '\n')
+            let cleaned_lines = substitute(shellescape(joined_lines), "'\\\\''", "\\\\'", 'g')
+            let output = systemlist(cmd . " <<< $" . cleaned_lines)
+        endif
+    else
+        redir => output
+        execute a:cmd
+        redir END
+        let output = split(output, "\n")
+    endif
+    vnew
+    let w:scratch = 1
+    setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile
+    call setline(1, output)
+endfunction
+
+" This command definition includes -bar, so that it is possible to "chain" Vim commands.
+" Side effect: double quotes can't be used in external commands
+command! -nargs=1 -complete=command -bar -range Redir silent call Redir(<q-args>, <range>, <line1>, <line2>)
+
+" This command definition doesn't include -bar, so that it is possible to use double quotes in external commands.
+" Side effect: Vim commands can't be "chained".
+command! -nargs=1 -complete=command -range Redir silent call Redir(<q-args>, <range>, <line1>, <line2>)
 
 " " --------------------------------------------------------------------
 " " Note that after forking, even if the Vim app itself is closed, the
