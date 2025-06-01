@@ -552,16 +552,46 @@ endfunc
 
 " --------------------------------------------------------------------
 " ʈ
-
-" I start by extracting all ‹ʈ› or ‹‼〈⋯〉› lines from a source file.
-" and construct a temporary file in which I write something like:
-"
-"    /opt/prj/l/vim/_l_vim.memo
-"       6   keys : char
-"      95   ⟦pv⟧
-"     217   plugin install vim8
-"     237   ´install ´plugin ´extplugin
-"       ⋯   ⋯
+" I use lines that look like ‹ʈ ⟨subject⟩› in pretty much all my
+" documentation files, to identify sections. For example:
+" 
+"     - --------------------------------------------------------------------
+"     ʈ parse binary
+" 
+"     https://dev.to/uzluisf/dbase-parsing-a-binary-file-format-with-raku-2fm6
+" 
+"     - --------------------------------------------------------------------
+"     ʈ irc logs : …<~/doc/_irc.memo>
+" 
+"     See ~/doc/cookbook.memo
+" 
+"     ū<https://fosstodon.org/@rakulang>
+" 
+"     - --------------------------------------------------------------------
+"     ʈ ´binding ´Set ´SetHash
+" 
+"         ☰2025-02-03.Mon
+"     ū<https://stackoverflow.com/...>
+" 
+"     ⋯
+" 
+" Some of these files have thousands of lines and dozens of sections.
+" 
+" The following code first builds a page like this:
+" 
+"     /tmp/pel.memo
+"      6   parse binary
+"     11   irc logs : …<~/doc/_irc.memo>
+"     18   ´binding ´Set ´SetHash
+"     31   parse binary
+"     36   irc logs : …<~/doc/_irc.memo>
+"     43   ´binding ´Set ´SetHash
+"     ⋯
+" 
+" So I can scan that visually, or search for some text, whatever, and
+" when I move my cursor to the desired line, for example ‹31   parse
+" binary›, it closes that window and moves the cursor to line 31 in the
+" original file.
 
 nmap <c-f8> :call _ProgFunc(
   \ 'if $line ~~ /^ [$<indentl-level> = \s*] ' .
