@@ -1131,6 +1131,8 @@ if v:version >= 700
 endif
 
 " --------------------------------------------------------------------
+" ʈ Options
+
     " Disable loading of the plugin.
 let loaded_matchparen = 1
 
@@ -1252,7 +1254,7 @@ xnoremap <f9> :call ExecHighlighted()<cr>
 "nnoremap ' `
 "nnoremap ` '
 
-    " Toggle between ｢paste｣ and ｢nopaste｣.
+    " Toggle between ‹paste› and ‹nopaste›.
 nmap <silent> <f3> :call _TogglePaste()<cr>
 func! _TogglePaste ()
     if &paste == 0
@@ -1286,7 +1288,7 @@ nnoremap Ll L
     " to do this. So now, ‹J› concatenates current line with following
     " one inserting a space between, and ‹gJ›, with no space between.
     "
-    " To have an equivalent to the original ｢J｣ mapping.
+    " To have an equivalent to the original ‹J› mapping.
 "nnoremap J. J
 
     " Maybe... ☰2024-11-11.Mon
@@ -1731,7 +1733,7 @@ nmap ,tl :call _AcuTags("l")<cr>
 nmap ,tf :call _AcuTags("f")<cr>
 
 " --------------------------------------------------------------------
-" Display ｢let｣s sorted in a new file.
+" Display ‹let›s sorted in a new file.
 
 func! L_DisplayLetSorted ()
     let l:tmpfile = tempname()
@@ -1750,9 +1752,7 @@ func! L_DisplayLetSorted ()
         } grep { /\S/ } split /\n/, read_file((VIM::Eval("l:tmpfile"))[1]);
         VIM::DoCommand(":new | :only");
         VIM::DoCommand(":let l:a_saved = \@a");
-        my $x = "asdf";
         for my $key (@sorted_keys) {
-           # VIM::DoCommand(":let \@a = '$x'");
             $key =~ s/'/''/g;   # ' For syntax highlighting.
             VIM::DoCommand(":let \@a = '" . $key . "'");
             VIM::DoCommand(":put a");
@@ -1788,9 +1788,7 @@ func! L_DisplayMappingsSorted ()
         } grep { /\S/ } split /\n/, read_file((VIM::Eval("l:tmpfile"))[1]);
         VIM::DoCommand(":new | :only");
         VIM::DoCommand(":let l:a_saved = \@a");
-        my $x = "asdf";
         for my $map (@sorted_maps) {
-           # VIM::DoCommand(":let \@a = '$x'");
             $map =~ s/'/''/g;   # ' For syntax highlighting.
             VIM::DoCommand(":let \@a = '" . $map . "'");
             VIM::DoCommand(":put a");
