@@ -34,22 +34,28 @@ nnoremap <silent> g*     :set hls<cr>g*
 " --------------------------------------------------------------------
 " ʈ open frequent
 
-" ‹K⋯h›: $HOME
+" ‹K⋯h›: $HOME dir
 " ‹K⋯s›: Subproject dir
 " ‹K⋯u›: Logged-in-user dir
 
     " ‹Kf⋯›: ‹.freq⋯›
-    " Open a file which lists file names, one per line, for easy
-    " opening with ‹gf› (built-in) or ‹gm› (defined here elsewhere).
+    " List of frequently used files or URLs for project.
+    " opening with ‹gf› (built-in) or ‹,gm› (defined here elsewhere).
 nmap Kfh :e $HOME/.freq<cr>
 nmap Kfs :e $dSP/.freq<cr>
 nmap Kfu :exec ':e ' . g:user_home_dir . '/.frequ'<cr>
 
+    " ‹Kj⋯›: ‹...›
+    " Junk text for project, but kept around anyway.
+nmap Kjh :e $HOME/...<cr>
+nmap Kjs :e $dSP/...<cr>
+nmap Kju :exec ':e ' . g:user_home_dir . '/...u'<cr>
+
     " ‹Kh⋯›: ‹...›
-    " Held junk data.
-nmap Khh :e $HOME/...<cr>
-nmap Khs :e $dSP/...<cr>
-nmap Khu :exec ':e ' . g:user_home_dir . '/...u'<cr>
+    " Project memo file.
+nmap Khh :e $HOME/_
+nmap Khs :e $dSP/_
+nmap Khu :e <c-r>=g:user_home_dir<cr>/_
 
     " ‹Kk⋯›: Misc.
 nmap Kkk :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
@@ -59,7 +65,7 @@ nmap Kkm :e /mnt/hKpop/opt/prj<cr>
 nmap Kkp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
 
 " --------------------------------------------------------------------
-" ʈ ‹K› mappings
+" ʈ Other ‹K› mappings
 
 nmap Kb :call InsertBillingElem()<cr>
 
