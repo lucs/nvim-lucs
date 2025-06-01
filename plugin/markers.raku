@@ -388,14 +388,16 @@ multi sub MAIN {
     say Q:to/EoH/
         Typical usage by lucs⧺:
             $prog xco  > ~lucs/.XCompose
-            $prog vim  > ~lucs/prj/t/nvim/plugin.vim-lucs/vim-lucs.git/plugin/markers.vim
+            $prog vim  > ~lucs/prj/t/nvim/sp.vim-lucs/vim-lucs.git/plugin/markers.vim
             $prog memo > /shome/lucs/gdoc/markers.memo
             $prog text > /shome/lucs/gdoc/markers.text
             $prog list > /shome/lucs/gdoc/markers.list
+
+                Select all and set font to Unifont-JP, 8pt.
+                Then save as …</shome/lucs/gdoc/markers.abw>.
+            abiword <($prog text)
         EoH
     ;
-   # abiword <($prog text) # Then save as …❬/shome/lucs/gdoc/markers.abw❭.
-   # $prog tex : For LaTeX, needs work.
 }
 
 # --------------------------------------------------------------------
