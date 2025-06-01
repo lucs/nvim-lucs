@@ -675,67 +675,61 @@ endfunc
 " <f2> followed by the letter (lowercase, uppercase, or smallcaps),
 " which will also properly place the cursor for insertion.
 
-func! BigSurr (char_lower, char_smcap, pfx, sfx, ...)
+func! BigSurr (char_lower, pfx, sfx, ...)
     let l:lL = a:char_lower     " lowercase Letter
-    let l:lN = char2nr(l:lL)    " lowercase Number
+    let l:lN = char2nr(l:lL)    " lowercase letter Number value
 
-    let l:uN = l:lN - 32        " uppercase Number
+    let l:uN = l:lN - 32        " uppercase letter Number value
     let l:uL = nr2char(l:uN)    " uppercase Letter
 
-    let l:sL = a:char_smcap     " smallcaps Letter
-    let l:sN = char2nr(l:sL)    " smallcaps Number
+        " These globals are used by the ‹surround› package. The
+        " carriage return will be replaced by the original text.
+    exec printf("let g:surround_%d = '%s\r%s'",   l:lN, a:pfx, a:sfx)
+    exec printf("let g:surround_%d = '%s \r %s'", l:uN, a:pfx, a:sfx)
 
-    exec "let g:surround_" . l:lN . " = '" . a:pfx . "\<cr>" .   a:sfx . "'"
-    exec "let g:surround_" . l:uN . " = '" . a:pfx . " \<cr> " . a:sfx . "'"
-    exec "let g:surround_" . l:sN . " = '" . a:pfx . " \<cr> " . a:sfx . "'"
-
-    if a:0 == 0
-        exec 'nnoremap <f2>' . l:lL   ' i' . a:pfx .                     a:sfx . '<esc>i'
-        exec 'nnoremap <f2>' . l:uL . ' i' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
-        exec 'nnoremap <f2>' . l:sL . ' i' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
-        exec 'inoremap <f2>' . l:lL   '  ' . a:pfx .                     a:sfx . '<esc>i'
-        exec 'inoremap <f2>' . l:uL . '  ' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
-        exec 'inoremap <f2>' . l:sL . '  ' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
-    else
+        " If there is a 4th arg to the function, it will be placed
+        " midway.
+    if a:0 != 0
         let l:mid = a:1
         exec 'nnoremap <f2>' . l:lL   ' i' . a:pfx .       l:mid .       a:sfx . '<esc>i'
         exec 'nnoremap <f2>' . l:uL . ' i' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>hi'
-        exec 'nnoremap <f2>' . l:sL . ' i' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>hi'
         exec 'inoremap <f2>' . l:lL   '  ' . a:pfx .       l:mid .       a:sfx . '<esc>hi'
         exec 'inoremap <f2>' . l:uL . '  ' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>2hi'
-        exec 'inoremap <f2>' . l:sL . '  ' . a:pfx . ' ' . l:mid . ' ' . a:sfx . '<esc>2hi'
+    else
+        exec 'nnoremap <f2>' . l:lL   ' i' . a:pfx .                     a:sfx . '<esc>i'
+        exec 'nnoremap <f2>' . l:uL . ' i' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
+        exec 'inoremap <f2>' . l:lL   '  ' . a:pfx .                     a:sfx . '<esc>i'
+        exec 'inoremap <f2>' . l:uL . '  ' . a:pfx . ' ' .         ' ' . a:sfx . '<esc>hi'
     endif
 endfunc
 
-    call BigSurr('a', 'ᴀ', '◆<', '>'     ) " Program name: Launch ◆<nvim> in your terminal.
-  " call BigSurr('b', 'ʙ',
-    call BigSurr('c', 'ᴄ', '❲',  '❳', '∣') " Choice: Choose one of ❲a∣b∣c❳.
-    call BigSurr('d', 'ᴅ', '⌊',  '⌉'     ) " Consequence of example: ⦃21*2⦄ gives ⌊42⌉.
-    call BigSurr('e', 'ᴇ', '⦃',  '⦄'     ) " Example value: ⦃21*2⦄ gives ⌊42⌉.
-    call BigSurr('f', 'ꜰ', '…<', '>'     ) " File or directory: …</etc/passwd>
-    call BigSurr('g', 'ɢ', '⟪',  '⟫'     ) " GUI: Select ⟪Inksc⇣tools:Bezier Tool (⇧F6)⇣mode:⦃…regular…⦄⟫.
-  " call BigSurr('h', 'ʜ',
-  " call BigSurr('i', 'ɪ',
-    call BigSurr('j', 'ᴊ', '∿<', '>'     ) " Project directory: ∿<t/nvim>
-    call BigSurr('k', 'ᴋ', '｢',  '｣'     ) " Literal Raku quoting: ｢No $interpol. \n｣
-  " call BigSurr('l', 'ʟ',
-  " call BigSurr('m', 'ᴍ',
-  " call BigSurr('n', 'ɴ',
-
-    call BigSurr('o', 'ᴏ', '᚜', '᚛'      ) " Operator: Going back to this ☰2025-05-03.Sat
-   " call BigSurr('o', 'ᴏ', 'ᴏ<', '>'     ) " Operator: ᴏ<ban-cu1> (not ‹᚜⋯᚛› anymore)
-
-    call BigSurr('p', 'ᴘ', 'ᴘ<', '>'     ) " Password location: ᴘ<lp/bazfoo/s>
-  " call BigSurr('q', No such small cap.
-    call BigSurr('r', 'ʀ', '⟦',  '⟧'     ) " Reftag: ⟦⋯ p_36/23⟧
-    call BigSurr('s', 'ꜱ', '«',  '»'     ) " French guillemets: «Le film L'argent».
-    call BigSurr('t', 'ᴛ', '⟨',  '⟩'     ) " A kind of something: ▸ cp ⟨file from⟩ ⟨file to⟩
-    call BigSurr('u', 'ᴜ', 'ū<', '>'     ) " URL: ū<https://github.com/lucs/>
-  " call BigSurr('v', 'ᴠ',
-    call BigSurr('w', 'ᴡ', '<',  '>'     ) " ?
-  " call BigSurr('x', No such mall cap.
-  " call BigSurr('y', 'ʏ',
-    call BigSurr('z', 'ᴢ', '‹',  '›'     ) " Quotes: Quote ‹like this›.
+        " The 
+    call BigSurr('a', '◆<', '>'     ) " Program name: Launch ◆<nvim> in your terminal.
+  " call BigSurr('b',                 " SEEMS NOT TO BE MAPPABLE ☰2025-05-31.Sat.
+    call BigSurr('c', '❲',  '❳', '∣') " Choice: Choose one of ❲a∣b∣c❳.
+    call BigSurr('d', '⌊',  '⌉'     ) " Consequence of example: ⦃21*2⦄ gives ⌊42⌉.
+    call BigSurr('e', '⦃',  '⦄'     ) " Example value: ⦃21*2⦄ gives ⌊42⌉.
+    call BigSurr('f', '…<', '>'     ) " File or directory: …</etc/passwd>
+    call BigSurr('g', '⟪',  '⟫'     ) " GUI: Select ⟪Inksc⇣tools:Bezier Tool (⇧F6)⇣mode:⦃…regular…⦄⟫.
+  " call BigSurr('h',
+  " call BigSurr('i',
+    call BigSurr('j', '∿<', '>'     ) " Project directory: ∿<t/nvim>
+    call BigSurr('k', '｢',  '｣'     ) " Literal Raku quoting: ｢No $interpolation.\n｣
+  " call BigSurr('l',
+  " call BigSurr('m',
+  " call BigSurr('n',
+    call BigSurr('o', '᚜', '᚛'      ) " Operator: Going back to this ☰2025-05-03.Sat
+    call BigSurr('p', 'ᴘ<', '>'     ) " Password location: ᴘ<lp/bazfoo/s>
+  " call BigSurr('q',
+    call BigSurr('r', '⟦',  '⟧'     ) " Reftag: ⟦⋯ p_36/23⟧
+    call BigSurr('s', '«',  '»'     ) " French guillemets: «Le film L'argent».
+    call BigSurr('t', '⟨',  '⟩'     ) " A kind of something: ▸ cp ⟨file from⟩ ⟨file to⟩
+    call BigSurr('u', 'ū<', '>'     ) " URL: ū<https://github.com/lucs/>
+  " call BigSurr('v',
+  " call BigSurr('w',
+  " call BigSurr('x',
+  " call BigSurr('y',
+    call BigSurr('z', '‹',  '›'     ) " Quotes: Quote ‹like this›.
 
 " --------------------------------------------------------------------
 
