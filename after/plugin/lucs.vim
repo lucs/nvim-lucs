@@ -1935,29 +1935,6 @@ else
     set termguicolors
 endif
 
-func! Hi_off ()
-    hi clear User1
-    hi clear User2
-    hi clear User3
-    hi clear User4
-    hi clear User5
-    hi clear User6
-    hi clear User7
-    hi clear User8
-    hi clear User9
-    syntax off
-endfunc
-
-func! Hi_onn ()
-    syntax enable
-    hi statusline   cterm=reverse guifg=green  guibg=white
-    hi statuslineNC cterm=reverse guifg=gray   guibg=white
-    hi User1        cterm=reverse guifg=yellow guibg=black
-    hi User2        cterm=reverse guifg=red    guibg=black
-    hi User3        cterm=reverse guifg=green  guibg=white
-    hi User4        cterm=reverse guifg=white  guibg=black
-endfunc
-
 " --------------------------------------------------------------------
 " ʈ Build up the status line
 
@@ -2011,17 +1988,18 @@ func! BuildUpStatusLine ()
 endfunc
 call BuildUpStatusLine()
 
-nmap <silent> <f7> :call _ToggleSyntaxHi()<cr>
+" --------------------------------------------------------------------
 func! _ToggleSyntaxHi ()
     if exists("g:syntax_on")
-        call Hi_off()
+        syntax off
     else
-        call Hi_onn()
+        syntax enable
     endif
 endfunc
 
     " Initialize.
-call Hi_onn()
+syntax enable
+nmap <silent> <f7> :call _ToggleSyntaxHi()<cr>
 
 "set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 "set guicursor=n-v-c-sm:ver25,i-ci-ve:ver25,r-cr-o:hor20
