@@ -37,54 +37,54 @@ nnoremap <silent> g*     :set hls<cr>g*
     " ‹Kf⋯›: ‹.freq⋯›
     " List of frequently used files or URLs for project.
     " opening with ‹gf› (built-in) or ‹,gm› (defined here elsewhere).
-nmap Kfh :e $HOME/.freq<cr>
-nmap Kfs :e $dSP/.freq<cr>
-nmap Kfu :exec ':e ' . g:user_home_dir . '/.frequ'<cr>
+nnoremap Kfh :e $HOME/.freq<cr>
+nnoremap Kfs :e $dSP/.freq<cr>
+nnoremap Kfu :exec ':e ' . g:user_home_dir . '/.frequ'<cr>
 
     " ‹Kj⋯›: ‹...›
     " Junk text for project, but kept around anyway.
-nmap Kjh :e $HOME/...<cr>
-nmap Kjs :e $dSP/...<cr>
-nmap Kju :exec ':e ' . g:user_home_dir . '/...u'<cr>
+nnoremap Kjh :e $HOME/...<cr>
+nnoremap Kjs :e $dSP/...<cr>
+nnoremap Kju :exec ':e ' . g:user_home_dir . '/...u'<cr>
 
     " ‹Kh⋯›: ‹...›
     " Project memo file.
-nmap Khh :e $HOME/_
-nmap Khs :e $dSP/_
-nmap Khu :e <c-r>=g:user_home_dir<cr>/_
+nnoremap Khh :e $HOME/_
+nnoremap Khs :e $dSP/_
+nnoremap Khu :e <c-r>=g:user_home_dir<cr>/_
 
     " ‹Kk⋯›: Misc.
-nmap Kkk :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
-nmap Kkd :e /shome/lucs/gdoc<cr>
-nmap Kkl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
-nmap Kkm :e /mnt/hKpop/opt/prj<cr>
-nmap Kkp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
+nnoremap Kkk :exec ':e ' . g:nvim_lucs_pack . '/after/plugin/lucs.vim'<cr>
+nnoremap Kkd :e /shome/lucs/gdoc<cr>
+nnoremap Kkl :exec ':e ' . g:user_home_dir . '/.llog'<cr>
+nnoremap Kkm :e /mnt/hKpop/opt/prj<cr>
+nnoremap Kkp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
 
 " --------------------------------------------------------------------
 " ʈ Other ‹K› mappings
 
-nmap Kb :call InsertBillingElem()<cr>
+nnoremap Kb :call InsertBillingElem()<cr>
 
     " Change to "- -⋯" my old style "# -⋯" text separator lines.
-nmap Kc :%s/^\(\s*\)\# -/\1- -/gc<cr>
+nnoremap Kc :%s/^\(\s*\)\# -/\1- -/gc<cr>
 
-nmap Km :call FormatManPage()<cr>
+nnoremap Km :call FormatManPage()<cr>
 
     " Replace keyed surrounders by more recent mechanism
     " ☰2024-11-23.Sat.
-"nmap Kr :%s/\([◆…∿ū]\)<\(.\{-}\)>/\1❬\2❭/gc<cr>
+"nnoremap Kr :%s/\([◆…∿ū]\)<\(.\{-}\)>/\1❬\2❭/gc<cr>
 
     " Replace old by new timestamp indicator.
     " ⌚1 U+231a
     " ⌘21 U+2318
-nmap Kt :%s,[\u231a\u2318],☰,gc<cr>
+nnoremap Kt :%s,[\u231a\u2318],☰,gc<cr>
 
 " --------------------------------------------------------------------
 " ☰2024-12-27.Fri
 " Restore these ❬⋯❭ to <⋯>
 
-:nmap ,r :%s/❬/</gc<cr>
-:nmap ,R :%s/❭/>/gc<cr>
+nnoremap ,r :%s/❬/</gc<cr>
+nnoremap ,R :%s/❭/>/gc<cr>
 
     " Make it easier to leave terminal mode.
     " (Enter with ⦃:vsplit term://zsh⦄, then ‹i›.)
@@ -101,7 +101,7 @@ func! s:MidWindow ()
     :vert res 78
     exec "normal! \<c-w>x\<c-w>h"
 endfunc
-nmap ,<f2> :call <SID>MidWindow()<cr>
+nnoremap ,<f2> :call <SID>MidWindow()<cr>
 
 " --------------------------------------------------------------------
 " These allow saving the current visual selection and resetting it to
@@ -138,7 +138,7 @@ endfunc
 " ʈ open evince
 " ☰2025-01-18.Sat
 
-nmap gbv :call GetOpenInEvince()<cr>
+nnoremap gbv :call GetOpenInEvince()<cr>
 
 " For example, place cursor within this string and press ‹gbv›:
 " …</home/lucs/prj/t/raku/vol/Parsing-Moritz/Parsing-Moritz.pdf>
@@ -189,10 +189,10 @@ func! EchoSleep (dura, msg)
     exec "normal! \<esc>"
 endfunc
 
-nmap gbut :call GetOpenInBrowser('u', 't')<cr>
-nmap gbuw :call GetOpenInBrowser('u', 'w')<cr>
-nmap gbft :call GetOpenInBrowser('f', 't')<cr>
-nmap gbfw :call GetOpenInBrowser('f', 'w')<cr>
+nnoremap gbut :call GetOpenInBrowser('u', 't')<cr>
+nnoremap gbuw :call GetOpenInBrowser('u', 'w')<cr>
+nnoremap gbft :call GetOpenInBrowser('f', 't')<cr>
+nnoremap gbfw :call GetOpenInBrowser('f', 'w')<cr>
 
 func! GetOpenInBrowser (url_or_file, tab_or_window)
     let l:winview = winsaveview()
@@ -274,12 +274,12 @@ endfunc
 " ☰2024-08-06.Tue
 
     " For use with Debugging::Tool.
-nmap ,dp /\$dt\.p/e<cr>
+nnoremap ,dp /\$dt\.p/e<cr>
 
-nmap ,ds /\$dt\.s/e<cr>
-nmap ,dd /\$dt\.[ps]/e<cr>
-nmap ,d. /\$dt\._/e<cr>
-nmap ,da /\$dt\./e<cr>
+nnoremap ,ds /\$dt\.s/e<cr>
+nnoremap ,dd /\$dt\.[ps]/e<cr>
+nnoremap ,d. /\$dt\._/e<cr>
+nnoremap ,da /\$dt\./e<cr>
 
 " --------------------------------------------------------------------
 " ☰2024-03-23.Sat
@@ -333,7 +333,7 @@ command! -nargs=1 SS let @/ = '\V'.escape(<q-args>, '/\')|normal! /<C-R>/<CR>
     \ . ">"<cr>
 
     " To help match code snippet id`s.
-nmap gW /ID:<space>\.\?
+nnoremap gW /ID:<space>\.\?
 
 " --------------------------------------------------------------------
 " ʈ timestamps
@@ -366,6 +366,7 @@ inoremap <c-u>0i <esc>:call _InsertTimestamp(0, "i")<cr>a
 nnoremap <c-u>0o      :call _InsertTimestamp(0, "o")<cr>
 inoremap <c-u>0o <esc>:call _InsertTimestamp(0, "o")<cr>a
 
+    " These have to "remap".
 nmap <c-u><c-t>6      0itodo0<esc><c-u>6oa<space><esc>
 nmap <c-u><c-t>7      0itodo0<esc><c-u>7oa<space><esc>
 nmap <c-u><c-t>8      0itodo0<esc><c-u>8oa<space><esc>
@@ -390,6 +391,7 @@ imap <c-u><c-t>0 <esc>0itodo0<esc><c-u>0oa<space><esc>a
     "   todo☰2023-04-15.Sat As heard on "Stuff You Should Know", see about
     "   Ferrante/Teicher piano duet.
 
+    " These have to "remap".
 nmap <c-u><c-d>7 0xRtodo<esc>O<c-u>7o<esc>I    <esc>A<space>
 nmap <c-u><c-d>8 0xRtodo<esc>O<c-u>8o<esc>I    <esc>A<space>
 nmap <c-u><c-d>9 0xRtodo<esc>O<c-u>9o<esc>I    <esc>A<space>
@@ -532,7 +534,7 @@ nnoremap _l :e ./⋯*<cr>
 " 70 (minus 4) plus however far is the first character on the line
 " where the cursor is.
 
-nmap gp :call _ReTextWidth()<cr>
+nnoremap gp :call _ReTextWidth()<cr>
 func! _ReTextWidth ()
     let l:curr_wid = &textwidth
     if l:curr_wid != 70
@@ -589,12 +591,12 @@ endfunc
 " binary›, it closes that window and moves the cursor to line 31 in the
 " original file.
 
-nmap <c-f8> :call _ProgFunc(
+nnoremap <c-f8> :call _ProgFunc(
   \ 'if $line ~~ /^ [$<indentl-level> = \s*] ' .
   \ '$<entry> = [[sub\|method\|class\|grammar\|multi] ｢ ｣ .* ] / {'
   \ )<cr>
 
-nmap <f8>   :call _ProgFunc(
+nnoremap <f8>   :call _ProgFunc(
   \ 'if $line ~~ /^ .*? ｢ʈ｣ [$<indentl-level> = \d+]? \s+ $<entry> = [.*] / {'
   \ )<cr>
 
@@ -805,7 +807,7 @@ func! _FixEncoding (pairs)
 endfunc
 
     " Yank full path of current file into unnamed register.
-nmap ,yp :let @" = expand("%:p")<cr>
+nnoremap ,yp :let @" = expand("%:p")<cr>
 
 " --------------------------------------------------------------------
 " Save timestamped file. The filename will be a timestamp, and the
@@ -833,11 +835,11 @@ func! L_saveasTimestamped ()
 endfunc
 
 " --------------------------------------------------------------------
-nmap :: :w<cr>
-nmap :' :w<bar>bd<cr>
-nmap :/ :bd<cr>
+nnoremap :: :w<cr>
+nnoremap :' :w<bar>bd<cr>
+nnoremap :/ :bd<cr>
 
-nmap g9 :setl noma!<cr>
+nnoremap g9 :setl noma!<cr>
 
 " --------------------------------------------------------------------
 let NERDTreeWinPos = "right"
@@ -904,7 +906,7 @@ endfunc
 
 nnoremap <silent><Plug>XmlStyleOneLine :call
   \ XmlStyleOneLine()<cr>:call repeat#set("\<Plug>XmlStyleOneLine")<cr>
-nmap ,cx <Plug>XmlStyleOneLine
+nnoremap ,cx <Plug>XmlStyleOneLine
 
 " --------------------------------------------------------------------
 " Toggle ‹/*⋯*/› style one line comments.
@@ -967,7 +969,7 @@ endfunc
 
 nnoremap <silent><Plug>CComment :call
   \ CStyleOneLine()<cr>:call repeat#set("\<Plug>CComment")<cr>
-nmap ,cc <Plug>CComment
+nnoremap ,cc <Plug>CComment
 
 " --------------------------------------------------------------------
 " Toggle single character ｢#⋯｣ prefix style one line comments.
@@ -1013,23 +1015,23 @@ endfunc
 " --------------------------------------------------------------------
 nnoremap <silent><Plug>XresPfx :call
   \ PfxLine('!')<cr>:call repeat#set("\<Plug>XresPfx")<cr>
-nmap ,c! <Plug>XresPfx
+nnoremap ,c! <Plug>XresPfx
 
 nnoremap <silent><Plug>TextPfx :call
   \ PfxLine('-')<cr>:call repeat#set("\<Plug>TextPfx")<cr>
-nmap ,c- <Plug>TextPfx
+nnoremap ,c- <Plug>TextPfx
 
 nnoremap <silent><Plug>PerlPfx :call
   \ PfxLine('#')<cr>:call repeat#set("\<Plug>PerlPfx")<cr>
-nmap ,c# <Plug>PerlPfx
+nnoremap ,c# <Plug>PerlPfx
 
 nnoremap <silent><Plug>VimPfx :call
   \ PfxLine('"')<cr>:call repeat#set("\<Plug>VimPfx")<cr>
-nmap ,c" <Plug>VimPfx
+nnoremap ,c" <Plug>VimPfx
 
 nnoremap <silent><Plug>TexPfx :call
   \ PfxLine('%')<cr>:call repeat#set("\<Plug>TexPfx")<cr>
-nmap ,c% <Plug>TexPfx
+nnoremap ,c% <Plug>TexPfx
 
     " Try to abstract out the commonality, failed so far. Try again
     " later.
@@ -1081,8 +1083,8 @@ func! _BufSel (pattern, listunlisted)
 endfunc
 command! -nargs=* Bs  :call _BufSel("<args>", 1)
 command! -nargs=* Bs2 :call _BufSel("<args>", 0)
-nmap <f6> :Bs<cr>
-nmap <f5> :Bs2<cr>
+nnoremap <f6> :Bs<cr>
+nnoremap <f5> :Bs2<cr>
 
 " --------------------------------------------------------------------
 " To make sure ftdetect are reread.
@@ -1190,7 +1192,7 @@ func! ToggleList ()
     let s:do_list = 1 - s:do_list
 endfunc
 call ToggleList()
-nmap ,<f4> :call ToggleList()<cr>
+nnoremap ,<f4> :call ToggleList()<cr>
 
 " --------------------------------------------------------------------
 if has("gui_running")
@@ -1248,7 +1250,7 @@ xnoremap <f9> :call ExecHighlighted()<cr>
 "nnoremap ` '
 
     " Toggle between ‹paste› and ‹nopaste›.
-nmap <silent> <f3> :call _TogglePaste()<cr>
+nnoremap <silent> <f3> :call _TogglePaste()<cr>
 func! _TogglePaste ()
     if &paste == 0
         set paste
@@ -1258,7 +1260,7 @@ func! _TogglePaste ()
     call BuildUpStatusLine()
 endfunc
 
-nmap <silent> <f4> :call _ToggleScrollOffset()<cr>
+nnoremap <silent> <f4> :call _ToggleScrollOffset()<cr>
 func! _ToggleScrollOffset ()
     if &scrolloff == 0
         set scrolloff=100
@@ -1270,11 +1272,11 @@ func! _ToggleScrollOffset ()
 endfunc
 
     " Move between buffers.
-nmap H <Nop>
-nmap L <Nop>
-nmap HH :bp<cr>
+nnoremap H <Nop>
+nnoremap L <Nop>
+nnoremap HH :bp<cr>
 nnoremap Hh H
-nmap LL :bn<cr>
+nnoremap LL :bn<cr>
 nnoremap Ll L
 
     " ☰2024-11-11.Mon I just commented this out. Not sure why I used
@@ -1309,7 +1311,7 @@ func! _ClearTrailingBlanks ()
     endtry
     nohl
 endfunc
-nmap <silent> gs :call _ClearTrailingBlanks()<cr>
+nnoremap <silent> gs :call _ClearTrailingBlanks()<cr>
 
     " ʈ Yank string under cursor into search register.
 map gy "ayiW:let @/ = @a<cr>
@@ -1409,10 +1411,10 @@ func! _LoadFileOrDir (closeAfter, openUnmodifiable)
         endif
     endif
 endfunc
-nmap ,gm :call _LoadFileOrDir(1, 0)<cr>
-nmap ,gM :call _LoadFileOrDir(0, 0)<cr>
-nmap ,gu :call _LoadFileOrDir(1, 1)<cr>
-nmap ,gU :call _LoadFileOrDir(0, 1)<cr>
+nnoremap ,gm :call _LoadFileOrDir(1, 0)<cr>
+nnoremap ,gM :call _LoadFileOrDir(0, 0)<cr>
+nnoremap ,gu :call _LoadFileOrDir(1, 1)<cr>
+nnoremap ,gU :call _LoadFileOrDir(0, 1)<cr>
 
 " --------------------------------------------------------------------
 " Force filetype. ⦃:Fft vim⦄
@@ -1648,7 +1650,7 @@ func! _AllCodeSnips ()
     call _CodeSnipNick('tex',        'te')
 endfunc
 "call _AllCodeSnips()<cr>
-nmap <silent> gh :call _AllCodeSnips()<cr>
+nnoremap <silent> gh :call _AllCodeSnips()<cr>
 
 " --------------------------------------------------------------------
 " My log entries look like this:
@@ -1701,11 +1703,11 @@ func! _AppendLogEntry ()
 endfunc
 
 imap ,a  ´
-nmap ,aa :call _AppendLogEntry()<cr>
-nmap ,ar :call _AppendLogEntry()<cr>
-nmap ,as :call _AppendLogEntry()<cr>´
-nmap ,ad :call _AppendLogEntry()<cr>-
-nmap ,an :call _AppendLogEntry()<cr>.
+nnoremap ,aa :call _AppendLogEntry()<cr>
+nnoremap ,ar :call _AppendLogEntry()<cr>
+nnoremap ,as :call _AppendLogEntry()<cr>´
+nnoremap ,ad :call _AppendLogEntry()<cr>-
+nnoremap ,an :call _AppendLogEntry()<cr>.
 
 " --------------------------------------------------------------------
 func! _AcuTags (option)
@@ -1722,8 +1724,8 @@ func! _AcuTags (option)
         endif
     endif
 endfunc
-nmap ,tl :call _AcuTags("l")<cr>
-nmap ,tf :call _AcuTags("f")<cr>
+nnoremap ,tl :call _AcuTags("l")<cr>
+nnoremap ,tf :call _AcuTags("f")<cr>
 
 " --------------------------------------------------------------------
 " Display ‹let›s sorted in a new file.
@@ -1992,7 +1994,7 @@ endfunc
 
     " Initialize.
 syntax enable
-nmap <silent> <f7> :call _ToggleSyntaxHi()<cr>
+nnoremap <silent> <f7> :call _ToggleSyntaxHi()<cr>
 
 "set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 "set guicursor=n-v-c-sm:ver25,i-ci-ve:ver25,r-cr-o:hor20

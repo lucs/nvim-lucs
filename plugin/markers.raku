@@ -452,7 +452,7 @@ multi sub MAIN ('vim') {
                 ;
             }
             else {
-                $vim ~= sprintf "imap <C-f>%s %s\n",
+                $vim ~= sprintf "inoremap <C-f>%s %s\n",
                     $kombo.keys,
                     $kombo.phem,
             }
