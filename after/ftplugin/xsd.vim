@@ -13,7 +13,7 @@ abbr <buffer> x xsd:
 func! Dblk()
  " echo "<" . getline(".") . ">"
   if ( getline(".") =~ "^\\s*$" && line(".") != line("$"))
-    normal dd
+    normal! dd
   endif 
 endfunc
 

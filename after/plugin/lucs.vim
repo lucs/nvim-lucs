@@ -101,9 +101,9 @@ func! s:MidWindow ()
     :vnew
     :vnew
     :vert res 46
-    exec "normal 2\<c-w>l"
+    exec "normal! 2\<c-w>l"
     :vert res 78
-    exec "normal \<c-w>x\<c-w>h"
+    exec "normal! \<c-w>x\<c-w>h"
 endfunc
 nmap ,<f2> :call <SID>MidWindow()<cr>
 
