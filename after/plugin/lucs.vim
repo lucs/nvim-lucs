@@ -27,10 +27,6 @@ nnoremap <silent> g*     :set hls<cr>g*
 " to add the ‹\v› manually to such invocations, or to use the regular
 " "magic" notation or such.
 
-    " Not sure what this was for. Commented out ☰2025-05-03.Sat
-"nmap <c-h> zh
-"nmap <c-l> zl
-
 " --------------------------------------------------------------------
 " ʈ open frequent
 
@@ -1015,9 +1011,6 @@ func! PfxLine (pfx_char)
 endfunc
 
 " --------------------------------------------------------------------
-" Line breaks in some other places may cause spurious moving right
-" of cursor (?!) (☰2023-06-18.Sun Not sure what that even means)
-
 nnoremap <silent><Plug>XresPfx :call
   \ PfxLine('!')<cr>:call repeat#set("\<Plug>XresPfx")<cr>
 nmap ,c! <Plug>XresPfx
