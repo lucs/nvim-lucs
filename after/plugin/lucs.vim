@@ -836,8 +836,8 @@ endfunc
 
 " --------------------------------------------------------------------
 nnoremap :: :w<cr>
-nnoremap :' :w<bar>bd<cr>
-nnoremap :/ :bd<cr>
+nnoremap :' :w<bar>Bdelete<cr>
+nnoremap :/ :Bdelete<cr>
 
 nnoremap g9 :setl noma!<cr>
 
