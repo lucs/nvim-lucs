@@ -8,6 +8,17 @@
 "   g:prj_nick
 
 " --------------------------------------------------------------------
+func! _PasteOptVal (opt)
+    let l:savedB = @b
+    redir @b
+    exec 'echon &' . a:opt
+    redir end
+    normal "bP
+    let @b = l:savedB
+endfunc
+command! -nargs=1 PasteOptVal :call _PasteOptVal("<args>")
+
+" --------------------------------------------------------------------
 " Use "very magic" regexes (☰2025-05-03.Sat) and keep allowing
 " toggling search highlight, but turn it back on when a search is
 " done.
