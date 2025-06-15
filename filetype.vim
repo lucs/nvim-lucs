@@ -18,9 +18,10 @@ au! BufNewFile,BufRead *.sco,*.orc,*.csd setf csound
 au! BufNewFile,BufRead *.txh setf txh
 au! BufNewFile,BufRead *.pod setf pod
 au! BufNewFile,BufRead *.vpl,*.cons setf perl
-au! BufNewFile,BufRead,BufWritePost *.memo,*.txt,*.poy setf text
+au! BufNewFile,BufRead,BufWritePost *.memo,*.txt,*.poy setf memo
 au! BufNewFile,BufRead *.tt2,*.tt set filetype=tt2
 au! BufNewFile,BufRead /home/lucs/.mutt/aliases setf mailaliases
-au! BufWritePost * if &filetype == 'text' | exec 'filetype detect' | endif
-au! BufEnter * if &filetype == "" | setlocal ft=text | endif
+
+au! BufWritePost * if &filetype == 'memo' | exec 'filetype detect' | endif
+au! BufEnter * if &filetype == "" | setlocal ft=memo | endif
 
