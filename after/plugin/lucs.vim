@@ -444,18 +444,6 @@ func! _InsertTimestamp (format, where)
 endfunc
 
 " --------------------------------------------------------------------
-" Fix a timestamp, adding the day of week. so that:
-"   ☰2023-01-24 becomes ☰2023-01-24.Tue
-" and:
-"   ☰2023-01-24.20-45-15 becomes ☰2023-01-24.Tue.20-45-15
-"
-" This is not very smart. It will work correctly only only if the
-" cursor is already placed on the '☰' character.
-
-"func! AddDOW ()
-"endfunc
-
-" --------------------------------------------------------------------
 " ʈ billing elem
 " Given ⦃g:prj_nick = 'vch'⦄, look for lines that start like ⦃vchf…⦄
 " (note the appended 'f') and insert a block before it, like
@@ -512,33 +500,11 @@ func! DelPara ()
 endfunc
 
 " --------------------------------------------------------------------
-" Take a string like ‹foo=$bar/noy› and have it evaluate so that the
-" Vim session recognizes $foo.
-"
-" Meh, complicated. Just copy the line and eval that
-" ⦃
-"   foo=bar
-"   " $foo = 'bar'
-" ⦄
-
-" --------------------------------------------------------------------
-func! FixPerl6PodAnsi ()
-    :%s/\[4m/[33;4m/g
-    :%s/\[1m/[33;1m/g
-    :AnsiEsc
-endfunc
-
-" --------------------------------------------------------------------
 
     " Especially don't want ‹q› to quit Vim when I'm reading a file
     " that has ‹set ft=man›. See
     " ‥<vim.app/share/vim/vim80/ftplugin/man.vim>.
 let no_man_maps = 1
-
-nnoremap __ :e ~/⋯*<cr>
-nnoremap _. :e ./⋯*<cr>
-nnoremap _t :e ./…*<cr>
-nnoremap _l :e ./⋯*<cr>
 
 " --------------------------------------------------------------------
 " If ‹:set textwidth› is not equal to 70, set it to 70, else set it to
@@ -739,86 +705,6 @@ endfunc
     call BigSurr('x', 'κ<', '>'     ) " Packages LaTeX et Vim: κ<fontspec>, κ<pgsep>
   " call BigSurr('y',
     call BigSurr('z', '‹',  '›'     ) " Quotes: Quote ‹like this›.
-
-" --------------------------------------------------------------------
-
-    " In the past, needed to fix these too:
-    "   \ 'ª' : '´',
-    "   \ '£' : '◆',
-    "   \ '※' : '‼',
-    "   \ 'Ť' : '⁇',
-    "   \ '‣' : '▸',
-    "   \ '←' : '◂',
-    "   \ '₋' : 'FIXME',
-    "   \ '⟨' : 'FIXME',
-    "   \ '⟩' : 'FIXME',
-    "   \ 'Ŏ' : 'ɱ',
-    "   \ 'Ň' : 'Ɲ',
-func! L_fixMarkers ()
-    call _FixEncoding({
-      \ '⌘' : '☰',
-    \})
-endfunc
-
-func! L_fixEncodingSimple ()
-    call _FixEncoding({
-      \ 'Â§'  : '§',
-      \ 'Ã§'  : 'ç',
-      \ 'Ã¢'  : 'â',
-      \ 'Ã€'  : 'À',
-      \ 'Ã®'  : 'î',
-      \ 'Ã\*' : 'É',
-      \ 'Ã©'  : 'é',
-      \ 'Ã '  : 'à',
-      \ 'Â '  : ' ',
-      \ 'Ã´'  : 'ô',
-      \ 'Ã¨'  : 'è',
-      \ 'Å“'  : 'œ',
-      \ 'Ã¹'  : 'ù',
-      \ 'â€“' : '–',
-      \ 'Â«'  : '«',
-      \ 'Â»'  : '»',
-      \ 'Ãª'  : 'ê',
-      \ 'Ã«'  : 'ë',
-      \ 'Ã»'  : 'û',
-      \ 'â€™' : '’',
-      \ 'â€¦' : '…',
-    \})
-endfunc
-
-func! L_fixEncodingDouble ()
-    call _FixEncoding({
-      \ 'â€¦' : '…',
-      \ 'â€™' : '',
-      \ 'â€¢' : ':',
-      \ 'آ°'  : '°',
-      \ 'أ¢'  : 'â',
-      \ 'أ§'  : 'ç',
-      \ 'أ©'  : 'é',
-      \ 'أ¨'  : 'è',
-      \ 'أ´'  : 'ô',
-      \ 'أ '  : 'à',
-      \ 'إ“'  : 'œ',
-      \ 'â€œ' : '"',
-      \ 'â€“' : '–',
-      \ 'â€*' : '"',
-      \ 'ﺃ®'  : 'î',
-      \ 'ﺃ»'  : 'û',
-    \})
-endfunc
-
-func! _FixEncoding (pairs)
-    for l:key in keys(a:pairs)
-        let l:val = get(a:pairs, l:key)
-        try
-            exec "%s/" . l:key . "/" . l:val . "/gc"
-        catch
-        endtry
-    endfor
-endfunc
-
-    " Yank full path of current file into unnamed register.
-nnoremap ,yp :let @" = expand("%:p")<cr>
 
 " --------------------------------------------------------------------
 " Save timestamped file. The filename will be a timestamp, and the
@@ -1437,17 +1323,6 @@ func! _Fft (ft)
 endfunc
 com! -nargs=1 Fft call _Fft("<args>")
 
-" " --------------------------------------------------------------------
-" func! _Errmess ()
-"     let l:tmp_file = g:lucs_tmp_dir . "/mess.vim"
-"     exec "redir! > " . l:tmp_file
-"     silent mess
-"     redir END
-"     exec "sp " . l:tmp_file
-"     norm G
-" endfunc
-" com! -nargs=0 M call _Errmess()
-
 " --------------------------------------------------------------------
 " Open a Raku doc file in the current Vim session. ⦃:Rd Module::Install⦄
 
@@ -1465,127 +1340,6 @@ func! _Rd (module)
     let @b = l:savedB
 endfunc
 com! -nargs=1 Rd call _Rd("<args>")
-
-" --------------------------------------------------------------------
-" Open a Perl module in the current Vim session. ⦃:Pm Module::Install⦄
-func! _Pm (module)
-    let f = system("perl -MModule::Locate "
-      \ . "-e 'print scalar(Module::Locate::locate(" . a:module . "))'")
-    if empty(f)
-        echo a:module "not found."
-        return
-    endif
-    exec ":e " . f
-    setl ft=perl ro nomod noma
-endfunc
-com! -nargs=1 Pm call _Pm("<args>")
-
-" --------------------------------------------------------------------
-" Open a Perl POD file in the current Vim session. ⦃:Pd Module::Install⦄
-func! _Pd (module)
-    let f = system("perldoc -l " . a:module)[:-2]
-    if v:shell_error != 0
-        echo a:module "not found."
-        return
-    endif
-    exec ":e " . f
-    setl ft=pod ro nomod noma
-endfunc
-com! -nargs=1 Pd call _Pd("<args>")
-
-" " --------------------------------------------------------------------
-" " View a Perl POD file in the current Vim session. ⦃:Pod
-" " Module::Install⦄
-" func! _Pod (module)
-"         " We will read the data into this file.
-"     let fname = g:lucs_tmp_dir . "/" . a:module . ".TO_DELETE"
-"         " Move to it if it's already open.
-"     let bnum = bufnr(fname)
-"     if bnum != -1
-"         exec ":e #" . bnum
-"         return
-"     endif
-"     let f = system("perldoc -l " . a:module)[:-2]
-"     if v:shell_error != 0
-"         echo a:module "not found."
-"         return
-"     endif
-"         " Open a new buffer unless the current one is available.
-"     if bufname('%') != '' || &modified
-"         new
-"         only
-"     endif
-"    " echo "r!" . "pod2man -u " . f . " | /usr/bin/man -Tutf8 -l - | col -bx"
-"    " return
-"    "
-"    " exec "r!" . "pod2man -u " . f . " | /usr/bin/man -Tutf8 -l - "
-"         "Good line.
-"     exec "r!" . "pod2man -u " . f . " | /usr/bin/man -Tutf8 -l - | col -bx"
-"
-"    " exec "r!" . "pod2man " . f . " | nroff -man | col -bpx | iconv -c"
-"     setl ft=man nolist fenc=utf8 ro nomod noma
-"     norm gg
-"     exec ":w " . fname
-" endfunc
-" com! -nargs=1 Pod call _Pod("<args>")
-
-" " --------------------------------------------------------------------
-" " View a Perl6 synopsis (design doc) POD file in the current Vim
-" " session. ⦃:Sod 12⦄
-" func! _Sod (synopsis_num)
-"         " We will read the data into this file.
-"     let fname = g:lucs_tmp_dir . "/S" . a:synopsis_num . ".TO_DELETE"
-"         " Move to it if it's already open.
-"     let bnum = bufnr(fname)
-"     if bnum != -1
-"         exec ":e #" . bnum
-"         return
-"     endif
-"     let l:cmd = "find " . g:lucs_perl6specs_dir . " -name 'S" . a:synopsis_num . "*'"
-"     let f = substitute(system(l:cmd), '\n\+$', '', '')
-"     if v:shell_error != 0
-"         echo "Synopsis" a:synopsis_num "not found."
-"         return
-"     endif
-"     exec "edit " f
-"    "     " Open a new buffer unless the current one is available.
-"    " if bufname('%') != '' || &modified
-"    "     new
-"    "     only
-"    " endif
-"    " let l:cmd = "pod2man -u " . f . " | /usr/bin/man -Tutf8 -l - | col -bx"
-"    " exec "r!" . l:cmd
-"    " setl ft=man nolist fenc=utf8 ro nomod noma
-"    " norm gg
-"    " exec ":w " . fname
-" endfunc
-" com! -nargs=1 Sod call _Sod("<args>")
-
-" " --------------------------------------------------------------------
-" nvim implements :Man, so forget about this.
-"
-" " View a man page in the current Vim session. ⦃:Man ls⦄
-" func! _Man (page)
-"         " We will read the data into this file.
-"     let fname = g:lucs_tmp_dir . "/" . a:page . ".TO_DELETE"
-"         " Move to it if it's already open.
-"     let bnum = bufnr(fname)
-"     if bnum != -1
-"         exec ":e #" . bnum
-"         return
-"     endif
-"         " Open a new buffer unless the current one is available.
-"     if bufname('%') != '' || &modified
-"         new
-"         only
-"     endif
-"     exec "r!" . "/usr/bin/man -Tutf8 " . a:page . " | col -b"
-"    " exec "r!" . "/usr/bin/man -Tascii " . a:page . " | col -bpx | iconv -c"
-"     setl ft=man nolist fenc=utf8 ro nomod noma
-"     norm gg
-"     exec ":w " . fname
-" endfunc
-" com! -nargs=1 Man call _Man("<args>")
 
 " --------------------------------------------------------------------
 " Enable Vim to syntax highlight specially wrapped text in a given
@@ -1888,41 +1642,6 @@ command! -nargs=1 -complete=command -bar -range Redir silent call Redir(<q-args>
 " Side effect: Vim commands can't be "chained".
 command! -nargs=1 -complete=command -range Redir silent call Redir(<q-args>, <range>, <line1>, <line2>)
 
-" " --------------------------------------------------------------------
-" " Note that after forking, even if the Vim app itself is closed, the
-" " server will still be running, so relaunching Vim with 'vv' will
-"
-" func! _ForkCmd (cmd, file)
-"     perl << EOT
-"     use strict;
-"     use warnings;
-"     my $file = (VIM::Eval('a:file'))[1];
-"     if (-f $file) {
-"         my $gPid = fork;
-"         if (! defined $gPid) {
-"             VIM::DoCommand(qq<echo "Couldn't fork.">);
-"
-"         }
-"         elsif ($gPid == 0) {
-"                 # Child process.
-"             system(
-"                 (VIM::Eval('a:cmd'))[1],
-"                 $file
-"             );
-"             exit;
-"         }
-"         # Parent process does nothing special.
-"     }
-"     else {
-"         VIM::DoCommand("echo '<$file> not found.'");
-"     }
-" EOT
-" endfunc
-" noremap ,ce0  :call _ForkCmd('evince'  , _GetFileOrDirUnderCursor(0))<cr>
-" noremap ,cf1  :call _ForkCmd('firefox' , _GetFileOrDirUnderCursor(1))<cr>
-" noremap ,cg0  :call _ForkCmd('gnumeric', _GetFileOrDirUnderCursor(0))<cr>
-" noremap ,cg1  :call _ForkCmd('gnumeric', _GetFileOrDirUnderCursor(1))<cr>
-
 " --------------------------------------------------------------------
 " Syntax highlighting and colors.
 
@@ -2006,10 +1725,4 @@ endfunc
     " Initialize.
 syntax enable
 nnoremap <silent> <f7> :call _ToggleSyntaxHi()<cr>
-
-"set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
-"set guicursor=n-v-c-sm:ver25,i-ci-ve:ver25,r-cr-o:hor20
-"hhset guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
-"hi Cursor guifg=black guibg=green gui=reverse
-"set guicursor=a:block-blinkon100-Cursor/Cursor
 
