@@ -734,9 +734,9 @@ endfunc
     call BigSurr('s', '«',  '»'     ) " French guillemets: «Le film L'argent».
     call BigSurr('t', '⟨',  '⟩'     ) " A kind of something: ▸ cp ⟨file from⟩ ⟨file to⟩
     call BigSurr('u', 'ū<', '>'     ) " URL: ū<https://github.com/lucs/>
-  " call BigSurr('v',
+    call BigSurr('v', 'ε<', '>'     ) " LaTeX environment name:
   " call BigSurr('w',
-  " call BigSurr('x',
+    call BigSurr('x', 'κ<', '>'     ) " Packages LaTeX et Vim: κ<fontspec>, κ<pgsep>
   " call BigSurr('y',
     call BigSurr('z', '‹',  '›'     ) " Quotes: Quote ‹like this›.
 
