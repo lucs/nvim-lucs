@@ -39,6 +39,7 @@ my $raw-data = q:to/EoD/;
     ai ∞  Infinity
     ak ¦  Broken bar
     a! ¡  ¡Exclamation!
+    am —  Em dash
     an    Non-breaking space
     as §  Section sign        | ▸ rak §word
     at ™  Trademark
