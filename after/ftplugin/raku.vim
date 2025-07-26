@@ -10,7 +10,7 @@ setl nocindent
 setl nosmartindent
 "setl indentkeys-=0#
 setl isfname-=:
-setl tabstop=4 softtabstop=4 shiftwidth=4
+setl tabstop=4 softtabstop=4 shiftwidth=2
 
     " Added for acutags. ☰2025-01-24.Fri
 setl isk+=´
