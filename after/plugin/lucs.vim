@@ -8,6 +8,23 @@
 "   g:prj_nick
 
 " --------------------------------------------------------------------
+" Insert a pgsep followed by a line holding the current date, then
+" two empty lines, with the cursor in normal mode at the beginning
+" of the last one.
+" 
+" :let @r = " io\<c-u>7i\<c-m>\<c-m>\<esc>"
+
+" --------------------------------------------------------------------
+" Yank full path of current file into unnamed register.
+
+func! YankFullPath ()
+    let @" = expand("%:p")
+endfunc
+command! -nargs=0 YankFullPath :call YankFullPath()
+
+" --------------------------------------------------------------------
+" ☰2025-06-16.Mon
+
 func! _PasteOptVal (opt)
     let l:savedB = @b
     redir @b
@@ -91,12 +108,6 @@ nnoremap Km :call FormatManPage()<cr>
 nnoremap Kt :%s,[\u231a\u2318],☰,gc<cr>
 
 " --------------------------------------------------------------------
-" ☰2024-12-27.Fri
-" Restore these ❬⋯❭ to <⋯>
-
-nnoremap ,r :%s/❬/</gc<cr>
-nnoremap ,R :%s/❭/>/gc<cr>
-
     " Make it easier to leave terminal mode.
     " (Enter with ⦃:vsplit term://zsh⦄, then ‹i›.)
 :tnoremap <c-g><c-g> <c-\><c-n>
@@ -281,18 +292,6 @@ func! MoveCursorToBpos (bPos)
 endfunc
 
 " --------------------------------------------------------------------
-" ʈ Debugging::Tool
-" ☰2024-08-06.Tue
-
-    " For use with Debugging::Tool.
-nnoremap ,dp /\$dt\.p/e<cr>
-
-nnoremap ,ds /\$dt\.s/e<cr>
-nnoremap ,dd /\$dt\.[ps]/e<cr>
-nnoremap ,d. /\$dt\._/e<cr>
-nnoremap ,da /\$dt\./e<cr>
-
-" --------------------------------------------------------------------
 " ☰2024-03-23.Sat
 "
 " When in a Makefile, the syntax setting has ‹:set noexpandtab›, which
@@ -332,19 +331,6 @@ command! -nargs=1 Ss let @/ = escape(<q-args>, '/')|normal! /<C-R>/<CR>
 
     " ⦃:SS /baz*/foo⦄ Escape all special characters.
 command! -nargs=1 SS let @/ = '\V'.escape(<q-args>, '/\')|normal! /<C-R>/<CR>
-
-" --------------------------------------------------------------------
-
-   " Identify the syntax highlighting group used at the cursor
-   " ū<http://vim.wikia.com/wiki/Identify_the_syntax_highlighting_group_used_at_the_cursor>
-:map <f10> :echo
-    \     "hi<"    . synIDattr(synID(line("."), col("."), 1), "name")
-    \ . '> trans<' . synIDattr(synID(line("."), col("."), 0), "name")
-    \ . "> lo<"    . synIDattr(synIDtrans(synID(line("."), col("."), 1)), "name")
-    \ . ">"<cr>
-
-    " To help match code snippet id`s.
-nnoremap gW /ID:<space>\.\?
 
 " --------------------------------------------------------------------
 " ʈ timestamps
@@ -526,9 +512,9 @@ func! _ReTextWidth ()
 endfunc
 
 " --------------------------------------------------------------------
-" ʈ
+" ʈ Goʈ
 " I use lines that look like ‹ʈ ⟨subject⟩› in pretty much all my
-" documentation files, to identify sections. For example:
+" memo files, to identify sections. For example:
 " 
 "     - --------------------------------------------------------------------
 "     ʈ parse binary
@@ -568,16 +554,22 @@ endfunc
 " binary›, it closes that window and moves the cursor to line 31 in the
 " original file.
 
-nnoremap <c-f8> :call _ProgFunc(
-  \ 'if $line ~~ /^ [$<indentl-level> = \s*] ' .
-  \ '$<entry> = [[sub\|method\|class\|grammar\|multi] ｢ ｣ .* ] / {'
-  \ )<cr>
+" --------------------------------------------------------------------
+nnoremap <f8>   :call GoToc()<cr>
+nnoremap <c-f8> :call GoToc(1)<cr>
+command! -nargs=* GoToc :call GoToc(<args>)
 
-nnoremap <f8>   :call _ProgFunc(
-  \ 'if $line ~~ /^ .*? ｢ʈ｣ [$<indentl-level> = \d+]? \s+ $<entry> = [.*] / {'
-  \ )<cr>
+func! GoToc (...)
+    if a:0 == 0
+        let l:rakuCond = 'if $line ~~ /^ .*? ｢ʈ｣ [$<indentl-level> = \d+]? \s+ $<entry> = [.*] / {'
+    else
+        let l:rakuCond = 'if $line ~~ /^ [$<indentl-level> = \s*] ' .
+          \ '$<entry> = [[sub|method|class|grammar|multi] ｢ ｣ .* ] / {'
+    endif
+    call _ProgF(l:rakuCond)
+endfunc
 
-func! _ProgFunc (rakuRegex)
+func! _ProgF (rakuCond)
     if &modified
         echo "File is modified. Save it first."
         return
@@ -611,24 +603,25 @@ EoP
 EoP
 
     let l:rakuInvoc = [ printf("foo(q|%s|, q|%s|)", l:fRead, l:fWryt) ]
-    let l:cmd = printf("raku -e '%s'", join(l:rakuFuncBeg + [ a:rakuRegex ] + l:rakuFuncEnd + l:rakuInvoc, "\n"))
+    let l:cmd = printf("raku -e '%s'", join(l:rakuFuncBeg + [ a:rakuCond ] + l:rakuFuncEnd + l:rakuInvoc, "\n"))
 
    " echo l:cmd | echo input("Press a key to continue...")
+   " exec 'put ' . l:cmd
     call system(l:cmd)
     exec "edit " . l:fWryt
         " Pressing Enter on a line will open the file at the line
         " number that it happens
-    nnoremap <buffer> <cr> :call OpenHere()<cr>
+    nnoremap <buffer> <cr> :call OpenH()<cr>
 endfunc
 
     " Current line should read like ⦃582 Chomp a string⦄. Open the
     " file that was shown on line-1 at the line number that is shown
     " on the current line.
-func! OpenHere ()
+func! OpenH ()
     let l:saved_ = getreg("")
     let l:saved_x = getreg("x")
     normal! "xyy
-    let l:num = matchstr(@x, '\d\+')
+    let l:num = matchstr(@x, '\d\+') - 1
     normal! gg"xyy
     let l:file = matchstr(@x, '[^\n]\+')
     call setreg('x', l:saved_x)
@@ -681,6 +674,7 @@ endfunc
         " The 
     call BigSurr('a', '◆<', '>'     ) " Program name: Launch ◆<nvim> in your terminal.
   " call BigSurr('b',                 " SEEMS NOT TO BE MAPPABLE ☰2025-05-31.Sat.
+                                      " zsh insert-composed-char can  help maybe?
     call BigSurr('c', '❲',  '❳', '∣') " Choice: Choose one of ❲a∣b∣c❳.
     call BigSurr('d', '⌊',  '⌉'     ) " Consequence of example: ⦃21*2⦄ gives ⌊42⌉.
     call BigSurr('e', '⦃',  '⦄'     ) " Example value: ⦃21*2⦄ gives ⌊42⌉.
@@ -1072,7 +1066,8 @@ set shortmess=atIToO
 set showcmd
 set showmatch
 set splitbelow
-set tabstop=4 softtabstop=4 shiftwidth=4
+set tabstop=2 softtabstop=2 shiftwidth=2
+"set tabstop=4 softtabstop=4 shiftwidth=4
 set textwidth=70
 set noruler
 set whichwrap+=<,>,[,]
@@ -1088,8 +1083,9 @@ func! ToggleList ()
     endif
     let s:do_list = 1 - s:do_list
 endfunc
-call ToggleList()
 nnoremap ,<f4> :call ToggleList()<cr>
+
+set list listchars=tab:\ \ ,trail:·
 
 " --------------------------------------------------------------------
 if has("gui_running")
@@ -1467,7 +1463,6 @@ func! _AppendLogEntry ()
     endtry
 endfunc
 
-imap ,a  ´
 nnoremap ,aa :call _AppendLogEntry()<cr>
 nnoremap ,ar :call _AppendLogEntry()<cr>
 nnoremap ,as :call _AppendLogEntry()<cr>´
@@ -1475,6 +1470,7 @@ nnoremap ,ad :call _AppendLogEntry()<cr>-
 nnoremap ,an :call _AppendLogEntry()<cr>.
 
 " --------------------------------------------------------------------
+noremap! ,a ´
 func! _AcuTags (option)
     if &modified
         echo "File is modified. Save it first."
@@ -1634,31 +1630,15 @@ function! Redir(cmd, rng, start, end)
     call setline(1, output)
 endfunction
 
-" This command definition includes -bar, so that it is possible to "chain" Vim commands.
-" Side effect: double quotes can't be used in external commands
+    " This command definition includes -bar, so that it is possible to
+    " "chain" Vim commands. Side effect: double quotes can't be used
+    " "in external commands
 command! -nargs=1 -complete=command -bar -range Redir silent call Redir(<q-args>, <range>, <line1>, <line2>)
 
-" This command definition doesn't include -bar, so that it is possible to use double quotes in external commands.
-" Side effect: Vim commands can't be "chained".
+    " This command definition doesn't include -bar, so that it is
+    " possible to use double quotes in external commands. Side effect:
+    " Vim commands can't be "chained".
 command! -nargs=1 -complete=command -range Redir silent call Redir(<q-args>, <range>, <line1>, <line2>)
-
-" --------------------------------------------------------------------
-" Syntax highlighting and colors.
-
-    " Modified 2019-12-17
-if $DISPLAY == ''
-        " We are probably in a console terminal.
-    colorscheme blue_lucs
-else
-        " We are probably in a X terminal.
-    colorscheme desert256
-endif
-
-if $TMUX == ''
-    set notermguicolors
-else
-    set termguicolors
-endif
 
 " --------------------------------------------------------------------
 " ʈ Build up the status line
@@ -1714,6 +1694,34 @@ endfunc
 call BuildUpStatusLine()
 
 " --------------------------------------------------------------------
+" Syntax highlighting and colors.
+
+   " Identify the syntax highlighting group used at the cursor
+   " ū<http://vim.wikia.com/wiki/Identify_the_syntax_highlighting_group_used_at_the_cursor>
+:map <f10> :echo
+    \     "hi<"    . synIDattr(synID(line("."), col("."), 1), "name")
+    \ . '> trans<' . synIDattr(synID(line("."), col("."), 0), "name")
+    \ . "> lo<"    . synIDattr(synIDtrans(synID(line("."), col("."), 1)), "name")
+    \ . ">"<cr>
+
+    " To help match code snippet id`s.
+nnoremap gW /ID:<space>\.\?
+
+    " Modified 2019-12-17
+if $DISPLAY == ''
+        " We are probably in a console terminal.
+    colorscheme blue_lucs
+else
+        " We are probably in a X terminal.
+    colorscheme desert256
+endif
+
+if $TMUX == ''
+    set notermguicolors
+else
+    set termguicolors
+endif
+
 func! _ToggleSyntaxHi ()
     if exists("g:syntax_on")
         syntax off
