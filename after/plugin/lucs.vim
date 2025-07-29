@@ -626,7 +626,9 @@ func! OpenH ()
     let l:file = matchstr(@x, '[^\n]\+')
     call setreg('x', l:saved_x)
     bd
-    exec "edit " . l:file
+        " Needed to escape(), some of my files contain unusual
+        " characters in their name.
+    exec "edit " . escape(l:file, ':%')
     exec "normal! " . l:num . "Gzt"
     call setreg('', l:saved_)
 endfunc
