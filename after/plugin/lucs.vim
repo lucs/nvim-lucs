@@ -1,5 +1,5 @@
 " --------------------------------------------------------------------
-" Globals
+" ʈ globals
 "
 "       ⦃/home/lucs⦄, ⦃/root⦄, usually set in …<.init.⟨user⟩.vim>.
 "   g:user_home_dir
@@ -11,10 +11,12 @@
 " Insert a pgsep followed by a line holding the current date, then
 " two empty lines, with the cursor in normal mode at the beginning
 " of the last one.
-" 
+"
 " :let @r = " io\<c-u>7i\<c-m>\<c-m>\<esc>"
 
 " --------------------------------------------------------------------
+" ʈ yank path
+"
 " Yank full path of current file into unnamed register.
 
 func! YankFullPath ()
@@ -23,6 +25,8 @@ endfunc
 command! -nargs=0 YankFullPath :call YankFullPath()
 
 " --------------------------------------------------------------------
+" ʈ paste option value
+"
 " ☰2025-06-16.Mon
 
 func! _PasteOptVal (opt)
@@ -56,7 +60,7 @@ nnoremap <silent> g*     :set hls<cr>g*
 " "magic" notation or such.
 
 " --------------------------------------------------------------------
-" ʈ open frequent
+" ʈ open frequent files ‹K› mappings
 
 " ‹K⋯h›: $HOME dir
 " ‹K⋯s›: Subproject dir
@@ -89,7 +93,7 @@ nnoremap Kkm :e /mnt/hKpop/opt/prj<cr>
 nnoremap Kkp :exec ':e ' . g:user_home_dir . '/prj/'<cr>
 
 " --------------------------------------------------------------------
-" ʈ Other ‹K› mappings
+" ʈ misc ‹K› mappings
 
 nnoremap Kb :call InsertBillingElem()<cr>
 
@@ -108,6 +112,8 @@ nnoremap Km :call FormatManPage()<cr>
 nnoremap Kt :%s,[\u231a\u2318],☰,gc<cr>
 
 " --------------------------------------------------------------------
+" ʈ terminal mode
+
     " Make it easier to leave terminal mode.
     " (Enter with ⦃:vsplit term://zsh⦄, then ‹i›.)
 :tnoremap <c-g><c-g> <c-\><c-n>
@@ -333,7 +339,7 @@ command! -nargs=1 Ss let @/ = escape(<q-args>, '/')|normal! /<C-R>/<CR>
 command! -nargs=1 SS let @/ = '\V'.escape(<q-args>, '/\')|normal! /<C-R>/<CR>
 
 " --------------------------------------------------------------------
-" ʈ timestamps
+" ʈ insert timestamps
 
     " Insert a timestamp with a format of 7, 8, 9, or 0 (cf.
     " _InsertTimestamp) and either at (i) the cursor position, or
@@ -430,7 +436,7 @@ func! _InsertTimestamp (format, where)
 endfunc
 
 " --------------------------------------------------------------------
-" ʈ billing elem
+" ʈ manage billing elem
 " Given ⦃g:prj_nick = 'vch'⦄, look for lines that start like ⦃vchf…⦄
 " (note the appended 'f') and insert a block before it, like
 " ‹vchf!0'043- ☰2019l.Dec02.Mon.09:44.06›
@@ -512,34 +518,37 @@ func! _ReTextWidth ()
 endfunc
 
 " --------------------------------------------------------------------
-" ʈ Goʈ
-" I use lines that look like ‹ʈ ⟨subject⟩› in pretty much all my
-" memo files, to identify sections. For example:
-" 
+" ʈ section markers ʈ
+"
+" I use lines that look like the one two lines up here in pretty much
+" all my memo files, to identify sections. For example (using plain
+" ‹t›s instead of the actual U-0288 to prevent these example lines
+" from being misidentified as real sections in this file):
+"
 "     - --------------------------------------------------------------------
-"     ʈ parse binary
-" 
+"     t parse binary
+"
 "     https://dev.to/uzluisf/dbase-parsing-a-binary-file-format-with-raku-2fm6
-" 
+"
 "     - --------------------------------------------------------------------
-"     ʈ irc logs : …<~/doc/_irc.memo>
-" 
+"     t irc logs : …<~/doc/_irc.memo>
+"
 "     See ~/doc/cookbook.memo
-" 
+"
 "     ū<https://fosstodon.org/@rakulang>
-" 
+"
 "     - --------------------------------------------------------------------
-"     ʈ ´binding ´Set ´SetHash
-" 
+"     t ´binding ´Set ´SetHash
+"
 "         ☰2025-02-03.Mon
 "     ū<https://stackoverflow.com/...>
-" 
+"
 "     ⋯
-" 
+"
 " Some of these files have thousands of lines and dozens of sections.
-" 
+"
 " The following code first builds a page like this:
-" 
+"
 "     /tmp/pel.memo
 "      6   parse binary
 "     11   irc logs : …<~/doc/_irc.memo>
@@ -548,7 +557,7 @@ endfunc
 "     36   irc logs : …<~/doc/_irc.memo>
 "     43   ´binding ´Set ´SetHash
 "     ⋯
-" 
+"
 " So I can scan that visually, or search for some text, whatever, and
 " when I move my cursor to the desired line, for example ‹31   parse
 " binary›, it closes that window and moves the cursor to line 31 in the
@@ -635,6 +644,7 @@ endfunc
 
 " --------------------------------------------------------------------
 " ʈ surrounders
+"
 " This works with Tim Pope's ‹surround› plugin. For example, in normal
 " mode, surround visually selected text by typing ‹S› followed by
 " either a lowercase, uppercase, or smallcaps letter to surround
@@ -673,7 +683,7 @@ func! BigSurr (char_lower, pfx, sfx, ...)
     endif
 endfunc
 
-        " The 
+        " The
     call BigSurr('a', '◆<', '>'     ) " Program name: Launch ◆<nvim> in your terminal.
   " call BigSurr('b',                 " SEEMS NOT TO BE MAPPABLE ☰2025-05-31.Sat.
                                       " zsh insert-composed-char can  help maybe?
@@ -687,7 +697,7 @@ endfunc
     call BigSurr('j', '∿<', '>'     ) " Project directory: ∿<t/nvim>
     call BigSurr('k', '｢',  '｣'     ) " Literal Raku quoting: ｢No $interpolation.\n｣
   " call BigSurr('l',
-  " call BigSurr('m',
+    call BigSurr('m', '✎<', '>',    ) " Project's memo file: ✎<t/bouffe>
   " call BigSurr('n',
     call BigSurr('o', '᚜', '᚛'      ) " Operator: Going back to this ☰2025-05-03.Sat
     call BigSurr('p', 'ᴘ<', '>'     ) " Password location: ᴘ<lp/bazfoo/s>
@@ -772,23 +782,49 @@ vnoremap CS :StrikeThrough<cr>
 vnoremap CL :SlashThrough<cr>
 
 " --------------------------------------------------------------------
-" Toggle HTML/XML style comments.
+" ʈ ,c mappings
 "
-"   |<!-- foo ⋯ -->
+" I have a bunch of ‹,c› normal mode mappings that toggle a single
+" code line between being commented out or not. The resulting
+" alignment may appear unusual FIXME
+"
+"   ,cx   <!-- ⋯ -->
+"   ,cc   ‹/* ⋯ */›
+"   ,c#   ‹# ⋯›
+"   ,c!   ‹! ⋯›
+"   ,c-   ‹- ⋯›
+"   ,c"   ‹" ⋯›
+"   ,c%   ‹% ⋯›
+"   ,cd   ‹-- ⋯›
+"   ,cw   ‹// ⋯›
+
+" --------------------------------------------------------------------
+" Toggle HTML/XML style.
+"
 "   |<foo ⋯>
+"   |<!-- foo ⋯ -->
 "
-"   |    <foo ⋯>
-"   |    <!-- foo ⋯ -->
+"   | <foo ⋯>
+"   | <!-- foo ⋯ -->
+"   ⋯
+
+    " Remove leading ‹" › for interactive testing.
+" <foo ⋯>
+"  <foo ⋯>
+"   <foo ⋯>
 
 func! XmlStyleOneLine ()
-        " Remove the comment.
-    if match(getline('.'), '<!--.*-->') != -1
+    let l:line = getline('.')
+
+        " Remove the surrounders if present.
+    if match(l:line, '<!--.*-->') != -1
         exec ':s,<!--\s*,<,'
         exec ':s,\s*-->,>,'
-    elseif match(getline('.'), '<!--') != -1
+    elseif match(l:line, '<!--') != -1
         echo "Multiline comment: fix by hand."
-        " Convert to comment.
-    elseif match(getline('.'), '<') == -1
+
+        " Insert the surrounders.
+    elseif match(l:line, '<') == -1
         echo "No tag here."
     else
         exec ':s,<,<!-- ,'
@@ -802,53 +838,50 @@ nnoremap <silent><Plug>XmlStyleOneLine :call
 nnoremap ,cx <Plug>XmlStyleOneLine
 
 " --------------------------------------------------------------------
-" Toggle ‹/*⋯*/› style one line comments.
+" Toggle ‹/*⋯*/› style.
 "
-"   |int main() ⋯
-"   |/*0 int main() ⋯ */
+"   |abc
+"   |/*⁰ abc */
 "
-"   | printf ⋯
+"   | abc
+"   |/*¹ abc */
+"
+"   |  abc
+"   |/* abc */
+"
+"   |   abc
+"   | /* abc */
+" ⋯
 
-"
-"   |  printf ⋯
-"   |/* printf ⋯ */
-"
-"   |   printf ⋯
-"   | /* printf ⋯ */
-"
-"   |    printf ⋯
-"   |  /* printf ⋯ */
-"
-" /*0 adcfadf */
-" /*1  adcfadf */
-"  /* adcfadf */
-"   /* adcfadf */
+    " Remove leading ‹" › for interactive testing.
+" printf("We're here!\n")
+"  printf("We're here!\n")
+"   printf("We're here!\n")
+"    printf("We're here!\n")
 
 func! CStyleOneLine ()
-    let l:savedSearchReg = @/
+    let l:line = getline('.')
 
-        " Remove the comment.
-    if match(getline('.'), '^/\*0') != -1
-        echo getline(".")
-        exec ':s,/\*0\s*,,'
+        " Remove the surrounders if present.
+    if match(l:line, '^/\*⁰') != -1
+        exec ':s,/\*⁰\s*,,'
         exec ':s,\s*\*/,,'
-    elseif match(getline('.'), '^/\*1') != -1
-        echo getline(".")
-        exec ':s,/\*1\s*, ,'
+    elseif match(l:line, '^/\*¹') != -1
+        exec ':s,/\*¹\s*, ,'
         exec ':s,\s*\*/,,'
-    elseif match(getline('.'), '/\*') != -1
+    elseif match(l:line, '/\*') != -1
         exec ':s,/\*\s*,  ,'
         exec ':s,\s*\*/,,'
 
-        " Convert to comment.
+        " Insert the surrounders.
     else
-            " LS : Leading Spaces.
+            " ‹LS› means ‹Leading Spaces›.
         let nbLSCurr = indent(line("."))
         if nbLSCurr == 0
-            exec ':s,^,/*0 ,'
+            exec ':s,^,/*⁰ ,'
             exec ':s,$, */,'
         elseif nbLSCurr == 1
-            exec ':s,^,/*1 ,'
+            exec ':s,^,/*¹,'
             exec ':s,$, */,'
         else
             let LSWant = repeat(" ", nbLSCurr - 2)
@@ -857,7 +890,6 @@ func! CStyleOneLine ()
         endif
     endif
     nohl
-    let @/ = l:savedSearchReg
 endfunc
 
 nnoremap <silent><Plug>CComment :call
@@ -865,77 +897,128 @@ nnoremap <silent><Plug>CComment :call
 nnoremap ,cc <Plug>CComment
 
 " --------------------------------------------------------------------
-" Toggle single character ｢#⋯｣ prefix style one line comments.
-" Presumes that the code starts in column 1 or is indented with 4
-" spaces or more. So converts between pairs of lines like these:
+" Toggle ‹# ⋯› style.
 "
+"       Toggles between lines like shown here.
 "   |my $x ⋯
-"   |#0 my $x ⋯
+"   |#⁰ my $x ⋯
 "
 "   | my $x ⋯
-"   |#1 my $x ⋯
+"   |# my $x ⋯
 "
 "   |  my $x ⋯
 "   | # my $x ⋯
-"
-"   |    my $x ⋯
-"   |   # my $x ⋯
+"   ⋯
 
-func! PfxLine (pfx_char)
+    " Remove leading ‹" › for interactive testing.
+" my $x ⋯
+"  my $x ⋯
+"   my $x ⋯
+
+func! PfxLineOneChar (pfx_char)
     let l:line = getline('.')
-    if strlen(l:line) == 0
-        return
-    endif
-    let l:col_1_char = (l:line)[0]
-    if l:col_1_char != ' '
-        if l:col_1_char == a:pfx_char
-            exec ':.s,' . a:pfx_char . ',,'
-        else
-            exec ':.s,^,' . a:pfx_char . ','
-        endif
-    else
 
-        let l:first_nonblank_char = matchstr(l:line, '  \zs\S\ze')
-        if l:first_nonblank_char == a:pfx_char
-            exec ':.s, ' . a:pfx_char . ', ,'
+        " A doublequote must be escaped when attempting to match it.
+    if a:pfx_char == '"'
+        let l:match_char = '\"'
+    else
+        let l:match_char = a:pfx_char
+    endif
+
+        " Remove the prefix if present.
+    if match(l:line, '^' . l:match_char . '⁰') != -1
+        exec ':s,' . l:match_char . '⁰ ,,'
+    elseif match(l:line, '^\s*' . l:match_char) != -1
+        exec ':s,' . l:match_char . ',,'
+
+        " Insert the prefix.
+    else
+            " ‹LS› means ‹Leading Spaces›.
+        let nbLSHave = indent(line("."))
+        if nbLSHave == 0
+            exec ':s,^,' . a:pfx_char . '⁰ ,'
         else
-            exec ':.s,\( \S\),' . a:pfx_char . '\1,'
+            let LSWant = repeat(" ", nbLSHave - 1)
+            exec ':s,^\s*,' . LSWant . a:pfx_char . ' ,'
         endif
     endif
-    normal! ll
+    nohl
 endfunc
 
+    " Set 'PfxLineOneChar'.
+func! SetPLOC (name, pfx_char)
+    let l:plug_name = 'SetPLOC' . a:name
+    exec ':nnoremap <silent><Plug>' . l:plug_name .
+      \ ' :call PfxLineOneChar("\' . a:pfx_char . '")<cr>' .
+      \ ':call repeat#set("\<Plug>' . l:plug_name . '")<cr>'
+    exec 'nnoremap ,c' . a:pfx_char . ' <Plug>SetPLOC' . a:name
+endfunc
+call SetPLOC('Pnd', '#')
+call SetPLOC('Ban', '!')
+call SetPLOC('Dsh', '-')
+call SetPLOC('Dqt', '"')
+call SetPLOC('Prc', '%')
+
 " --------------------------------------------------------------------
-nnoremap <silent><Plug>XresPfx :call
-  \ PfxLine('!')<cr>:call repeat#set("\<Plug>XresPfx")<cr>
-nnoremap ,c! <Plug>XresPfx
+" Toggle ‹-- ⋯› style.
+"
+"   |select col from tbl;
+"   |--⁰ select col from tbl;
+"
+"   | select col from tbl;
+"   |--¹ select col from tbl;
+"
+"   |  select col from tbl;
+"   |-- select col from tbl;
+"
+"   |   select col from tbl;
+"   | -- select col from tbl;
+"
+"   ⋯
 
-nnoremap <silent><Plug>TextPfx :call
-  \ PfxLine('-')<cr>:call repeat#set("\<Plug>TextPfx")<cr>
-nnoremap ,c- <Plug>TextPfx
+    " Remove leading ‹" › for interactive testing.
+" select col from tbl;
+"  select col from tbl;
+"   select col from tbl;
+"    select col from tbl;
 
-nnoremap <silent><Plug>PerlPfx :call
-  \ PfxLine('#')<cr>:call repeat#set("\<Plug>PerlPfx")<cr>
-nnoremap ,c# <Plug>PerlPfx
+func! PfxLineTwoChar (pfx_chars)
+    let l:line = getline('.')
 
-nnoremap <silent><Plug>VimPfx :call
-  \ PfxLine('"')<cr>:call repeat#set("\<Plug>VimPfx")<cr>
-nnoremap ,c" <Plug>VimPfx
+        " Remove the prefix if present.
+    if match(l:line, '^' . a:pfx_chars . '⁰') != -1
+        exec ':s,' . a:pfx_chars . '⁰ ,,'
+    elseif match(l:line, '^' . a:pfx_chars . '¹') != -1
+        exec ':s,' . a:pfx_chars . '¹,,'
+    elseif match(l:line, '^\s*' . a:pfx_chars . ' ') != -1
+        exec ':s,' . a:pfx_chars . ', ,'
 
-nnoremap <silent><Plug>TexPfx :call
-  \ PfxLine('%')<cr>:call repeat#set("\<Plug>TexPfx")<cr>
-nnoremap ,c% <Plug>TexPfx
+        " Insert the prefix.
+    else
+            " ‹LS› means ‹ Leading Spaces ›.
+        let nbLSCurr = indent(line("."))
+        if nbLSCurr == 0
+            exec ':s,^,' . a:pfx_chars . '⁰ ,'
+        elseif nbLSCurr == 1
+            exec ':s,^,' . a:pfx_chars . '¹,'
+        else
+            let LSWant = repeat(" ", nbLSCurr - 2)
+            exec ':s,^\s*,' . LSWant . a:pfx_chars . ' ,'
+        endif
+    endif
+    nohl
+endfunc
 
-    " Try to abstract out the commonality, failed so far. Try again
-    " later.
-" func! Florb (name, nmap, pfx_char)
-"     let l:plug_name = 'Florb' . a:name
-"     exec ':nnoremap <silent><Plug>' . l:plug_name .
-"       \ ':call PfxLine('a:pfx_char')<cr>i
-"     :call repeat#set("\<Plug>l:plug_name")<cr>
-"     nmap a:nmap <Plug>Florb . a:name
-" endfunc
-" Florb('text', ',cx', '-')
+    " Set 'PfxLineTwoChar'.
+func! SetPLTC (name, map_char, pfx_chars)
+    let l:plug_name = 'SetPLTC' . a:name
+    exec ':nnoremap <silent><Plug>' . l:plug_name .
+      \ ' :call PfxLineTwoChar("' . a:pfx_chars . '")<cr>' .
+      \ ':call repeat#set("\<Plug>' . l:plug_name . '")<cr>'
+    exec 'nnoremap ,c' . a:map_char . ' <Plug>' . l:plug_name
+endfunc
+call SetPLTC('DshDsh', 'd', '--')
+call SetPLTC('SlaSla', 's', '//')
 
 " --------------------------------------------------------------------
 " Similar to something found at
@@ -989,6 +1072,8 @@ filetype on
 filetype plugin on
 
 " --------------------------------------------------------------------
+" ʈ save restore window view
+"
 " http://vim.wikia.com/wiki/Avoid_scrolling_when_switch_buffers
 
     " Save current view settings on a per-window, per-buffer basis.
@@ -1019,7 +1104,7 @@ if v:version >= 700
 endif
 
 " --------------------------------------------------------------------
-" ʈ Options
+" ʈ options
 
     " Disable loading of the plugin.
 let loaded_matchparen = 1
@@ -1565,40 +1650,40 @@ endfunc
 " --------------------------------------------------------------------
 " ☰2025-05-11.Sun
 " From ū<https://gist.github.com/romainl/eae0a260ab9c135390c30cd370c20cd7>
-" 
+"
 " Redirect the output of a Vim or external command into a scratch buffer
-" 
+"
 " Usage (any shell)
-" 
+"
 "         Show full output of command :hi in scratch window.
 "     :Redir hi
-" 
+"
 "         Show full output of command :!ls -al in scratch window.
-"     :Redir !ls -al 
-" 
+"     :Redir !ls -al
+"
 " Additional usage (depends on non-standard shell features so YMMV)
-" 
+"
 " Evaluate current line with node and show full output in scratch window:
-" 
+"
 " " current line
 " console.log(Math.random());
-" 
+"
 " " Ex command
 " :.Redir !node
-" 
+"
 " " scratch window
 " 0.03987581000754448
-" 
+"
 " Evaluate visual selection + positional parameters with bash and show
 " full output in scratch window:
-" 
+"
 " " content of buffer
 " echo ${1}
 " echo ${2}
-" 
+"
 " " Ex command
 " :%Redir !bash -s foo bar
-" 
+"
 " " scratch window
 " foo
 " bar
@@ -1643,9 +1728,9 @@ command! -nargs=1 -complete=command -bar -range Redir silent call Redir(<q-args>
 command! -nargs=1 -complete=command -range Redir silent call Redir(<q-args>, <range>, <line1>, <line2>)
 
 " --------------------------------------------------------------------
-" ʈ Build up the status line
-
-" Elements I use:
+" ʈ status line
+"
+" Build up the status line. Elements I use:
 "
 "   \       Insert a space.
 "   -4.4    Set a width.
